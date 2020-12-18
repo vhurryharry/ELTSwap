@@ -1,6 +1,6 @@
-//----------------------------
-//ELTCOIN 2 HODL SWAP CONTRACT
-//----------------------------
+//--------------------------------------------------
+//ELTCOIN -> HODL SWAP CONTRACT WITH BURN MULTIPLIER
+//--------------------------------------------------
 pragma solidity ^0.6.0;
 
 interface IERC20 {
