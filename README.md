@@ -1,8 +1,8 @@
-#Ethereum Contracts
+# Ethereum Contracts
 
 ---
 
--ELTSWAP
--AIRDROP
--Golden Ticket
--TokenSale
+- ELTSWAP
+- AIRDROP
+- Golden Ticket
+- TokenSale
