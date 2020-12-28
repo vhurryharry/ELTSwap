@@ -9,7 +9,8 @@
     approveELT,
     swap,
   } from "./js/web3Helper";
-  import RangeSlider from "svelte-range-slider-pips";
+
+  import ELTSwapWizard from "./components/ELTSwapWizard.svelte";
 
   // Creates a connection to own infura node.
   const enable = () =>
@@ -80,10 +81,5 @@
 </style>
 
 <main>
-  <div>
-    <button on:click={approveELTTransfer}>Approve ELT Transfer</button>
-    <button on:click={sendSwap}>Start Swap</button>
-
-    <RangeSlider values={[swapMinThreshold]} first="0 ELT" last="40M ELT" />
-  </div>
+  <ELTSwapWizard />
 </main>
