@@ -1,29 +1,21 @@
 <script>
   import RangeSlider from "svelte-range-slider-pips";
-
-  import { Progress } from "svelma";
-  // import { log } from "svelte-web3";
 </script>
 
 <style>
-  .unit-enclave {
-    height: 30;
-    border-radius: 15;
-    background-color: "blue";
-  }
 </style>
 
 <div class="card">
   <div class="card-header level">
-    <div class="unit-enclave column">
+    <div class="column">
       <pre>0 HODL</pre>
     </div>
 
-    <div class="unit-enclave column">
+    <div class="column">
       <pre>0 ELT</pre>
     </div>
 
-    <div class="unit-enclave column ">
+    <div class="column">
       <pre class="is-flex">0 ETH</pre>
 
       <div class="unitEnclave ">
@@ -59,8 +51,8 @@
         <pre>66%</pre>
       </div>
 
-      <div class="sliderWrapper level">
-        <RangeSlider />
+      <div class="sliderWrapper level is-4">
+        <progress class="progress is-info" max="100" value="66">87%</progress>
       </div>
 
       <div class="column has-text-right">
@@ -81,8 +73,6 @@
   </div>
 
   <div class="sliderWrapper level">
-    <Progress />
-
     <div class="column">
       <pre>0 ELT</pre>
     </div>
