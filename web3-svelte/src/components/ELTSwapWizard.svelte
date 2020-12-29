@@ -5,7 +5,7 @@
 <style>
 </style>
 
-<div class="card">
+<div class="card is-10">
   <div class="card-header level">
     <div class="column">
       <pre>0 HODL</pre>

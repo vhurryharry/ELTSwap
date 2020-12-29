@@ -87,7 +87,7 @@
 <style>
 </style>
 
-<main>
+<main class="">
   <ELTSwapWizard />
 
   <link
