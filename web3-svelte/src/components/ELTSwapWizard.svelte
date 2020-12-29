@@ -3,38 +3,70 @@
 </script>
 
 <style>
+  .elt-swap-wizard {
+    border-radius: 0.5rem;
+    background-color: #2f2f2f;
+    color: #fff;
+  }
+  .elt-swap-wizard .card {
+    border-radius: 1rem;
+    background-color: #383838;
+  }
+
+  .connectionIndicator {
+    color: red;
+  }
+
+  .info-pill {
+    border-radius: 1rem;
+  }
+
+  .number-bubble {
+    background-color: #565656;
+    border-radius: 1rem;
+  }
+
+  pre {
+    color: #fff;
+
+    background-color: transparent;
+  }
 </style>
 
-<div class="card is-10 mt-5 mb-5">
-  <div class="card-header level align-items-end is-justify-content-end">
-    <div class="block is-flex p-0 m-0 mr-5">
+<div class="elt-swap-wizard is-10 mt-5 mb-5 p-5">
+  <div class="level align-items-end is-justify-content-end">
+    <div class="info-pill block is-flex p-0 m-0 mr-5">
       <pre>0 HODL</pre>
     </div>
 
-    <div class="block is-flex p-0 m-0 mr-5">
+    <div id="hodlPill" class="info-pill block is-flex p-0 m-0 mr-5">
       <pre>0 ELT</pre>
     </div>
 
-    <div class="block is-flex p-0 m-0">
-      <pre class="">
+    <div id="eltPill" class="info-pill block is-flex p-0 m-0">
+      <pre>
         0 ETH
       </pre>
 
-      <div class="is-flex p-0 m-0">
+      <div
+        id="balancePill"
+        class="info-pill is-flex p-0 m-0"
+        style={{ background: 'red' }}>
         <pre>Not Connected</pre>
-        <pre class="connectionIndicator">&#11044;</pre>
+        <pre class="connectionIndicator px-0">&#11044;</pre>
       </div>
     </div>
   </div>
 
-  <div class="card-content">
+  <div class="card">
     <div class="level ">
       <div class="column">
         <h3>ELT</h3>
-        <pre class="balance">100,000</pre>
+        <pre class="number-bubble py-2">100,000</pre>
       </div>
 
       <button
+        class="button is-danger is-rounded"
         on:click={(evt) => {
           console.log(evt);
         }}>
@@ -43,13 +75,13 @@
 
       <div class="column has-text-right">
         <h3>HODL</h3>
-        <pre class="balance">0.0833</pre>
+        <pre class="number-bubble py-2">0.0833</pre>
       </div>
     </div>
 
     <div class="sliderWrapper level">
       <div class="column">
-        <pre>ELT Burn &#128293;</pre>
+        <h3>ELT Burn &#128293;</h3>
         <pre>66%</pre>
       </div>
 
@@ -58,7 +90,7 @@
       </div>
 
       <div class="column has-text-right">
-        <pre>HODL Bonus;</pre>
+        <h3>HODL Bonus;</h3>
         <pre>0.033%</pre>
       </div>
     </div>
