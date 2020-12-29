@@ -48,12 +48,7 @@ export default {
         dev: !production,
       }
     }),
-    // we'll extract any component CSS out into
-    // a separate file - better for performance
-    // css({ output: 'public/build/bundle.css' }),
-    postcss({
-      extract: 'public/build/utils.css',
-    }),
+    postcss(),
 
     // If you have external dependencies installed from
     // npm, you'll most likely need these plugins. In
