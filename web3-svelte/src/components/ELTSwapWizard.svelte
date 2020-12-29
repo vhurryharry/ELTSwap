@@ -26,6 +26,12 @@
     border-radius: 1rem;
   }
 
+  h3 {
+    color: #fff;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
   pre {
     color: #fff;
 
@@ -59,8 +65,8 @@
   </div>
 
   <div class="card">
-    <div class="level ">
-      <div class="column">
+    <div class="level px-2 py-5 is-align-items-end">
+      <div class="column py-0 ">
         <h3>ELT</h3>
         <pre class="number-bubble py-2">100,000</pre>
       </div>
@@ -73,14 +79,14 @@
         Connect Wallet
       </button>
 
-      <div class="column has-text-right">
+      <div class="column has-text-right py-0">
         <h3>HODL</h3>
         <pre class="number-bubble py-2">0.0833</pre>
       </div>
     </div>
 
     <div class="sliderWrapper level">
-      <div class="column">
+      <div class="block mb-0 px-5 py-0">
         <h3>ELT Burn &#128293;</h3>
         <pre>66%</pre>
       </div>
@@ -89,8 +95,8 @@
         <progress class="progress is-info" max="100" value="66">87%</progress>
       </div>
 
-      <div class="column has-text-right">
-        <h3>HODL Bonus;</h3>
+      <div class="block has-text-right px-5 py-0">
+        <h3>HODL Bonus</h3>
         <pre>0.033%</pre>
       </div>
     </div>
@@ -102,7 +108,7 @@
     </div>
 
     <div class="column is-full">
-      <span class="is-centered">30,000,000 ELT</span>
+      <span class="is-centered test-color">30,000,000 ELT</span>
 
       <progress class="progress is-info" max="100" value="66">87%</progress>
 

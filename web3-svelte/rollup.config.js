@@ -5,6 +5,10 @@ import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import postcss from 'rollup-plugin-postcss';
 import autoPreprocess from 'svelte-preprocess';
+import purgecss from '@fullhuman/postcss-purgecss';
+import autoprefixer from 'autoprefixer';
+
+import path from 'path';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -41,14 +45,28 @@ export default {
     svelte({
       preprocess: autoPreprocess({
         postcss: true,
+        sourceMap: !production,
       }),
 
       compilerOptions: {
         // enable run-time checks when not in production
         dev: !production,
-      }
+      },
     }),
-    postcss(),
+    postcss({
+      plugins: [
+        purgecss({
+          content: [
+            './src/**/*.svelte',
+            './node_modules/svelte/*.js',
+          ],
+        }),
+        autoprefixer()
+      ],
+      extract: path.resolve('public/build/bundle.css'),
+      minimize: production,
+      sourceMap: !production,
+    }),
 
     // If you have external dependencies installed from
     // npm, you'll most likely need these plugins. In

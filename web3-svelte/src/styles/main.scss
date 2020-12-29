@@ -1,0 +1,45 @@
+@import "bulma/bulma";
+
+@import "_variables";
+
+.elt-swap-wizard{
+  @extend .is-10;
+  background-color: $surfaceDark;
+  border-radius: 1rem;
+  color: #fff;
+}
+
+
+  .elt-swap-wizard .card {
+    border-radius: 1rem;
+  background-color: $surfaceMid;
+  }
+
+.number-bubble{
+  background-color: $surfaceLight;
+  border-radius: 1rem;
+}
+
+.info-pill{
+  @extend .px-1;
+  @extend .py-0;
+  border-radius: 1rem;
+  background-color: $surfaceLight;
+}
+
+pre{
+  @extend .px-2;
+  @extend .py-1;
+  color: #fff;
+  background-color: transparent;
+}
+
+.connectionIndicator {
+  color: red;
+}
+
+h3 {
+  color: #fff;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
