@@ -87,7 +87,7 @@
 <style>
 </style>
 
-<main class="">
+<main class="block is-flex is-justify-content-center">
   <ELTSwapWizard />
 
   <link
