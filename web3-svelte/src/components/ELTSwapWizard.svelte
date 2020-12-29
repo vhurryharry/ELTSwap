@@ -1,15 +1,17 @@
 <script>
   import RangeSlider from "svelte-range-slider-pips";
   // import { log } from "svelte-web3";
-
-  export const ELTSwapWizard = {};
 </script>
 
 <style>
+  .unitEnclave {
+    height: 30;
+    border-radius: 15;
+  }
 </style>
 
-<div class="ELTSwapWizard">
-  <div class="header">
+<div class="ELTSwapWizard container">
+  <div class="header level">
     <div class="unitEnclave">
       <pre>0 HODL</pre>
     </div>
@@ -28,7 +30,7 @@
     </div>
   </div>
 
-  <div class="content">
+  <div class="content container has-text-center">
     <h3>ELT</h3>
     <pre class="balance">100,000</pre>
 
