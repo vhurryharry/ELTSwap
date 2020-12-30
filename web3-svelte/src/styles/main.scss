@@ -9,6 +9,12 @@
   color: #fff;
 }
 
+.not-connected {
+  cursor:not-allowed;
+}
+.not-connected *:not(button.connect-wallet) {
+  cursor: not-allowed;
+}
 
   .elt-swap-wizard .card {
     border-radius: 1rem;
