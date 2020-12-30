@@ -32,8 +32,9 @@
         <h3>ELT</h3>
         <input
           class="number-bubble input"
-          type="text"
-          placeholder="Text input" />
+          type="number"
+          value="100000"
+          placeholder="100,000" />
       </div>
 
       <button
@@ -46,7 +47,10 @@
 
       <div class="column has-text-right py-0">
         <h3>HODL</h3>
-        <pre class="number-bubble py-2">0.0833</pre>
+        <input
+          class="number-bubble input"
+          type="text"
+          placeholder="Text input" />
       </div>
     </div>
 
