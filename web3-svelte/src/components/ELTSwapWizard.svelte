@@ -1,6 +1,6 @@
 <script>
 
-  import RangeSlider from "svelte-range-slider-pips";
+
   
   import { ethStore, web3, selectedAccount, connected, chainName } from "svelte-web3";
   import {
