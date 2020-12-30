@@ -76,13 +76,14 @@ input[type=range]::-moz-range-thumb {
 }
 #swapProgress::before{
   width: 65%;
-  height: 20px;
-  background: $swapProgressGradient;
+  height: 14px;
+  background: linear-gradient(90deg, #009DFF 0%, #65FA67 28%, #FC0707 100%);  // $swapProgressGradient;
   position: absolute;
-  margin: 5px 0 0rem 3px;
+  margin: 10px 0 0rem 10px;
   border-radius: 2rem;
   content: '';
   z-index: 0;
+  box-shadow: 0px 1px 3px #333;
 }
 #swapProgressSlider{
   position: absolute;
@@ -90,4 +91,31 @@ input[type=range]::-moz-range-thumb {
 #swapProgressSlider::-moz-range-track,
 #swapProgressSlider::-webkit-range-track{
   background: transparent;
+}
+
+
+#minSwapMark{
+  margin-left: 23%;
+  margin-top: 5px;
+  height: 25px;
+  border-left: 1px solid #fff;
+  z-index: 1;
+}
+#minSwapMark::before{
+  position: absolute;
+  top: 34px;
+  margin-left: -33px;
+  content: '15M ELT';
+}
+
+#currentSwapMark::before{
+  top: -25px;
+  left: 66%;
+  margin-left: -35px;
+  position: absolute;
+  content: '30,000,000 ELT';
+}
+
+.is-underline{
+  border-bottom: 2px solid $surfaceLight;
 }

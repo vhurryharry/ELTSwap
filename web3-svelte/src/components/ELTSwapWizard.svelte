@@ -135,9 +135,9 @@
       <div class="column has-text-right py-0">
         <h3>HODL</h3>
         <input
-          class="number-bubble input"
+          class="number-bubble input has-text-right"
           type="text"
-          placeholder="Text input" />
+          value="0.0833" />
       </div>
     </div>
 
@@ -160,12 +160,15 @@
 
   <div class="column is-flex-wrap-wrap is-flex">
     <div class="column is-full">
-      <h3>Eltswap Progress: <span class="has-text-success">133%</span></h3>
+      <h3>
+        <span class="is-underline">
+          Eltswap Progress:
+          <span class="has-text-success">133%</span>
+        </span>
+      </h3>
     </div>
 
     <div class="column is-full">
-      <span class="is-centered test-color">30,000,000 ELT</span>
-
       <div id="swapProgress" class="is-flex is-12">
         <input
           type="range"
@@ -174,6 +177,8 @@
           max="100"
           value="66"
           disabled="disabled" />
+        <span id="minSwapMark" />
+        <span id="currentSwapMark" />
       </div>
 
       <span class="">0 ELT</span>
