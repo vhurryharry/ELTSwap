@@ -1,10 +1,90 @@
 <script>
+
+  import RangeSlider from "svelte-range-slider-pips";
+  
+  import { ethStore, web3, selectedAccount, connected, chainName } from "svelte-web3";
+  import {
+    getELTBurned,
+    getELTInContract,
+    getHODLInContract,
+    getTokenBalance,
+    getTotalHodlReward,
+    approveELT,
+    swap,
+  } from "../js/web3Helper";
+
+// Creates a connection to own infura node.
+const enable = async () => {
+    ethStore.setProvider(
+      "https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca"
+    );
+  };
+
+  $: balance = 0;
+  $: checkAccount =
+    $selectedAccount || "0x0000000000000000000000000000000000000000";
+
+  const enableBrowser = async () => {
+    let connectedNetId = $chainName
+    console.log(connectedNetId)
+    let networkId = 3; //NOTE: change for mainnet 
+
+
+    if (connectedNetId !== networkId) console.log('Connected to Ropstien')
+    else {
+      alert('Please connect to the Ropstien Testnet to continue')
+      return;
+    }
+
+    balance = $connected ? $web3.eth.getBalance(checkAccount) : "";
+    await ethStore.setBrowserProvider();
+  };
+
+
+
+  $: eltBalance = $connected
+    ? getTokenBalance(
+        $web3,
+        checkAccount,
+        "0xa84a0b15d7c62684b71fecb5ea8efe0e5af1d11b"
+      )
+    : "";
+  $: hodlBalance = $connected
+    ? getTokenBalance(
+        $web3,
+        checkAccount,
+        "0x5c85a93991671dc5886203e0048777a4fd219983"
+      )
+    : "";
+  $: totalHodlReward = $connected ? getTotalHodlReward($web3, 10000, 25) : "";
+  $: hodlInContract = $connected ? getHODLInContract($web3) : "";
+  $: eltInContract = $connected ? getELTInContract($web3) : "";
+  $: eltBurned = $connected ? getELTBurned($web3) : "";
+  $: isConnected = $connected ? true:false;
+
+
+  function approveELTTransfer() {
+    if ($connected) {
+      approveELT(
+        $web3,
+        10000,
+        $selectedAccount,
+        "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e"
+      );
+    }
+  }
+
+  function sendSwap() {
+    if ($connected) {
+      swap($web3, 10000, 25, $selectedAccount);
+    }
+  }
+
+  let swapMinThreshold = (15 * 100) / 40;
 </script>
 
-<style>
-</style>
-
-<div class="elt-swap-wizard is-10 mt-5 mb-5 p-5">
+<div class="elt-swap-wizard is-10 mt-5 mb-5 p-5" 	class:not-connected="{! isConnected}">
+  <pre></pre>
   <div class="level align-items-end is-justify-content-end">
     <div id="hodlPill" class="info-pill block is-flex p-0 m-0 mr-5">
       <pre>0 HODL</pre>
@@ -16,7 +96,7 @@
 
     <div id="ethPill" class="info-pill block is-flex p-0 m-0">
       <pre>
-        0 ETH
+        {balance} ETH
       </pre>
 
       <div id="balancePill" class="info-pill is-flex">
@@ -37,13 +117,21 @@
           placeholder="100,000" />
       </div>
 
-      <button
-        class="button is-danger is-rounded"
-        on:click={(evt) => {
-          console.log(evt);
-        }}>
-        Connect Wallet
+      {#if isConnected === false}
+      <button        
+      class="button connect-wallet is-danger is-rounded"
+      on:click={enableBrowser()}>
+      Connect Wallet
       </button>
+      {:else }
+      <button        
+      class="button is-success is-rounded"
+      on:click={enableBrowser()}>
+      Swap
+      </button>
+      {/if}
+
+
 
       <div class="column has-text-right py-0">
         <h3>HODL</h3>

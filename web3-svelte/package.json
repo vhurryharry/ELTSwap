@@ -1,5 +1,5 @@
 {
-  "name": "svelte-app",
+  "name": "ELTSWAP-dApp",
   "version": "1.0.0",
   "scripts": {
     "build": "rollup -c",
@@ -19,7 +19,7 @@
     "rollup-plugin-svelte": "^7.0.0",
     "rollup-plugin-terser": "^7.0.0",
     "svelte": "^3.0.0",
-    "svelte-preprocess": "^4.6.1",
+    "svelte-preprocess": "^4.6.1"
   },
   "dependencies": {
     "bulma": "^0.9.1",
