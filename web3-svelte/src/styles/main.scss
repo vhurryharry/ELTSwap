@@ -3,7 +3,8 @@
 @import "_variables";
 
 .elt-swap-wizard{
-  @extend .is-10;
+  // @extend .is-10;
+  width: 80%;
   background-color: $surfaceDark;
   border-radius: 1rem;
   color: #fff;
@@ -17,14 +18,8 @@
 
 .number-bubble{
   background-color: $surfaceLight;
-  border-radius: 1rem;
-}
-
-.info-pill{
-  @extend .px-1;
-  @extend .py-0;
-  border-radius: 1rem;
-  background-color: $surfaceLight;
+  border-radius: 20px;
+  height: 40px;
 }
 
 pre{
@@ -42,4 +37,35 @@ h3 {
   color: #fff;
   padding-left: 1rem;
   padding-right: 1rem;
+}
+
+.info-pill{
+  @extend .is-flex;
+  @extend .px-1;
+  @extend .py-0;
+  border-radius: 1rem;
+  background-color: $surfaceLight;
+}
+
+#ethPill{
+  @extend .pr-0;
+}
+
+#balancePill{
+  background-color: $surfaceMid;
+  margin-right: 0;
+  padding: 0rem;
+  border: 1px solid $surfaceLight;
+}
+
+#swapHodlBurnRatio{
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+}
+
+#swapHodlBurnRatio > meter{
+  width: 100%;
+  border-radius: 1rem;
+  
 }

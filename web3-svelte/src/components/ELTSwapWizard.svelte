@@ -1,63 +1,25 @@
 <script>
-  import RangeSlider from "svelte-range-slider-pips";
 </script>
 
 <style>
-  .elt-swap-wizard {
-    border-radius: 0.5rem;
-    background-color: #2f2f2f;
-    color: #fff;
-  }
-  .elt-swap-wizard .card {
-    border-radius: 1rem;
-    background-color: #383838;
-  }
-
-  .connectionIndicator {
-    color: red;
-  }
-
-  .info-pill {
-    border-radius: 1rem;
-  }
-
-  .number-bubble {
-    background-color: #565656;
-    border-radius: 1rem;
-  }
-
-  h3 {
-    color: #fff;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
-  pre {
-    color: #fff;
-
-    background-color: transparent;
-  }
 </style>
 
 <div class="elt-swap-wizard is-10 mt-5 mb-5 p-5">
   <div class="level align-items-end is-justify-content-end">
-    <div class="info-pill block is-flex p-0 m-0 mr-5">
+    <div id="hodlPill" class="info-pill block is-flex p-0 m-0 mr-5">
       <pre>0 HODL</pre>
     </div>
 
-    <div id="hodlPill" class="info-pill block is-flex p-0 m-0 mr-5">
+    <div id="eltPill" class="info-pill block is-flex p-0 m-0 mr-5">
       <pre>0 ELT</pre>
     </div>
 
-    <div id="eltPill" class="info-pill block is-flex p-0 m-0">
+    <div id="ethPill" class="info-pill block is-flex p-0 m-0">
       <pre>
         0 ETH
       </pre>
 
-      <div
-        id="balancePill"
-        class="info-pill is-flex p-0 m-0"
-        style={{ background: 'red' }}>
+      <div id="balancePill" class="info-pill is-flex">
         <pre>Not Connected</pre>
         <pre class="connectionIndicator px-0">&#11044;</pre>
       </div>
@@ -68,7 +30,10 @@
     <div class="level px-2 py-5 is-align-items-end">
       <div class="column py-0 ">
         <h3>ELT</h3>
-        <pre class="number-bubble py-2">100,000</pre>
+        <input
+          class="number-bubble input"
+          type="text"
+          placeholder="Text input" />
       </div>
 
       <button
@@ -91,8 +56,8 @@
         <pre>66%</pre>
       </div>
 
-      <div class="sliderWrapper level is-4">
-        <progress class="progress is-info" max="100" value="66">87%</progress>
+      <div id="swapHodlBurnRatio" class="is-flex is-12">
+        <meter max="1" min=".1" value=".666" high=".66" low=".33" optimum="1" />
       </div>
 
       <div class="block has-text-right px-5 py-0">
