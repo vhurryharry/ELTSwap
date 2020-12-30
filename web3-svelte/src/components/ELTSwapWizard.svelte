@@ -1,8 +1,11 @@
 <script>
-
-  import RangeSlider from "svelte-range-slider-pips";
-  
-  import { ethStore, web3, selectedAccount, connected, chainName } from "svelte-web3";
+  import {
+    ethStore,
+    web3,
+    selectedAccount,
+    connected,
+    chainName,
+  } from "svelte-web3";
   import {
     getELTBurned,
     getELTInContract,
@@ -13,8 +16,8 @@
     swap,
   } from "../js/web3Helper";
 
-// Creates a connection to own infura node.
-const enable = async () => {
+  // Creates a connection to own infura node.
+  const enable = async () => {
     ethStore.setProvider(
       "https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca"
     );
@@ -25,22 +28,21 @@ const enable = async () => {
     $selectedAccount || "0x0000000000000000000000000000000000000000";
 
   const enableBrowser = async () => {
-    let connectedNetId = $chainName
-    console.log(connectedNetId)
-    let networkId = 3; //NOTE: change for mainnet 
+    return;
 
+    let connectedNetId = $chainName;
+    console.log(connectedNetId);
+    let networkId = 3; //NOTE: change for mainnet
 
-    if (connectedNetId !== networkId) console.log('Connected to Ropstien')
+    if (connectedNetId !== networkId) console.log("Connected to Ropstien");
     else {
-      alert('Please connect to the Ropstien Testnet to continue')
+      alert("Please connect to the Ropstien Testnet to continue");
       return;
     }
 
     balance = $connected ? $web3.eth.getBalance(checkAccount) : "";
     await ethStore.setBrowserProvider();
   };
-
-
 
   $: eltBalance = $connected
     ? getTokenBalance(
@@ -60,8 +62,7 @@ const enable = async () => {
   $: hodlInContract = $connected ? getHODLInContract($web3) : "";
   $: eltInContract = $connected ? getELTInContract($web3) : "";
   $: eltBurned = $connected ? getELTBurned($web3) : "";
-  $: isConnected = $connected ? true:false;
-
+  $: isConnected = $connected ? true : false;
 
   function approveELTTransfer() {
     if ($connected) {
@@ -83,8 +84,10 @@ const enable = async () => {
   let swapMinThreshold = (15 * 100) / 40;
 </script>
 
-<div class="elt-swap-wizard is-10 mt-5 mb-5 p-5" 	class:not-connected="{! isConnected}">
-  <pre></pre>
+<div
+  class="elt-swap-wizard is-10 mt-5 mb-5 p-5"
+  class:not-connected={!isConnected}>
+  <pre />
   <div class="level align-items-end is-justify-content-end">
     <div id="hodlPill" class="info-pill block is-flex p-0 m-0 mr-5">
       <pre>0 HODL</pre>
@@ -118,20 +121,16 @@ const enable = async () => {
       </div>
 
       {#if isConnected === false}
-      <button        
-      class="button connect-wallet is-danger is-rounded"
-      on:click={enableBrowser()}>
-      Connect Wallet
-      </button>
-      {:else }
-      <button        
-      class="button is-success is-rounded"
-      on:click={enableBrowser()}>
-      Swap
-      </button>
+        <button
+          class="button connect-wallet is-danger is-rounded"
+          on:click={enableBrowser()}>
+          Connect Wallet
+        </button>
+      {:else}
+        <button class="button is-success is-rounded" on:click={enableBrowser()}>
+          Swap
+        </button>
       {/if}
-
-
 
       <div class="column has-text-right py-0">
         <h3>HODL</h3>
@@ -149,7 +148,7 @@ const enable = async () => {
       </div>
 
       <div id="swapHodlBurnRatio" class="is-flex is-12">
-        <meter max="1" min=".1" value=".666" high=".66" low=".33" optimum="1" />
+        <input type="range" id="burnRatioSlider" min="0" max="100" value="66" />
       </div>
 
       <div class="block has-text-right px-5 py-0">
