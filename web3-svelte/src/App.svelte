@@ -13,15 +13,38 @@
   import ELTSwapWizard from "./components/ELTSwapWizard.svelte";
 
   // Creates a connection to own infura node.
-  const enable = () =>
+  const enable = async () => {
     ethStore.setProvider(
       "https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca"
     );
-  const enableBrowser = () => ethStore.setBrowserProvider();
+  };
 
+  const enableBrowser = async () => {
+    modalOpen = false;
+    await ethStore.setBrowserProvider();
+
+    web3.version.getNetwork((err, netId) => {
+      switch (netId) {
+        case "1":
+          console.log("This is mainnet");
+          break;
+        case "2":
+          console.log("This is the deprecated Morden test network.");
+          break;
+        case "3":
+          console.log("This is the ropsten test network.");
+          break;
+        default:
+          console.log("This is an unknown network.");
+      }
+    });
+  };
+  $: modalOpen = true;
+  $: modalLoading = false;
   $: checkAccount =
     $selectedAccount || "0x0000000000000000000000000000000000000000";
   $: balance = $connected ? $web3.eth.getBalance(checkAccount) : "";
+
   $: eltBalance = $connected
     ? getTokenBalance(
         $web3,
@@ -59,27 +82,12 @@
   }
 
   let swapMinThreshold = (15 * 100) / 40;
-
-  // Connect to Metamask
-  enableBrowser();
 </script>
 
-<style>
-  main {
-    text-align: center;
-    padding: 1em;
-    max-width: 240px;
-    margin: 0 auto;
-    background-color: #fff;
-  }
-
-  @media (min-width: 640px) {
-    main {
-      max-width: none;
-    }
-  }
+<style lang="scss" global>
+  @import "styles/main.scss";
 </style>
 
-<main>
+<main class="block is-flex is-justify-content-center">
   <ELTSwapWizard />
 </main>

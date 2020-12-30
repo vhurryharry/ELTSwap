@@ -1,84 +1,89 @@
 <script>
-  import RangeSlider from "svelte-range-slider-pips";
-  // import { log } from "svelte-web3";
-
-  export const ELTSwapWizard = {};
 </script>
 
 <style>
 </style>
 
-<div class="ELTSwapWizard">
-  <div class="header">
-    <div class="unitEnclave">
+<div class="elt-swap-wizard is-10 mt-5 mb-5 p-5">
+  <div class="level align-items-end is-justify-content-end">
+    <div id="hodlPill" class="info-pill block is-flex p-0 m-0 mr-5">
       <pre>0 HODL</pre>
     </div>
 
-    <div class="unitEnclave">
+    <div id="eltPill" class="info-pill block is-flex p-0 m-0 mr-5">
       <pre>0 ELT</pre>
     </div>
 
-    <div class="unitEnclave">
-      <pre>0 ETH</pre>
+    <div id="ethPill" class="info-pill block is-flex p-0 m-0">
+      <pre>
+        0 ETH
+      </pre>
 
-      <div class="unitEnclave">
+      <div id="balancePill" class="info-pill is-flex">
         <pre>Not Connected</pre>
-        <pre class="connectionIndicator">&#11044;</pre>
+        <pre class="connectionIndicator px-0">&#11044;</pre>
       </div>
     </div>
   </div>
 
-  <div class="content">
-    <h3>ELT</h3>
-    <pre class="balance">100,000</pre>
+  <div class="card">
+    <div class="level px-2 py-5 is-align-items-end">
+      <div class="column py-0 ">
+        <h3>ELT</h3>
+        <input
+          class="number-bubble input"
+          type="number"
+          value="100000"
+          placeholder="100,000" />
+      </div>
 
-    <div class="sliderWrapper">
-      <RangeSlider />
+      <button
+        class="button is-danger is-rounded"
+        on:click={(evt) => {
+          console.log(evt);
+        }}>
+        Connect Wallet
+      </button>
 
-      <div class="colLeft">
-        <pre>ELT Burn &#128293;</pre>
+      <div class="column has-text-right py-0">
+        <h3>HODL</h3>
+        <input
+          class="number-bubble input"
+          type="text"
+          placeholder="Text input" />
+      </div>
+    </div>
+
+    <div class="sliderWrapper level">
+      <div class="block mb-0 px-5 py-0">
+        <h3>ELT Burn &#128293;</h3>
         <pre>66%</pre>
       </div>
 
-      <div class="colRight">
-        <pre>HODL Bonus;</pre>
+      <div id="swapHodlBurnRatio" class="is-flex is-12">
+        <meter max="1" min=".1" value=".666" high=".66" low=".33" optimum="1" />
+      </div>
+
+      <div class="block has-text-right px-5 py-0">
+        <h3>HODL Bonus</h3>
         <pre>0.033%</pre>
       </div>
     </div>
-
-    <h3>HODL</h3>
-    <pre class="balance">0.0833</pre>
-
-    <button
-      on:click={(evt) => {
-        console.log(evt);
-      }}>
-      Connect Wallet
-    </button>
   </div>
 
-  <div class="footer">
-    <div class="colLeft">
-      <pre>Eltswap Progress</pre>
+  <div class="column is-flex-wrap-wrap is-flex">
+    <div class="column is-full">
+      <h3>Eltswap Progress: <span class="has-text-success">133%</span></h3>
     </div>
 
-    <div class="colRight">
-      <pre>30.1M ELT</pre>
-      <pre>133%</pre>
-    </div>
-  </div>
+    <div class="column is-full">
+      <span class="is-centered test-color">30,000,000 ELT</span>
 
-  <div class="sliderWrapper">
-    <div class="absStatusIndicator">
-      <RangeSlider />
-    </div>
+      <progress class="progress is-info" max="100" value="66">87%</progress>
 
-    <div class="colLeft">
-      <pre>0 ELT</pre>
-    </div>
+      <span class="">0 ELT</span>
 
-    <div class="colRight">
-      <pre>40M ELT</pre>
+      <span class="is-pulled-right">40M ELT</span>
     </div>
   </div>
 </div>
