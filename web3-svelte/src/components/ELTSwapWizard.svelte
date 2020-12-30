@@ -144,7 +144,7 @@
     <div class="sliderWrapper level">
       <div class="block mb-0 px-5 py-0">
         <h3>ELT Burn &#128293;</h3>
-        <pre>66%</pre>
+        <span class="has-text-danger">66%</span>
       </div>
 
       <div id="swapHodlBurnRatio" class="is-flex is-12">
@@ -153,7 +153,7 @@
 
       <div class="block has-text-right px-5 py-0">
         <h3>HODL Bonus</h3>
-        <pre>0.033%</pre>
+        <span class="has-text-success">33.3%</span>
       </div>
     </div>
   </div>
@@ -166,7 +166,15 @@
     <div class="column is-full">
       <span class="is-centered test-color">30,000,000 ELT</span>
 
-      <progress class="progress is-info" max="100" value="66">87%</progress>
+      <div id="swapProgress" class="is-flex is-12">
+        <input
+          type="range"
+          id="swapProgressSlider"
+          min="0"
+          max="100"
+          value="66"
+          disabled="disabled" />
+      </div>
 
       <span class="">0 ELT</span>
 

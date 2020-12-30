@@ -8,6 +8,7 @@
 input[type=range] {
   // height: 25px;
   -webkit-appearance: none;
+  -moz-appearance: none;
   // margin: 10px 0;
   width: 100%;
   background-color: transparent;
@@ -16,6 +17,8 @@ input[type=range] {
 input[type=range]:focus {
   outline: none;
 }
+
+// Chrome
 input[type=range]::-webkit-slider-runnable-track {
   width: 100%;
   height: 5px;
@@ -25,6 +28,7 @@ input[type=range]::-webkit-slider-runnable-track {
   background: $surfaceLight;
   border-radius: 1px;
   border: 0px solid #000000;
+  z-index: 90;
 }
 input[type=range]::-webkit-slider-thumb {
   box-shadow: 1px 1px 3px #000000;
@@ -36,19 +40,23 @@ input[type=range]::-webkit-slider-thumb {
   cursor: pointer;
   -webkit-appearance: none;
   margin-top: -7px;
+  z-index: 100;
 }
 input[type=range]:focus::-webkit-slider-runnable-track {
-  background:$surfaceLight;
+  background: $surfaceLight;
 }
+
+// FireFox
 input[type=range]::-moz-range-track {
   width: 100%;
-  height: 5px;
+  height: 7px;
   cursor: pointer;
   animate: 0.2s;
   box-shadow: 0px 0px 0px #000000;
-  background:$surfaceLight;
-  border-radius: 1px;
+  background: $surfaceLight;
+  border-radius: 2px;
   border: 0px solid #000000;
+  z-index: 90;
 }
 input[type=range]::-moz-range-thumb {
   box-shadow: 1px 1px 3px #000000;
@@ -57,42 +65,26 @@ input[type=range]::-moz-range-thumb {
   width: 18px;
   border-radius: 25px;
   background: #b2b2b2;
+  z-index: 100;
   cursor: pointer;
 }
-input[type=range]::-ms-track {
-  width: 100%;
-  height: 5px;
-  cursor: pointer;
-  animate: 0.2s;
-  background: transparent;
-  border-color: transparent;
-  color: transparent;
+
+// IE - I deleted it and felt really good about it
+ 
+#swapProgress{
+  background-color: $surfaceLight;
+  padding: 0;
+  border-radius: 2rem;
+  position: relative;
 }
-input[type=range]::-ms-fill-lower {
-  background:$surfaceLight;
-  border: 0px solid #000000;
-  border-radius: 2px;
-  box-shadow: 0px 0px 0px #000000;
-}
-input[type=range]::-ms-fill-upper {
-  background:$surfaceLight;
-  border: 0px solid #000000;
-  border-radius: 2px;
-  box-shadow: 0px 0px 0px #000000;
-}
-input[type=range]::-ms-thumb {
-  margin-top: 1px;
-  box-shadow: 1px 1px 3px #000000;
-  border: 1px solid #b2b2b2;
+#swapProgress::before{
+  width: 65%;
   height: 18px;
-  width: 18px;
-  border-radius: 25px;
-  background: #b2b2b2;
-  cursor: pointer;
-}
-input[type=range]:focus::-ms-fill-lower {
-  background:$surfaceLight;
-}
-input[type=range]:focus::-ms-fill-upper {
-  background:$surfaceLight;
+  background-color: red;
+  position: absolute;
+  margin: .5rem 0 .5rem .5rem;
+  border-radius: 2rem;
+  content: '';
+  z-index: 10000;
+  top: 0;
 }

@@ -5,7 +5,6 @@
 @import "./components/range-slider";
 
 .elt-swap-wizard{
-  // @extend .is-10;
   width: 80%;
   background-color: $surfaceDark;
   border-radius: 1rem;
@@ -26,8 +25,12 @@ background-color: $surfaceMid;
 
 .number-bubble{
   background-color: $surfaceLight;
+  border: none;
   border-radius: 20px;
   height: 40px;
+  color: #def;
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
 }
 
 .card{
@@ -45,8 +48,12 @@ pre{
   color: red;
 }
 
+.connected {
+  color: #37a24a;
+}
+
 h3 {
-  @extend .px-2;
+  @extend .px-0;
   color: #fff;
 }
 
