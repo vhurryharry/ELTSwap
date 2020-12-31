@@ -58,30 +58,35 @@ h3 {
 }
 
 .info-pill{
-  @extend .is-flex;
-  @extend .px-1;
+  // @extend .px-1;
   @extend .py-0;
   border-radius: 1rem;
   background-color: $surfaceLight;
 }
 
 #ethPill{
+  @extend .is-flex;
+  @extend .info-pill;
   @extend .pr-0;
 }
 
 #balancePill{
+  @extend .info-pill;
   background-color: $surfaceMid;
   margin-right: 0;
   padding: 0rem;
   border: 1px solid $surfaceLight;
+  margin-left: auto;
 }
 
 #hodlPill {
+  @extend .info-pill;
   background-image: linear-gradient(-189deg, #528BF8 0%, #DE4967 100%);
   box-shadow: 0 2px 4px 0 rgba(0,0,0,0.50);
 }
 
 #eltPill{
+  @extend .info-pill;
   background-image: linear-gradient(-199deg, #000000 0%, #68396E 44%, #000000 100%);
   box-shadow: 0 2px 2px 0 rgba(0,0,0,0.50);
 }

@@ -93,7 +93,6 @@ input[type=range]::-moz-range-thumb {
   background: transparent;
 }
 
-
 #minSwapMark{
   margin-left: 23%;
   margin-top: 5px;
@@ -111,7 +110,7 @@ input[type=range]::-moz-range-thumb {
 #currentSwapMark::before{
   top: -25px;
   left: 66%;
-  margin-left: -35px;
+  margin-left: -5px;
   position: absolute;
   content: '30,000,000 ELT';
 }
@@ -119,3 +118,4 @@ input[type=range]::-moz-range-thumb {
 .is-underline{
   border-bottom: 2px solid $surfaceLight;
 }
+

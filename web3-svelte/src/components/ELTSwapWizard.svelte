@@ -84,27 +84,27 @@
   let swapMinThreshold = (15 * 100) / 40;
 </script>
 
-<div
-  class="elt-swap-wizard is-10 mt-5 mb-5 p-5"
-  class:not-connected={!isConnected}>
-  <pre />
-  <div class="level align-items-end is-justify-content-end">
-    <div id="hodlPill" class="info-pill block is-flex p-0 m-0 mr-5">
+<div class="elt-swap-wizard mt-5 mb-5 p-5" class:not-connected={!isConnected}>
+  <div
+    class="columns level is-mobile is-multiline is-flex-wrap-wrap is-justify-content-end">
+    <div id="hodlPill" class="column is-2-desktop">
       <pre>0 HODL</pre>
     </div>
 
-    <div id="eltPill" class="info-pill block is-flex p-0 m-0 mr-5">
+    <div id="eltPill" class="column is-2-desktop">
       <pre>0 ELT</pre>
     </div>
 
-    <div id="ethPill" class="info-pill block is-flex p-0 m-0">
-      <pre>
+    <div class="column is-12-mobile is-4-desktop px-0">
+      <div id="ethPill" class="column">
+        <pre>
         {balance} ETH
       </pre>
 
-      <div id="balancePill" class="info-pill is-flex">
-        <pre>Not Connected</pre>
-        <pre class="connectionIndicator px-0">&#11044;</pre>
+        <div id="balancePill" class="info-pill is-flex">
+          <pre>Not Connected</pre>
+          <pre class="connectionIndicator px-0">&#11044;</pre>
+        </div>
       </div>
     </div>
   </div>
