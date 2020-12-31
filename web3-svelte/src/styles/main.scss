@@ -1,4 +1,3 @@
-@import "bulma/bulma";
 
 @import "./variables";
 
@@ -61,6 +60,7 @@ h3 {
   border-radius: 1rem;
   background-color: $surfaceLight;
   align-items: center;
+  text-align: center;
 }
 
 #ethPill{
@@ -96,3 +96,4 @@ h3 {
   background-color: $surfaceMid;
   padding: 1rem;
 }
+

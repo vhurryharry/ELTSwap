@@ -89,18 +89,22 @@
   // } on #currentSwapMark:before
 </script>
 
+<style lang="scss" global>
+  @import "bulma/bulma";
+  @import "../styles/main.scss";
+</style>
+
 <div class="elt-swap-wizard mt-5 mb-5 p-5" class:not-connected={!isConnected}>
   <div
-    class="columns level is-mobile is-multiline is-flex-wrap-wrap is-justify-content-end">
-    <div id="hodlPill" class="column is-2-desktop">
+    class="columns level is-multiline is-flex-wrap-wrap is-justify-content-end">
+    <div id="hodlPill" class="column is-6-mobile is-2-tablet is-2-desktop">
       <pre>0 HODL</pre>
     </div>
-
-    <div id="eltPill" class="column is-2-desktop">
+    <div id="eltPill" class="column is-6-mobile is-2-tablet is-2-desktop">
       <pre>0 ELT</pre>
     </div>
 
-    <div class="column is-12-mobile is-4-desktop px-0">
+    <div class="column is-12-mobile is-4-tablet is-4-desktop px-0">
       <div id="ethPill" class="column">
         <pre>
         {balance} ETH
@@ -114,13 +118,11 @@
     </div>
   </div>
 
-  <div
-    id="wizardContent"
-    class="columns is-mobile my-5 is-flex-direction-column">
-    <div class="column is-flex-direction-row ">
-      <div class="columns is-mobile is-flex-wrap-wrap ">
-        <div class="column is-12-mobile is-5-desktop  ">
-          <h3 class="mx-5">ELT</h3>
+  <div id="wizardContent" class="columns my-5 is-flex-direction-column">
+    <div class="column ">
+      <div class="columns is-flex-wrap-wrap ">
+        <div class="column is-12-mobile is-4-tablet is-5-desktop  ">
+          <h3 class="">ELT</h3>
           <input
             class="number-bubble input"
             type="number"
@@ -129,7 +131,7 @@
         </div>
 
         <div
-          class="column is-flex is-flex-direction-column is-12-mobile is-2-desktop is-justify-content-end ">
+          class="column is-flex is-flex-direction-column is-12-mobile is-4-tablet is-2-desktop is-justify-content-end ">
           {#if isConnected === false}
             <button
               class="button connect-wallet is-danger is-rounded"
@@ -145,8 +147,9 @@
           {/if}
         </div>
 
-        <div class="column if-full-mobile is-5-dektop has-text-right">
-          <h3 class="mx-5">HODL</h3>
+        <div
+          class="column if-full-mobile is-4-tablet is-5-dektop has-text-right">
+          <h3 class="">HODL</h3>
           <input
             class="number-bubble input has-text-right"
             type="text"
@@ -155,25 +158,42 @@
       </div>
     </div>
 
-    <div class="columns is-mobile p-5">
-      <div class="column is-2-desktop">
-        <h3>ELT Burn &#128293;</h3>
-        <span class="has-text-danger">66%</span>
-      </div>
+    <div class="column">
+      <div class="columns level is-flex-wrap-wrap">
+        <div class="column is-hidden-mobile is-3-tablet is-2-desktop">
+          <h3>ELT Burn &#128293;</h3>
+          <span class="has-text-danger">66%</span>
+        </div>
 
-      <div id="swapHodlBurnRatio" class="column is-8-desktop">
-        <input type="range" id="burnRatioSlider" min="0" max="100" value="66" />
-      </div>
+        <div
+          id="swapHodlBurnRatio"
+          class="column is-12-mobile is-4-tablet is-8-desktop">
+          <input
+            type="range"
+            id="burnRatioSlider"
+            min="0"
+            max="100"
+            value="66" />
+        </div>
 
-      <div class="column is-2-desktop has-text-right">
-        <h3>HODL Bonus</h3>
-        <span class="has-text-success">33.3%</span>
+        <div class="level is-4-tablet is-2-desktop">
+          <div
+            class="column is-hidden-tablet is-hidden-desktop is-6-mobile is-2-tablet is-2-desktop m-0 p-0">
+            <h3>ELT Burn &#128293;</h3>
+            <span class="has-text-danger">66%</span>
+          </div>
+
+          <div class="column is-6-mobile is-pull-right has-text-right">
+            <h3>HODL Bonus</h3>
+            <span class="has-text-success">33.3%</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="columns is-flex-wrap-wrap">
-    <div class="column is-full">
+    <div class="column is-12">
       <h3>
         <span class="is-underline">
           Eltswap Progress:
@@ -182,7 +202,7 @@
       </h3>
     </div>
 
-    <div class="column is-full">
+    <div class="column is-12">
       <div id="swapProgress" class="is-flex is-12">
         <input
           type="range"
