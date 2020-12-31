@@ -103,16 +103,18 @@ input[type=range]::-moz-range-thumb {
 #minSwapMark::before{
   position: absolute;
   top: 34px;
-  margin-left: -33px;
   content: '15M ELT';
 }
 
 #currentSwapMark::before{
   top: -25px;
-  left: 66%;
+  right: 0%; // JS var
+  left: 0; 
   margin-left: -5px;
+  text-align: right;
   position: absolute;
-  content: '30,000,000 ELT';
+  white-space: nowrap;
+  content: '30,000,000 ELT'; // JS var
 }
 
 .is-underline{

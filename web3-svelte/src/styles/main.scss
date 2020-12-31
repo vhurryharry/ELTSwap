@@ -53,15 +53,14 @@ pre{
 }
 
 h3 {
-  @extend .px-0;
   color: #fff;
 }
 
 .info-pill{
-  // @extend .px-1;
-  @extend .py-0;
+  padding: 0;
   border-radius: 1rem;
   background-color: $surfaceLight;
+  align-items: center;
 }
 
 #ethPill{
@@ -89,4 +88,11 @@ h3 {
   @extend .info-pill;
   background-image: linear-gradient(-199deg, #000000 0%, #68396E 44%, #000000 100%);
   box-shadow: 0 2px 2px 0 rgba(0,0,0,0.50);
+}
+
+#wizardContent{
+  box-shadow: 1px 0 3px #121 inset;
+  border-radius: 1rem;
+  background-color: $surfaceMid;
+  padding: 1rem;
 }

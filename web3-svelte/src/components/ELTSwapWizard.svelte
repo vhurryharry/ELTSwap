@@ -82,6 +82,11 @@
   }
 
   let swapMinThreshold = (15 * 100) / 40;
+
+  // TODO: set {
+  //   right: $currSwapAmountPrc;
+  //   content: $currSwapAmount;
+  // } on #currentSwapMark:before
 </script>
 
 <div class="elt-swap-wizard mt-5 mb-5 p-5" class:not-connected={!isConnected}>
@@ -103,62 +108,71 @@
 
         <div id="balancePill" class="info-pill is-flex">
           <pre>Not Connected</pre>
-          <pre class="connectionIndicator px-0">&#11044;</pre>
+          <pre class="connectionIndicator px-1">&#11044;</pre>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="level px-2 py-5 is-align-items-end">
-      <div class="column py-0 ">
-        <h3>ELT</h3>
-        <input
-          class="number-bubble input"
-          type="number"
-          value="100000"
-          placeholder="100,000" />
-      </div>
+  <div
+    id="wizardContent"
+    class="columns is-mobile my-5 is-flex-direction-column">
+    <div class="column is-flex-direction-row ">
+      <div class="columns is-mobile is-flex-wrap-wrap ">
+        <div class="column is-12-mobile is-5-desktop  ">
+          <h3 class="mx-5">ELT</h3>
+          <input
+            class="number-bubble input"
+            type="number"
+            value="100000"
+            placeholder="100,000" />
+        </div>
 
-      {#if isConnected === false}
-        <button
-          class="button connect-wallet is-danger is-rounded"
-          on:click={enableBrowser()}>
-          Connect Wallet
-        </button>
-      {:else}
-        <button class="button is-success is-rounded" on:click={enableBrowser()}>
-          Swap
-        </button>
-      {/if}
+        <div
+          class="column is-flex is-flex-direction-column is-12-mobile is-2-desktop is-justify-content-end ">
+          {#if isConnected === false}
+            <button
+              class="button connect-wallet is-danger is-rounded"
+              on:click={enableBrowser()}>
+              Connect Wallet
+            </button>
+          {:else}
+            <button
+              class="button is-success is-rounded"
+              on:click={enableBrowser()}>
+              Swap
+            </button>
+          {/if}
+        </div>
 
-      <div class="column has-text-right py-0">
-        <h3>HODL</h3>
-        <input
-          class="number-bubble input has-text-right"
-          type="text"
-          value="0.0833" />
+        <div class="column if-full-mobile is-5-dektop has-text-right">
+          <h3 class="mx-5">HODL</h3>
+          <input
+            class="number-bubble input has-text-right"
+            type="text"
+            value="0.0833" />
+        </div>
       </div>
     </div>
 
-    <div class="sliderWrapper level">
-      <div class="block mb-0 px-5 py-0">
+    <div class="columns is-mobile p-5">
+      <div class="column is-2-desktop">
         <h3>ELT Burn &#128293;</h3>
         <span class="has-text-danger">66%</span>
       </div>
 
-      <div id="swapHodlBurnRatio" class="is-flex is-12">
+      <div id="swapHodlBurnRatio" class="column is-8-desktop">
         <input type="range" id="burnRatioSlider" min="0" max="100" value="66" />
       </div>
 
-      <div class="block has-text-right px-5 py-0">
+      <div class="column is-2-desktop has-text-right">
         <h3>HODL Bonus</h3>
         <span class="has-text-success">33.3%</span>
       </div>
     </div>
   </div>
 
-  <div class="column is-flex-wrap-wrap is-flex">
+  <div class="columns is-flex-wrap-wrap">
     <div class="column is-full">
       <h3>
         <span class="is-underline">
