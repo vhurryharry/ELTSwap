@@ -1,11 +1,6 @@
 <script>
-  import {
-    ethStore,
-    web3,
-    selectedAccount,
-    connected,
-    chainName,
-  } from "svelte-web3";
+
+  import { ethStore, web3, selectedAccount, connected, chainName } from "svelte-web3";
 
   import {
     getELTBurned,
