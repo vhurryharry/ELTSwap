@@ -1,8 +1,7 @@
 <script>
-
-
   
   import { ethStore, web3, selectedAccount, connected, chainName } from "svelte-web3";
+
   import {
     getELTBurned,
     getELTInContract,
@@ -13,8 +12,8 @@
     swap,
   } from "../js/web3Helper";
 
-// Creates a connection to own infura node.
-const enable = async () => {
+  // Creates a connection to own infura node.
+  const enable = async () => {
     ethStore.setProvider(
       "https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca"
     );
@@ -25,22 +24,21 @@ const enable = async () => {
     $selectedAccount || "0x0000000000000000000000000000000000000000";
 
   const enableBrowser = async () => {
-    let connectedNetId = $chainName
-    console.log(connectedNetId)
-    let networkId = 3; //NOTE: change for mainnet 
+    return;
 
+    let connectedNetId = $chainName;
+    console.log(connectedNetId);
+    let networkId = 3; //NOTE: change for mainnet
 
-    if (connectedNetId !== networkId) console.log('Connected to Ropstien')
+    if (connectedNetId !== networkId) console.log("Connected to Ropstien");
     else {
-      alert('Please connect to the Ropstien Testnet to continue')
+      alert("Please connect to the Ropstien Testnet to continue");
       return;
     }
 
     balance = $connected ? $web3.eth.getBalance(checkAccount) : "";
     await ethStore.setBrowserProvider();
   };
-
-
 
   $: eltBalance = $connected
     ? getTokenBalance(
@@ -60,8 +58,7 @@ const enable = async () => {
   $: hodlInContract = $connected ? getHODLInContract($web3) : "";
   $: eltInContract = $connected ? getELTInContract($web3) : "";
   $: eltBurned = $connected ? getELTBurned($web3) : "";
-  $: isConnected = $connected ? true:false;
-
+  $: isConnected = $connected ? true : false;
 
   function approveELTTransfer() {
     if ($connected) {
@@ -81,93 +78,169 @@ const enable = async () => {
   }
 
   let swapMinThreshold = (15 * 100) / 40;
+
+  // TODO: set {
+  //   right: $currSwapAmountPrc;
+  //   content: $currSwapAmount;
+  // } on #currentSwapMark:before
 </script>
 
-<div class="elt-swap-wizard is-10 mt-5 mb-5 p-5" 	class:not-connected="{! isConnected}">
-  <pre></pre>
-  <div class="level align-items-end is-justify-content-end">
-    <div id="hodlPill" class="info-pill block is-flex p-0 m-0 mr-5">
-      <pre>0 HODL</pre>
+<style lang="scss" global>
+  @import "bulma/bulma";
+  @import "../styles/main.scss";
+</style>
+
+<div class="elt-swap-wizard mt-5 mb-5 p-5" class:not-connected={!isConnected}>
+  <div
+    class="columns is-flex is-2 level is-multiline is-flex-wrap-wrap is-justify-content-end">
+    <div
+      class="column is-flex-wrap-nowrap is-12-mobile is-6-tablet is-4-desktop">
+      <div class="columns is-2 is-flex is-12-mobile">
+        <div id="hodlPill" class="column is-6-mobile">
+          <pre>0 HODL</pre>
+        </div>
+        <div id="eltPill" class="column is-6-mobile">
+          <pre>0 ELT</pre>
+        </div>
+      </div>
     </div>
 
-    <div id="eltPill" class="info-pill block is-flex p-0 m-0 mr-5">
-      <pre>0 ELT</pre>
-    </div>
+    <div
+      class="column is-12-mobile is-6-tablet is-3-desktop is-justify-content-center">
+      <div id="ethPill" class=" is-justify-content-center">
+        <span class="px-1"> {balance} ETH </span>
 
-    <div id="ethPill" class="info-pill block is-flex p-0 m-0">
-      <pre>
-        {balance} ETH
-      </pre>
-
-      <div id="balancePill" class="info-pill is-flex">
-        <pre>Not Connected</pre>
-        <pre class="connectionIndicator px-0">&#11044;</pre>
+        <div id="balancePill" class="">
+          <span class="px-1">Not Connected</span>
+          <span class="connectionIndicator">&#11044;</span>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="level px-2 py-5 is-align-items-end">
-      <div class="column py-0 ">
-        <h3>ELT</h3>
-        <input
-          class="number-bubble input"
-          type="number"
-          value="100000"
-          placeholder="100,000" />
-      </div>
+  <div id="wizardContent" class="columns my-5 is-flex-direction-column">
+    <div class="column ">
+      <div class="columns is-flex-wrap-wrap ">
+        <div
+          class="column is-12-mobile is-4-tablet is-5-desktop has-text-centered-mobile">
+          <h3 class="">ELT</h3>
+          <input
+            class="number-bubble input "
+            type="number"
+            value="100000"
+            placeholder="100,000" />
+        </div>
 
-      {#if isConnected === false}
-      <button        
-      class="button connect-wallet is-danger is-rounded"
-      on:click={enableBrowser()}>
-      Connect Wallet
-      </button>
-      {:else }
-      <button        
-      class="button is-success is-rounded"
-      on:click={enableBrowser()}>
-      Swap
-      </button>
-      {/if}
+        <div
+          class="column is-flex is-hidden-mobile is-flex-direction-column is-4-tablet is-2-desktop is-justify-content-end ">
+          {#if isConnected === false}
+            <button
+              class="button connect-wallet is-danger is-rounded"
+              on:click={enableBrowser()}>
+              Connect Wallet
+            </button>
+          {:else}
+            <button
+              class="button is-success is-rounded"
+              on:click={enableBrowser()}>
+              Swap
+            </button>
+          {/if}
+        </div>
 
-
-
-      <div class="column has-text-right py-0">
-        <h3>HODL</h3>
-        <input
-          class="number-bubble input"
-          type="text"
-          placeholder="Text input" />
+        <div
+          class="column is-hidden-mobile is-4-tablet is-5-desktop has-text-centered-mobile has-text-right">
+          <h3 class="">HODL</h3>
+          <input
+            class="number-bubble input has-text-right"
+            type="text"
+            value="0.0833" />
+        </div>
       </div>
     </div>
 
-    <div class="sliderWrapper level">
-      <div class="block mb-0 px-5 py-0">
-        <h3>ELT Burn &#128293;</h3>
-        <pre>66%</pre>
-      </div>
+    <div class="column">
+      <div class="columns level is-flex-wrap-wrap">
+        <div class="column is-hidden-mobile is-3-tablet is-2-desktop">
+          <h3>ELT Burn &#128293;</h3>
+          <span class="has-text-danger">66%</span>
+        </div>
 
-      <div id="swapHodlBurnRatio" class="is-flex is-12">
-        <meter max="1" min=".1" value=".666" high=".66" low=".33" optimum="1" />
-      </div>
+        <div
+          id="swapHodlBurnRatio"
+          class="column is-12-mobile is-4-tablet is-8-desktop pb-0">
+          <input
+            type="range"
+            id="burnRatioSlider"
+            min="0"
+            max="100"
+            value="66" />
+        </div>
 
-      <div class="block has-text-right px-5 py-0">
-        <h3>HODL Bonus</h3>
-        <pre>0.033%</pre>
+        <div class="column is-flex is-3-tablet is-2-desktop p-0">
+          <div
+            class="column is-hidden-tablet is-hidden-desktop is-6-mobile is-2-tablet is-2-desktop">
+            <h3>ELT Burn &#128293;</h3>
+            <span class="has-text-danger">66%</span>
+          </div>
+
+          <div class="column is-6-mobile is-pull-right has-text-right">
+            <h3>HODL Bonus</h3>
+            <span class="has-text-success">33.3%</span>
+          </div>
+        </div>
+
+        <div
+          class="column is-hidden-tablet is-hidden-desktop if-full-mobile is-5-dektop has-text-centered">
+          <h3 class="">HODL</h3>
+          <input
+            class="number-bubble input has-text-centered-mobile"
+            type="text"
+            value="0.0833" />
+        </div>
+
+        <div
+          class="column is-flex is-hidden-tablet is-hidden-desktop i is-flex-direction-column is-12-mobile is-justify-content-end ">
+          {#if isConnected === false}
+            <button
+              class="button connect-wallet is-danger is-rounded"
+              on:click={enableBrowser()}>
+              Connect Wallet
+            </button>
+          {:else}
+            <button
+              class="button is-success is-rounded"
+              on:click={enableBrowser()}>
+              Swap
+            </button>
+          {/if}
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="column is-flex-wrap-wrap is-flex">
-    <div class="column is-full">
-      <h3>Eltswap Progress: <span class="has-text-success">133%</span></h3>
+  <div class="columns is-flex-wrap-wrap">
+    <div class="column is-12">
+      <h3>
+        <span class="is-underline">
+          Eltswap Progress:
+          <span class="has-text-success">133%</span>
+        </span>
+      </h3>
     </div>
 
-    <div class="column is-full">
-      <span class="is-centered test-color">30,000,000 ELT</span>
-
-      <progress class="progress is-info" max="100" value="66">87%</progress>
+    <div class="column is-12">
+      <div id="swapProgress" class="is-flex is-12">
+        <input
+          type="range"
+          id="swapProgressSlider"
+          min="0"
+          max="100"
+          value="66"
+          disabled="disabled" />
+        <span id="minSwapMark" />
+        <span id="currentSwapMark" />
+      </div>
 
       <span class="">0 ELT</span>
 
