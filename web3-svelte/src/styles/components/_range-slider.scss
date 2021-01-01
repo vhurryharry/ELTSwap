@@ -1,0 +1,123 @@
+
+#swapHodlBurnRatio{
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+}
+
+input[type=range] {
+  // height: 25px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  // margin: 10px 0;
+  width: 100%;
+  background-color: transparent;
+  border: none;
+}
+input[type=range]:focus {
+  outline: none;
+}
+
+// Chrome
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 5px;
+  cursor: pointer;
+  animate: 0.2s;
+  box-shadow: 0px 0px 0px #000000;
+  background: $surfaceLight;
+  border-radius: 1px;
+  border: 0px solid #000000;
+}
+input[type=range]::-webkit-slider-thumb {
+  box-shadow: 1px 1px 3px #000000;
+  border: 1px solid #b2b2b2;
+  height: 18px;
+  width: 18px;
+  border-radius: 25px;
+  background: #b2b2b2;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -7px;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: $surfaceLight;
+}
+
+// FireFox
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 7px;
+  cursor: pointer;
+  animate: 0.2s;
+  box-shadow: 0px 0px 0px #000000;
+  background: $surfaceLight;
+  border-radius: 2px;
+  border: 0px solid #000000;
+}
+input[type=range]::-moz-range-thumb {
+  box-shadow: 1px 1px 3px #000000;
+  border: 1px solid #b2b2b2;
+  height: 18px;
+  width: 18px;
+  border-radius: 25px;
+  background: #b2b2b2;
+  cursor: pointer;
+}
+
+// IE - I deleted it and felt really good about it
+ 
+#swapProgress{
+  min-height: 34px;
+  background-color: $surfaceLight;
+  padding: 0;
+  border-radius: 2rem;
+  position: relative;
+}
+#swapProgress::before{
+  width: 65%;
+  height: 14px;
+  background: linear-gradient(90deg, #009DFF 0%, #65FA67 28%, #FC0707 100%);  // $swapProgressGradient;
+  position: absolute;
+  margin: 10px 0 0rem 10px;
+  border-radius: 2rem;
+  content: '';
+  z-index: 0;
+  box-shadow: 0px 1px 3px #333;
+}
+#swapProgressSlider{
+  position: absolute;
+}
+#swapProgressSlider::-moz-range-track,
+#swapProgressSlider::-webkit-range-track{
+  background: transparent;
+}
+
+#minSwapMark{
+  margin-left: 23%;
+  margin-top: 5px;
+  height: 25px;
+  border-left: 1px solid #fff;
+  z-index: 1;
+}
+#minSwapMark::before{
+  position: absolute;
+  top: 34px;
+  content: '15M ELT';
+}
+
+#currentSwapMark::before{
+  top: -25px;
+  right: 0%; // JS var
+  left: 0; 
+  margin-left: -5px;
+  text-align: right;
+  position: absolute;
+  white-space: nowrap;
+  content: '30,000,000 ELT'; // JS var
+}
+
+.is-underline{
+  border-bottom: 2px solid $surfaceLight;
+}
+
