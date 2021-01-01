@@ -38,6 +38,7 @@
       alert("Please connect to the Ropstien Testnet to continue");
       return;
     }
+    console.dir($selectedAccount);
 
     ethBalance = $connected ? $web3.eth.getBalance(checkAccount) : "";
     await ethStore.setBrowserProvider();
@@ -86,6 +87,10 @@
   //   right: $currSwapAmountPrc;
   //   content: $currSwapAmount;
   // } on #currentSwapMark:before
+
+  const fromatAddr = (str) => {
+    return str.substr(0, 5) + "..." + str.substr(str.length - 5, str.length);
+  };
 </script>
 
 <style lang="scss" global>
@@ -100,10 +105,18 @@
       class="column is-flex-wrap-nowrap is-12-mobile is-6-tablet is-4-desktop">
       <div class="columns is-2 is-flex is-12-mobile">
         <div id="hodlPill" class="column is-6-mobile">
-          <pre>0 HODL</pre>
+          {#await hodlBalance}
+            <pre class="px-1"> ? HODL </pre>
+          {:then value}
+            <pre class="px-1">{value} HODL </pre>
+          {/await}
         </div>
         <div id="eltPill" class="column is-6-mobile">
-          <pre>0 ELT</pre>
+          {#await eltBalance}
+            <pre class="px-1"> ? ELT </pre>
+          {:then value}
+            <pre class="px-1">{value} ELT </pre>
+          {/await}
         </div>
       </div>
     </div>
@@ -118,8 +131,13 @@
         {/await}
 
         <div id="balancePill" class="">
-          <span class="px-1">Not Connected</span>
-          <span class="connectionIndicator">&#11044;</span>
+          {#if isConnected === false}
+            <span class="px-1">Not Connected</span>
+          {:else}<span class="px-1">{fromatAddr($selectedAccount)}</span>{/if}
+
+          <span
+            class="connectionIndicator"
+            class:conneced={isConnected}>&#11044;</span>
         </div>
       </div>
     </div>
@@ -132,7 +150,7 @@
           class="column is-12-mobile is-4-tablet is-5-desktop has-text-centered-mobile">
           <h3 class="">ELT</h3>
           <input
-            class="number-bubble input "
+            class="number-bubble input has-text-centered-mobile"
             type="number"
             value="100000"
             placeholder="100,000" />
