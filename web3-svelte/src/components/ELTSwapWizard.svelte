@@ -25,7 +25,6 @@
   $: ethBalance = 0;
   $: checkAccount =
     $selectedAccount || "0x0000000000000000000000000000000000000000";
-  
 
   $: eltBalance = $connected
     ? getTokenBalance(
@@ -55,6 +54,14 @@
         $selectedAccount,
         "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e"
       );
+    }
+  }
+
+  $: $chainName, checkChain();
+
+  function checkChain() {
+    if($chainName !== undefined) {
+      console.log($chainName)
     }
   }
 
