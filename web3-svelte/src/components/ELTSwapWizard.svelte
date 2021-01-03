@@ -12,32 +12,20 @@
     swap,
   } from "../js/web3Helper";
 
-  // Creates a connection to own infura node.
-  const enable = async () => {
-    ethStore.setProvider(
-      "https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca"
-    );
-  };
 
+	// Creates a connection to own infura node.
+  const enable = () => ethStore.setProvider("https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca");
+	$: enableBrowser = () => ethStore.setBrowserProvider();
+
+
+  $: swapAmountELT = Number(10000);
+  $: swapAmountHodl = Number(swapAmountELT*0.0000005);
+  $: burnPercentage = 66;
+  $: ELTBurnBonus = Number((swapAmountHodl/100)*burnPercentage);
   $: ethBalance = 0;
   $: checkAccount =
     $selectedAccount || "0x0000000000000000000000000000000000000000";
-
-  const enableBrowser = async () => {
-    let connectedNetId = $chainName;
-    console.log(connectedNetId);
-    let networkId = 3; //NOTE: change for mainnet
-
-    if (connectedNetId !== networkId) console.log("Connected to Ropstien");
-    else {
-      alert("Please connect to the Ropstien Testnet to continue");
-      return;
-    }
-    console.dir($selectedAccount);
-
-    ethBalance = $connected ? $web3.eth.getBalance(checkAccount) : "";
-    await ethStore.setBrowserProvider();
-  };
+  
 
   $: eltBalance = $connected
     ? getTokenBalance(
@@ -86,6 +74,9 @@
   const fromatAddr = (str) => {
     return str.substr(0, 5) + "..." + str.substr(str.length - 5, str.length);
   };
+  const weiToETH = (wei) => {
+    return ((wei)/(10**18))
+  }
 </script>
 
 <style lang="scss" global>
@@ -110,7 +101,7 @@
           {#await eltBalance}
             <pre class="px-1"> ? ELT </pre>
           {:then value}
-            <pre class="px-1">{value} ELT </pre>
+            <pre class="px-1">{(value)/(10**18)} ELT</pre>
           {/await}
         </div>
       </div>
@@ -122,7 +113,7 @@
         {#await ethBalance}
           <span class="px-1"> ? ETH </span>
         {:then value}
-          <span class="px-1">{value} ETH </span>
+          <span class="px-1">{(value/(10**18))} ETH </span>
         {/await}
 
         <div id="balancePill" class="">
@@ -147,8 +138,8 @@
           <input
             class="number-bubble input has-text-centered-mobile"
             type="number"
-            value="100000"
-            placeholder="100,000" />
+            bind:value={swapAmountELT}
+            />
         </div>
 
         <div
@@ -156,13 +147,13 @@
           {#if isConnected === false}
             <button
               class="button connect-wallet is-danger is-rounded"
-              on:click={enableBrowser()}>
+              on:click={enableBrowser}>
               Connect Wallet
             </button>
           {:else}
             <button
               class="button is-success is-rounded"
-              on:click={enableBrowser()}>
+              on:click={console.log('hit')}>
               Swap
             </button>
           {/if}
@@ -173,8 +164,10 @@
           <h3 class="">HODL</h3>
           <input
             class="number-bubble input has-text-right"
-            type="text"
-            value="0.0833" />
+            type="number"
+            bind:value="{swapAmountHodl}"
+            on:keyup={()=>{swapAmountELT = (swapAmountHodl / 0.0000005)}}
+          />
         </div>
       </div>
     </div>
@@ -183,7 +176,7 @@
       <div class="columns level is-flex-wrap-wrap">
         <div class="column is-hidden-mobile is-3-tablet is-2-desktop">
           <h3>ELT Burn &#128293;</h3>
-          <span class="has-text-danger">66%</span>
+          <span class="has-text-danger">{burnPercentage}%</span>
         </div>
 
         <div
@@ -194,19 +187,19 @@
             id="burnRatioSlider"
             min="0"
             max="100"
-            value="66" />
+            bind:value={burnPercentage}/>
         </div>
 
         <div class="column is-flex is-3-tablet is-2-desktop p-0">
           <div
             class="column is-hidden-tablet is-hidden-desktop is-6-mobile is-2-tablet is-2-desktop">
             <h3>ELT Burn &#128293;</h3>
-            <span class="has-text-danger">66%</span>
+            <span class="has-text-danger">{burnPercentage}%</span>
           </div>
 
           <div class="column is-6-mobile is-pull-right has-text-right">
-            <h3>HODL Bonus</h3>
-            <span class="has-text-success">33.3%</span>
+            <h3>ELT Burn Bonus</h3>
+            <span class="has-text-success">{ELTBurnBonus.toFixed(4)} HODL</span>
           </div>
         </div>
 
@@ -215,8 +208,9 @@
           <h3 class="">HODL</h3>
           <input
             class="number-bubble input has-text-centered-mobile"
-            type="text"
-            value="0.0833" />
+            type="number"
+            bind:value="{swapAmountHodl}"
+            on:keyup={swapAmountELT = (swapAmountHodl / 0.0000005)}/> 
         </div>
 
         <div
@@ -224,13 +218,13 @@
           {#if isConnected === false}
             <button
               class="button connect-wallet is-danger is-rounded"
-              on:click={enableBrowser()}>
+              on:click={enableBrowser}>
               Connect Wallet
             </button>
           {:else}
             <button
               class="button is-success is-rounded"
-              on:click={enableBrowser()}>
+              on:click={console.log('hit')}>
               Swap
             </button>
           {/if}
@@ -256,7 +250,7 @@
           id="swapProgressSlider"
           min="0"
           max="100"
-          value="66"
+          value="66%"
           disabled="disabled" />
         <span id="minSwapMark" />
         <span id="currentSwapMark" />
