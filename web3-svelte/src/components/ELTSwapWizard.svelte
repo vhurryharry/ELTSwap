@@ -1,6 +1,12 @@
 <script>
-
-  import { ethStore, web3, selectedAccount, connected, chainName, getAddress } from "svelte-web3";
+  import {
+    ethStore,
+    web3,
+    selectedAccount,
+    connected,
+    chainName,
+    // getAddress,
+  } from "svelte-web3";
 
   import {
     getELTBurned,
@@ -12,24 +18,24 @@
     swap,
   } from "../js/web3Helper";
 
-
-	// Creates a connection to own infura node.
-  const enable = () => ethStore.setProvider("https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca");
-	$: enableBrowser = async () => {
+  // Creates a connection to own infura node.
+  const enable = () =>
+    ethStore.setProvider(
+      "https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca"
+    );
+  $: enableBrowser = async () => {
     await enable();
     ethStore.setBrowserProvider();
-  }
-
+  };
 
   $: swapAmountELT = Number(10000);
-  $: swapAmountHodl = Number(swapAmountELT*0.0000005);
+  $: swapAmountHodl = Number(swapAmountELT * 0.0000005);
   $: burnPercentage = Number(66);
-  $: ELTBurnBonus = Number((swapAmountHodl/100)*burnPercentage);
-  $: checkAccount = $selectedAccount || "0x0000000000000000000000000000000000000000";
-  
-  $: ethBalance = $connected
-    ? getAddress($checkAccount)
-     :0;
+  $: ELTBurnBonus = Number((swapAmountHodl / 100) * burnPercentage);
+  $: checkAccount =
+    $selectedAccount || "0x0000000000000000000000000000000000000000";
+
+  $: ethBalance = 0; // $connected ? getAddress($checkAccount) : 0;
   $: eltBalance = $connected
     ? getTokenBalance(
         $web3,
@@ -64,8 +70,8 @@
   $: $chainName, checkChain();
 
   function checkChain() {
-    if($chainName !== undefined) {
-      console.log($chainName)
+    if ($chainName !== undefined) {
+      console.log($chainName);
     }
   }
 
@@ -87,8 +93,8 @@
     return str.substr(0, 5) + "..." + str.substr(str.length - 5, str.length);
   };
   const weiToETH = (wei) => {
-    return ((wei)/(10**18))
-  }
+    return wei / 10 ** 18;
+  };
 </script>
 
 <style lang="scss" global>
@@ -125,15 +131,15 @@
         {#await ethBalance}
           <span class="px-1"> ? ETH </span>
         {:then value}
-          <span class="px-1">{(value/(10**18))} ETH </span>
+          <span class="px-1">{value / 10 ** 18} ETH </span>
         {/await}
         <div id="balancePill" class="">
           {#if isConnected === false}
-          <span class="px-1">Not Connected</span>
-          {:else}
-          <span class="px-1">{fromatAddr($selectedAccount)}</span>
-          {/if}
-          <span class="connectionIndicator" class:connected={isConnected}>&#11044;</span>
+            <span class="px-1">Not Connected</span>
+          {:else}<span class="px-1">{fromatAddr($selectedAccount)}</span>{/if}
+          <span
+            class="connectionIndicator"
+            class:connected={isConnected}>&#11044;</span>
         </div>
       </div>
     </div>
@@ -148,8 +154,7 @@
           <input
             class="number-bubble input has-text-centered-mobile"
             type="number"
-            bind:value={swapAmountELT}
-            />
+            bind:value={swapAmountELT} />
         </div>
 
         <div
@@ -175,9 +180,10 @@
           <input
             class="number-bubble input has-text-right"
             type="number"
-            bind:value="{swapAmountHodl}"
-            on:keyup={()=>{swapAmountELT = (swapAmountHodl / 0.0000005)}}
-          />
+            bind:value={swapAmountHodl}
+            on:keyup={() => {
+              swapAmountELT = swapAmountHodl / 0.0000005;
+            }} />
         </div>
       </div>
     </div>
@@ -197,7 +203,7 @@
             id="burnRatioSlider"
             min="0"
             max="100"
-            bind:value={burnPercentage}/>
+            bind:value={burnPercentage} />
         </div>
 
         <div class="column is-flex is-3-tablet is-2-desktop p-0">
@@ -219,8 +225,8 @@
           <input
             class="number-bubble input has-text-centered-mobile"
             type="number"
-            bind:value="{swapAmountHodl}"
-            on:keyup={swapAmountELT = (swapAmountHodl / 0.0000005)}/> 
+            bind:value={swapAmountHodl}
+            on:keyup={(swapAmountELT = swapAmountHodl / 0.0000005)} />
         </div>
 
         <div
@@ -255,13 +261,6 @@
 
     <div class="column is-12">
       <div id="swapProgress" class="is-flex is-12">
-        <input
-          type="range"
-          id="swapProgressSlider"
-          min="0"
-          max="100"
-          value="66%"
-          disabled="disabled" />
         <span id="minSwapMark" />
         <span id="currentSwapMark" />
       </div>
