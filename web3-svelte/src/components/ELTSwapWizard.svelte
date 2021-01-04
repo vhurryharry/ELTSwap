@@ -106,7 +106,7 @@
   <div
     class="columns is-flex is-2 level is-multiline is-flex-wrap-wrap is-justify-content-end">
     <div
-      class="column is-flex-wrap-nowrap is-12-mobile is-6-tablet is-4-desktop">
+      class="column is-flex-wrap-nowrap is-12-mobile is-6-tablet is-6-desktop">
       <div class="columns is-2 is-flex is-12-mobile">
         <div id="hodlPill" class="column is-6-mobile">
           {#await hodlBalance}
@@ -126,7 +126,7 @@
     </div>
 
     <div
-      class="column is-12-mobile is-6-tablet is-4-desktop is-justify-content-center">
+      class="column is-12-mobile is-6-tablet is-6-desktop is-justify-content-center">
       <div id="ethPill" class=" is-justify-content-center">
         {#await ethBalance}
           <span class="px-1"> ? ETH </span>
@@ -233,13 +233,15 @@
           class="column is-flex is-hidden-tablet is-hidden-desktop i is-flex-direction-column is-12-mobile is-justify-content-end ">
           {#if isConnected === false}
             <button
+              id="connectWalletBtn"
               class="button connect-wallet is-danger is-rounded"
               on:click={enableBrowser}>
               Connect Wallet
             </button>
           {:else}
             <button
-              class="button is-success is-rounded"
+              id="performSwapBtn"
+              class="button is-rounded"
               on:click={console.log('hit')}>
               Swap
             </button>
