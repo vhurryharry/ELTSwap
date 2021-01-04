@@ -1,6 +1,6 @@
 <script>
 
-  import { ethStore, web3, selectedAccount, connected, chainName } from "svelte-web3";
+  import { ethStore, web3, selectedAccount, connected, chainName, getAddress } from "svelte-web3";
 
   import {
     getELTBurned,
@@ -15,17 +15,21 @@
 
 	// Creates a connection to own infura node.
   const enable = () => ethStore.setProvider("https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca");
-	$: enableBrowser = () => ethStore.setBrowserProvider();
+	$: enableBrowser = async () => {
+    await enable();
+    ethStore.setBrowserProvider();
+  }
 
 
   $: swapAmountELT = Number(10000);
   $: swapAmountHodl = Number(swapAmountELT*0.0000005);
-  $: burnPercentage = 66;
+  $: burnPercentage = Number(66);
   $: ELTBurnBonus = Number((swapAmountHodl/100)*burnPercentage);
-  $: ethBalance = 0;
-  $: checkAccount =
-    $selectedAccount || "0x0000000000000000000000000000000000000000";
-
+  $: checkAccount = $selectedAccount || "0x0000000000000000000000000000000000000000";
+  
+  $: ethBalance = $connected
+    ? getAddress($checkAccount)
+     :0;
   $: eltBalance = $connected
     ? getTokenBalance(
         $web3,
@@ -79,6 +83,7 @@
   // } on #currentSwapMark:before
 
   const fromatAddr = (str) => {
+    if (!str) return;
     return str.substr(0, 5) + "..." + str.substr(str.length - 5, str.length);
   };
   const weiToETH = (wei) => {
@@ -101,36 +106,34 @@
           {#await hodlBalance}
             <pre class="px-1"> ? HODL </pre>
           {:then value}
-            <pre class="px-1">{value} HODL </pre>
+            <pre class="px-1">{value.toLocaleString('en-US')} HODL</pre>
           {/await}
         </div>
         <div id="eltPill" class="column is-6-mobile">
           {#await eltBalance}
             <pre class="px-1"> ? ELT </pre>
           {:then value}
-            <pre class="px-1">{(value)/(10**18)} ELT</pre>
+            <pre class="px-1">{value.toLocaleString('en-US')} ELT</pre>
           {/await}
         </div>
       </div>
     </div>
 
     <div
-      class="column is-12-mobile is-6-tablet is-3-desktop is-justify-content-center">
+      class="column is-12-mobile is-6-tablet is-4-desktop is-justify-content-center">
       <div id="ethPill" class=" is-justify-content-center">
         {#await ethBalance}
           <span class="px-1"> ? ETH </span>
         {:then value}
           <span class="px-1">{(value/(10**18))} ETH </span>
         {/await}
-
         <div id="balancePill" class="">
           {#if isConnected === false}
-            <span class="px-1">Not Connected</span>
-          {:else}<span class="px-1">{fromatAddr($selectedAccount)}</span>{/if}
-
-          <span
-            class="connectionIndicator"
-            class:conneced={isConnected}>&#11044;</span>
+          <span class="px-1">Not Connected</span>
+          {:else}
+          <span class="px-1">{fromatAddr($selectedAccount)}</span>
+          {/if}
+          <span class="connectionIndicator" class:connected={isConnected}>&#11044;</span>
         </div>
       </div>
     </div>

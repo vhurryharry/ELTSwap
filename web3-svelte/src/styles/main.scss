@@ -85,10 +85,13 @@ h3 {
   margin-left: auto;
 }
 .connectionIndicator {
-  color: red;
-  margin-top: -2px;
+  color: #DC3737;
+  position: relative;
+  top: -2px;
 }
-
+.connectionIndicator.connected {
+  color: #38A24A;
+}
 #hodlPill {
   @extend .info-pill;
 }
