@@ -28,14 +28,14 @@
     ethStore.setBrowserProvider();
   };
 
-  $: swapAmountELT = Number(10000);
-  $: swapAmountHodl = Number(swapAmountELT * 0.0000005);
-  $: burnPercentage = Number(66);
+  $: swapAmountELT = null; //Number();
+  $: swapAmountHodl = swapAmountELT ? Number(swapAmountELT * 0.0000005) : null;
+  $: burnPercentage = Number(0);
   $: ELTBurnBonus = Number((swapAmountHodl / 100) * burnPercentage);
   $: checkAccount =
     $selectedAccount || "0x0000000000000000000000000000000000000000";
 
-  $: ethBalance = 0; // $connected ? getAddress($checkAccount) : 0;
+  $: ethBalance = null; // $connected ? getAddress($checkAccount) : 0;
   $: eltBalance = $connected
     ? getTokenBalance(
         $web3,
@@ -115,6 +115,7 @@
             <pre class="px-1">{value.toLocaleString('en-US')} HODL</pre>
           {/await}
         </div>
+
         <div id="eltPill" class="column is-6-mobile">
           {#await eltBalance}
             <pre class="px-1"> ? ELT </pre>
@@ -129,9 +130,9 @@
       class="column is-12-mobile is-6-tablet is-6-desktop is-justify-content-center">
       <div id="ethPill" class=" is-justify-content-center">
         {#await ethBalance}
-          <span class="px-1"> ? ETH </span>
+          <span class="px-1"> ETH </span>
         {:then value}
-          <span class="px-1">{value / 10 ** 18} ETH </span>
+          <span class="px-1">{value / 10 ** 18 || ''} ETH </span>
         {/await}
         <div id="balancePill" class="">
           {#if isConnected === false}
@@ -149,16 +150,17 @@
     <div class="column ">
       <div class="columns is-flex-wrap-wrap ">
         <div
-          class="column is-12-mobile is-4-tablet is-5-desktop has-text-centered-mobile">
+          class="column is-12-mobile is-4-tablet is-4-desktop has-text-centered-mobile">
           <h3 class="">ELT</h3>
           <input
             class="number-bubble input has-text-centered-mobile"
             type="number"
+            placeholder="0"
             bind:value={swapAmountELT} />
         </div>
 
         <div
-          class="column is-flex is-hidden-mobile is-flex-direction-column is-4-tablet is-2-desktop is-justify-content-end ">
+          class="column is-flex is-hidden-mobile is-flex-direction-column is-4-tablet is-4-desktop is-justify-content-end ">
           {#if isConnected === false}
             <button
               class="button connect-wallet is-danger is-rounded"
@@ -167,7 +169,8 @@
             </button>
           {:else}
             <button
-              class="button is-success is-rounded"
+              id="performSwapBtn"
+              class="button connect-wallet is-success is-rounded"
               on:click={console.log('hit')}>
               Swap
             </button>
@@ -175,11 +178,12 @@
         </div>
 
         <div
-          class="column is-hidden-mobile is-4-tablet is-5-desktop has-text-centered-mobile has-text-right">
+          class="column is-hidden-mobile is-4-tablet is-4-desktop has-text-centered-mobile has-text-right">
           <h3 class="">HODL</h3>
           <input
             class="number-bubble input has-text-right"
             type="number"
+            placeholder="0"
             bind:value={swapAmountHodl}
             on:keyup={() => {
               swapAmountELT = swapAmountHodl / 0.0000005;
@@ -190,14 +194,14 @@
 
     <div class="column">
       <div class="columns level is-flex-wrap-wrap">
-        <div class="column is-hidden-mobile is-3-tablet is-2-desktop">
+        <div class="column is-hidden-mobile is-3-tablet is-3-desktop">
           <h3>ELT Burn &#128293;</h3>
           <span class="has-text-danger">{burnPercentage}%</span>
         </div>
 
         <div
           id="swapHodlBurnRatio"
-          class="column is-12-mobile is-4-tablet is-8-desktop pb-0">
+          class="column is-12-mobile is-4-tablet is-6-desktop pb-0">
           <input
             type="range"
             id="burnRatioSlider"
@@ -206,7 +210,7 @@
             bind:value={burnPercentage} />
         </div>
 
-        <div class="column is-flex is-3-tablet is-2-desktop p-0">
+        <div class="column is-flex is-3-tablet is-3-desktop p-0">
           <div
             class="column is-hidden-tablet is-hidden-desktop is-6-mobile is-2-tablet is-2-desktop">
             <h3>ELT Burn &#128293;</h3>
@@ -214,7 +218,7 @@
           </div>
 
           <div class="column is-6-mobile is-pull-right has-text-right">
-            <h3>ELT Burn Bonus</h3>
+            <h3>HODL Burn Bonus</h3>
             <span class="has-text-success">{ELTBurnBonus.toFixed(4)} HODL</span>
           </div>
         </div>
@@ -254,14 +258,15 @@
   <div class="columns is-flex-wrap-wrap">
     <div class="column is-12">
       <h3>
-        <span class="is-underline">
+        <span class="">
           Eltswap Progress:
-          <span class="has-text-success">133%</span>
+          <span class="has-text-success">133%</span><sup
+            class="ref-asterix">*</sup>
         </span>
       </h3>
     </div>
 
-    <div class="column is-12">
+    <div class="column is-12 elt-swap-progress-wrapper">
       <div id="swapProgress" class="is-flex is-12">
         <span id="minSwapMark" />
         <span id="currentSwapMark" />
@@ -270,6 +275,11 @@
       <span class="">0 ELT</span>
 
       <span class="is-pulled-right">40M ELT</span>
+    </div>
+
+    <div class="column is-flex">
+      <sup class="ref-asterix">*</sup>
+      <h6 class="ref-entry">of 15 million ELT softcap</h6>
     </div>
   </div>
 </div>

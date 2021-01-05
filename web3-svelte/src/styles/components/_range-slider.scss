@@ -100,21 +100,32 @@ input[type=range]::-moz-range-thumb {
   border-left: 1px solid #fff;
   z-index: 1;
 }
-#minSwapMark::before{
-  position: absolute;
-  top: 34px;
-  content: '15M ELT';
-}
-
 #currentSwapMark::before{
   top: -25px;
   right: 0%; // JS var
   left: 0; 
+  font-size: 0.8rem;
   margin-left: -5px;
   text-align: right;
   position: absolute;
   white-space: nowrap;
   content: '30,000,000 ELT'; // JS var
+}
+
+
+#minSwapMark::before{
+  position: absolute;
+  top: 38px;
+  font-size: 0.8rem;
+  content: '15M ELT';
+}
+
+#currentSwapMark::after{
+  top: 36px;
+  margin-left: 55px;
+  position: absolute;
+  font-size: 0.8rem;
+  // content: '*';
 }
 
 .is-underline{
