@@ -1,8 +1,9 @@
 <script>
 
-  import { ethStore, web3, selectedAccount, connected, chainName, getAddress } from "svelte-web3";
+  import { ethStore, web3, selectedAccount, connected, chainName } from "svelte-web3";
 
   import {
+    getETHBalance,
     getELTBurned,
     getELTInContract,
     getHODLInContract,
@@ -28,8 +29,14 @@
   $: checkAccount = $selectedAccount || "0x0000000000000000000000000000000000000000";
   
   $: ethBalance = $connected
-    ? getAddress($checkAccount)
-     :0;
+  ? getETHBalance($web3, $selectedAccount)
+  : Number(0.0000);
+
+  $: fixedDecimals = (number) => {
+    if (typeof number !== 'number') return
+    return number.toFixed(4);
+  }
+
   $: eltBalance = $connected
     ? getTokenBalance(
         $web3,
@@ -86,9 +93,7 @@
     if (!str) return;
     return str.substr(0, 5) + "..." + str.substr(str.length - 5, str.length);
   };
-  const weiToETH = (wei) => {
-    return ((wei)/(10**18))
-  }
+
 </script>
 
 <style lang="scss" global>
@@ -120,12 +125,12 @@
     </div>
 
     <div
-      class="column is-12-mobile is-6-tablet is-4-desktop is-justify-content-center">
+      class="column is-12-mobile is-6-tablet is-5-desktop is-justify-content-center">
       <div id="ethPill" class=" is-justify-content-center">
         {#await ethBalance}
           <span class="px-1"> ? ETH </span>
         {:then value}
-          <span class="px-1">{(value/(10**18))} ETH </span>
+          <span class="px-1">{fixedDecimals(value)} ETH </span>
         {/await}
         <div id="balancePill" class="">
           {#if isConnected === false}
@@ -163,7 +168,7 @@
           {:else}
             <button
               class="button is-success is-rounded"
-              on:click={console.log('hit')}>
+              on:click={approveELTTransfer}>
               Swap
             </button>
           {/if}
