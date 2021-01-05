@@ -28,6 +28,13 @@ export let getTokenBalance = async (web3, address, tokenContract, decimals = 8) 
     return amount;
 }
 
+export let getETHBalance = async (web3, address) => {
+    let amount = 0;
+    if (address === null) return;
+    amount = await web3.eth.getBalance(address);
+    return atomicToDecimal(amount, 18);
+}
+
 export let getTotalHodlReward = async (web3, amount, burnPercent, decimals = 8) => {
     let atomicAmount = decimalToAtomic(amount, decimals);
     let contract = new web3.eth.Contract(swapABI, swapContract);
