@@ -68,6 +68,15 @@ export let getELTBurned = async (web3) => {
     return result;
 }
 
+export let getAllowance = async (web3, ownerAddress, spenderAddress) => {
+    let contract = new web3.eth.Contract(eltABI, eltContract);
+    let result = contract.methods.allowance(ownerAddress, spenderAddress).call().then(function(res) {
+        return atomicToDecimal(res, eltDecimals);
+    });
+
+    return result;
+}
+
 export let approveELT = async (web3, amount, fromAddress, toAddress) => {
     let contract = new web3.eth.Contract(eltABI, eltContract, { from: fromAddress });
 
@@ -75,12 +84,17 @@ export let approveELT = async (web3, amount, fromAddress, toAddress) => {
         return res;
     });
 
-    await web3.eth.sendTransaction({
-        to: eltContract, 
-        from: fromAddress,
-        gasLimit: gasEstimate,
-        data: contract.methods.approve(toAddress, decimalToAtomic(amount)).encodeABI()
-    });
+    return new Promise((resolve, reject) => {
+        contract.methods.approve(toAddress, decimalToAtomic(amount)).send({ to: eltContract, from: fromAddress, gasLimit: gasEstimate }) 
+          .on('confirmation', (confirmationNumber) => {
+                if (confirmationNumber === 1) {
+                    resolve(true)
+                }
+          })
+          .on('error', (error) => {
+                reject(error)
+          })
+    })
 }
 
 export let swap = async (web3, amount, burnPercent = 0, fromAddress) => {
@@ -90,12 +104,17 @@ export let swap = async (web3, amount, burnPercent = 0, fromAddress) => {
         return res;
     });
 
-    await web3.eth.sendTransaction({
-        to: swapContract,
-        from: fromAddress,
-        gasLimit: gasEstimate,
-        data: contract.methods.swap(decimalToAtomic(amount), burnPercent).encodeABI()
-    });
+    return new Promise((resolve, reject) => {
+        contract.methods.swap(decimalToAtomic(amount), burnPercent).send({ to: swapContract, from: fromAddress, gasLimit: gasEstimate }) 
+          .on('confirmation', (confirmationNumber) => {
+                if (confirmationNumber === 1) {
+                    resolve(true)
+                }
+          })
+          .on('error', (error) => {
+                reject(error)
+          })
+    })
 }
 
 /*

@@ -1,6 +1,7 @@
 <script>
-
   import { ethStore, web3, selectedAccount, connected, chainName } from "svelte-web3";
+
+  import { approvedELTAmount } from "../utility/stores";
 
   import {
     getETHBalance,
@@ -11,6 +12,7 @@
     getTotalHodlReward,
     approveELT,
     swap,
+    getAllowance,
   } from "../js/web3Helper";
 
 
@@ -56,19 +58,36 @@
   $: eltInContract = $connected ? getELTInContract($web3) : "";
   $: eltBurned = $connected ? getELTBurned($web3) : "";
   $: isConnected = $connected ? true : false;
+  
+  $: approvedValue = $connected ? getAllowance($web3, checkAccount, "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e") : 0;
 
-  function approveELTTransfer() {
+  async function approveELTTransfer() {
     if ($connected) {
       approveELT(
         $web3,
         10000,
         $selectedAccount,
         "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e"
-      );
+      ).then(async function(resolve, reject) {
+        if(resolve) {
+          console.log("Approval transaction confirmed!");
+          let eltAllowance = await getApprovedAmount();
+          approvedELTAmount.set(eltAllowance);
+          console.log("Allowance: " + eltAllowance);
+        }
+      });
     }
   }
 
   $: $chainName, checkChain();
+
+  function getApprovedAmount() {
+    if($connected) {
+      let allowance = getAllowance($web3, checkAccount, "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e");
+      console.log(allowance);
+      return allowance;
+    }
+  }
 
   function checkChain() {
     if($chainName !== undefined) {
@@ -78,7 +97,16 @@
 
   function sendSwap() {
     if ($connected) {
-      swap($web3, 10000, 25, $selectedAccount);
+      swap($web3, 10000, 25, $selectedAccount).then(async function(resolve, reject) {
+        if(resolve) {
+          console.log("Swap transaction confirmed!");
+
+          // Check the allowance again to change the button back to Approve
+          let eltAllowance = await getApprovedAmount();
+          approvedELTAmount.set(eltAllowance);
+          console.log("Allowance: " + eltAllowance);
+        }
+      });
     }
   }
 
@@ -93,7 +121,6 @@
     if (!str) return;
     return str.substr(0, 5) + "..." + str.substr(str.length - 5, str.length);
   };
-
 </script>
 
 <style lang="scss" global>
@@ -159,6 +186,11 @@
 
         <div
           class="column is-flex is-hidden-mobile is-flex-direction-column is-4-tablet is-2-desktop is-justify-content-end ">
+          {#await $approvedELTAmount}
+            <p>Loading approved</p>
+          {:then value}
+            <p>Approved: {value}</p>
+          {/await}
           {#if isConnected === false}
             <button
               class="button connect-wallet is-danger is-rounded"
@@ -166,11 +198,27 @@
               Connect Wallet
             </button>
           {:else}
-            <button
-              class="button is-success is-rounded"
-              on:click={approveELTTransfer}>
-              Swap
-            </button>
+            {#await $approvedELTAmount}
+              <button
+                class="button is-success is-rounded"
+                on:click={approveELTTransfer}>
+                Approve
+              </button>
+            {:then value}
+              {#if value >= 10000}
+                <button
+                  class="button is-success is-rounded"
+                  on:click={sendSwap}>
+                  Swap
+                </button>
+              {:else}
+                <button
+                  class="button is-success is-rounded"
+                  on:click={approveELTTransfer}>
+                  Approve
+                </button>
+              {/if}
+            {/await}
           {/if}
         </div>
 
