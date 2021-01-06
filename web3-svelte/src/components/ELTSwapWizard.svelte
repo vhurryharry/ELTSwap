@@ -25,6 +25,10 @@
   let isSwapBtnPending = false;
 
   const minELTToSwap = 10000;
+  const absMaxELT = 40 * 10 ** 6;
+  const getSwapProgress = () => {
+    return parseInt((eltInContract * 100) / absMaxELT);
+  };
 
   // TODO: move to utils
   // $: approveAddr = "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e";
@@ -79,7 +83,7 @@
     ? getTotalHodlReward($web3, minELTToSwap, 25)
     : "";
   $: hodlInContract = $connected ? getHODLInContract($web3) : "";
-  $: eltInContract = $connected ? getELTInContract($web3) : "";
+  $: eltInContract = $connected ? getELTInContract($web3) : 66;
   $: eltBurned = $connected ? getELTBurned($web3) : "";
   $: isConnected = $connected ? true : false;
 
@@ -283,7 +287,7 @@
         </div>
 
         <div
-          class="column is-flex is-hidden-mobile is-flex-direction-column is-4-tablet is-2-desktop is-justify-content-end ">
+          class="column is-flex is-hidden-mobile is-flex-direction-column is-4-tablet is-4-desktop is-justify-content-end ">
           {#await $approvedELTAmount}
             <h6>Loading approved</h6>
           {:then value}
@@ -360,7 +364,9 @@
           <h3>ELT Burn &#128293;</h3>
           <span
             class="elt-burn-percent"
-            class:disabled={swapAmountELT < minELTToSwap ? 'disabled' : ''}>{burnPercentage}%</span>
+            class:disabled={swapAmountELT < minELTToSwap ? 'disabled' : ''}>
+            {burnPercentage}%
+          </span>
         </div>
 
         <div
@@ -380,12 +386,19 @@
           <div
             class="column is-hidden-tablet is-hidden-desktop is-6-mobile is-2-tablet is-2-desktop">
             <h3>ELT Burn &#128293;</h3>
-            <span class="elt-burn-percent">{burnPercentage}%</span>
+            <span
+              class="elt-burn-percent"
+              class:disabled={swapAmountELT < minELTToSwap ? 'disabled' : ''}>
+              {burnPercentage}%
+            </span>
           </div>
 
           <div class="column is-6-mobile is-pull-right has-text-right">
             <h3><span class="is-hidden-mobile">HODL</span> Burn Bonus</h3>
-            <span class="hodl-burn-bonus">{ELTBurnBonus.toFixed(4)} HODL</span>
+            <span class="hodl-burn-bonus" class:disabled={!ELTBurnBonus}>
+              {ELTBurnBonus.toFixed(4)}
+              HODL
+            </span>
           </div>
         </div>
 
@@ -419,7 +432,7 @@
         </div>
 
         <div
-          class="column is-flex is-hidden-tablet is-hidden-desktop i is-flex-direction-column is-12-mobile is-justify-content-end ">
+          class="column is-flex is-hidden-tablet is-hidden-desktop is-flex-direction-column is-12-mobile is-justify-content-end ">
           {#await $approvedELTAmount}
             <h6>Loading approved</h6>
           {:then value}
@@ -469,7 +482,7 @@
       <h3>
         <span class="">
           Eltswap Progress:
-          <span class="eltswap-progress-success">133%</span><sup
+          <span class="eltswap-progress-success">{getSwapProgress()}%</span><sup
             class="ref-asterix">*</sup>
         </span>
       </h3>
@@ -477,8 +490,13 @@
 
     <div class="column is-12 elt-swap-progress-wrapper">
       <div id="swapProgress" class="is-flex is-12">
+        <span
+          id="swapProgressGradient"
+          style="--progress-bar-width: {getSwapProgress()}%;" />
         <span id="minSwapMark" />
-        <span id="currentSwapMark" />
+        <span
+          id="currentSwapMark"
+          style="--curr-mark-left: {getSwapProgress()}%;">{getSwapProgress() > 10 ? eltInContract + ' ELT' : ''}</span>
       </div>
 
       <span class="">0 ELT</span>
