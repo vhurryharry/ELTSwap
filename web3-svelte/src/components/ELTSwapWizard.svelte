@@ -142,6 +142,40 @@
     if (!str) return;
     return str.substr(0, 5) + "..." + str.substr(str.length - 5, str.length);
   };
+
+  const sanitizeNumber = (evt, isGtZeroPositive = true) => {
+    evt.preventDefault();
+    let cleanNumber = (evt.target.value = evt.target.value.replace(
+      /[^0-9.,]/g,
+      ""
+    )).to;
+
+    // console.log(" isGtZeroPositive ", isGtZeroPositive);
+    // console.log(" cleanNumber isGtZeroPositive ", Math.abs(cleanNumber));
+
+    if (isGtZeroPositive) {
+      cleanNumber = Math.abs(cleanNumber);
+    }
+
+    // console.log(" cleanNumber ", cleanNumber);
+    return (valHandler) => {
+      valHandler(cleanNumber);
+    };
+  };
+
+  // TODO: move this to utils
+  /**
+   * Prevent changing value onScroll for input:number
+   */
+  // document.addEventListener("wheel", function (event) {
+  //   if (document.activeElement.type === "number") {
+  //     event.preventDefault();
+  //     document.activeElement.blur();
+  //   }
+  // });
+  // can use ` onwheel="this.blur()" ` instead
+  // from https://stackoverflow.com/questions/9712295/disable-scrolling-on-input-type-number
+  // but only handles the wheel, not the arrow keys, as well
 </script>
 
 <style lang="scss" global>
@@ -203,7 +237,24 @@
             class="number-bubble input has-text-centered-mobile"
             type="number"
             placeholder="0"
-            bind:value={swapAmountELT} />
+            onwheel="this.blur()"
+            bind:value={swapAmountELT}
+            on:input={(evt) => {
+              return sanitizeNumber(evt)((cleanVal) => {
+                console.log(' sanitizeNumber swapAmountELT ', cleanVal);
+                return cleanVal > 0 ? cleanVal : null;
+              });
+            }}
+            on:keydown={(evt) => {
+              // prevent editing value by arrowKeys
+              if (evt.key == 'ArrowDown' || evt.key == 'ArrowUp') {
+                evt.preventDefault();
+              }
+            }}
+            on:keyup={(evt) => {
+              // prevent pasting negative vals
+              swapAmountELT = Math.abs(swapAmountELT) || null;
+            }} />
         </div>
 
         <div
@@ -251,9 +302,23 @@
             class="number-bubble input has-text-right"
             type="number"
             placeholder="0"
+            onwheel="this.blur()"
             bind:value={swapAmountHodl}
-            on:keyup={() => {
-              swapAmountELT = swapAmountHodl / 0.0000005;
+            on:input={(evt) => {
+              return sanitizeNumber(evt)((cleanVal) => {
+                console.log(' sanitizeNumber swapAmountHodl ', cleanVal);
+                return cleanVal > 0 ? cleanVal : null;
+              });
+            }}
+            on:keydown={(evt) => {
+              // prevent editing value by arrowKeys
+              if (evt.key == 'ArrowDown' || evt.key == 'ArrowUp') {
+                evt.preventDefault();
+              }
+            }}
+            on:keyup={(evt) => {
+              // prevent pasting negative vals
+              swapAmountELT = Math.abs(swapAmountELT) || null;
             }} />
         </div>
       </div>
@@ -296,8 +361,27 @@
           <input
             class="number-bubble input has-text-centered-mobile"
             type="number"
+            placeholder="0"
+            onwheel="this.blur()"
             bind:value={swapAmountHodl}
-            on:keyup={(swapAmountELT = swapAmountHodl / 0.0000005)} />
+            on:input={(evt) => {
+              // console.dir(' .... ', sanitizeNumber(evt));
+              return sanitizeNumber(evt)((cleanVal) => {
+                console.log(' sanitizeNumber cleanVal ', cleanVal);
+                // swapAmountHodl = cleanVal;
+                return cleanVal > 0 ? (swapAmountELT = cleanVal / 0.0000005) : null;
+              });
+            }}
+            on:keydown={(evt) => {
+              // prevent editing value by arrowKeys
+              if (evt.key == 'ArrowDown' || evt.key == 'ArrowUp') {
+                evt.preventDefault();
+              }
+            }}
+            on:keyup={(evt) => {
+              // prevent pasting negative vals
+              swapAmountELT = Math.abs(swapAmountELT) || null;
+            }} />
         </div>
 
         <div
