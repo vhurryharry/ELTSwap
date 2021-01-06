@@ -21,12 +21,24 @@
     getAllowance,
   } from "../js/web3Helper";
 
+  let isSwapBtnDisabled = false;
+  let isSwapBtnPending = false;
+
+  // TODO: move to utils
+  const approveAddr = "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e";
+
   // Creates a connection to own infura node.
-  const enable = () =>
-    ethStore.setProvider(
-      "https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca"
-    );
+  const enable = () => {
+    ethStore
+      .setProvider(
+        "https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca"
+      )
+      .then((res) => {
+        isSwapBtnPending = false;
+      });
+  };
   $: enableBrowser = async () => {
+    isSwapBtnPending = true;
     await enable();
     ethStore.setBrowserProvider();
   };
@@ -68,28 +80,25 @@
   $: isConnected = $connected ? true : false;
 
   $: approvedValue = $connected
-    ? getAllowance(
-        $web3,
-        checkAccount,
-        "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e"
-      )
+    ? getAllowance($web3, checkAccount, approveAddr)
     : 0;
 
   async function approveELTTransfer() {
-    if ($connected) {
-      approveELT(
-        $web3,
-        10000,
-        $selectedAccount,
-        "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e"
-      ).then(async function (resolve, reject) {
-        if (resolve) {
-          console.log("Approval transaction confirmed!");
-          let eltAllowance = await getApprovedAmount();
-          approvedELTAmount.set(eltAllowance);
-          console.log("Allowance: " + eltAllowance);
+    if ($connected & !isSwapBtnDisabled) {
+      isSwapBtnDisabled = true;
+      isSwapBtnPending = true;
+      approveELT($web3, 10000, $selectedAccount, approveAddr).then(
+        async function (resolve, reject) {
+          if (resolve) {
+            console.log("Approval transaction confirmed!");
+            let eltAllowance = await getApprovedAmount();
+            approvedELTAmount.set(eltAllowance);
+            console.log("Allowance: " + eltAllowance);
+            isSwapBtnDisabled = false;
+            isSwapBtnPending = false;
+          }
         }
-      });
+      );
     }
   }
 
@@ -97,11 +106,7 @@
 
   function getApprovedAmount() {
     if ($connected) {
-      let allowance = getAllowance(
-        $web3,
-        checkAccount,
-        "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e"
-      );
+      let allowance = getAllowance($web3, checkAccount, approveAddr);
       console.log(allowance);
       return allowance;
     }
@@ -114,7 +119,9 @@
   }
 
   function sendSwap() {
-    if ($connected) {
+    if ($connected & !isSwapBtnDisabled) {
+      isSwapBtnDisabled = true;
+      isSwapBtnPending = true;
       swap($web3, 10000, 25, $selectedAccount).then(async function (
         resolve,
         reject
@@ -126,6 +133,8 @@
           let eltAllowance = await getApprovedAmount();
           approvedELTAmount.set(eltAllowance);
           console.log("Allowance: " + eltAllowance);
+          isSwapBtnDisabled = false;
+          isSwapBtnPending = false;
         }
       });
     }
@@ -260,33 +269,38 @@
         <div
           class="column is-flex is-hidden-mobile is-flex-direction-column is-4-tablet is-2-desktop is-justify-content-end ">
           {#await $approvedELTAmount}
-            <p>Loading approved</p>
+            <h6>Loading approved</h6>
           {:then value}
-            <p>Approved: {value}</p>
+            <h6>Approved: {value}</h6>
           {/await}
           {#if isConnected === false}
             <button
-              class="button connect-wallet is-danger is-rounded"
+              class="button connect-wallet is-rounded"
+              class:pending={isSwapBtnPending}
               on:click={enableBrowser}>
               Connect Wallet
             </button>
           {:else}
             {#await $approvedELTAmount}
               <button
-                class="button is-success is-rounded"
+                class="button connect-wallet connected is-rounded"
+                class:pending={isSwapBtnPending}
                 on:click={approveELTTransfer}>
                 Approve
               </button>
             {:then value}
               {#if value >= 10000}
                 <button
-                  class="button is-success is-rounded"
+                  class="button connect-wallet connected is-rounded"
+                  class:pending={isSwapBtnPending}
+                  class:disabled={isSwapBtnDisabled}
                   on:click={sendSwap}>
                   Swap
                 </button>
               {:else}
                 <button
-                  class="button is-success is-rounded"
+                  class="button connect-wallet connected is-rounded"
+                  class:pending={isSwapBtnPending}
                   on:click={approveELTTransfer}>
                   Approve
                 </button>
@@ -350,7 +364,7 @@
           </div>
 
           <div class="column is-6-mobile is-pull-right has-text-right">
-            <h3>HODL Burn Bonus</h3>
+            <h3>Burn Bonus</h3>
             <span class="has-text-success">{ELTBurnBonus.toFixed(4)} HODL</span>
           </div>
         </div>
@@ -386,20 +400,44 @@
 
         <div
           class="column is-flex is-hidden-tablet is-hidden-desktop i is-flex-direction-column is-12-mobile is-justify-content-end ">
+          {#await $approvedELTAmount}
+            <h6>Loading approved</h6>
+          {:then value}
+            <h6>Approved: {value}</h6>
+          {/await}
           {#if isConnected === false}
             <button
-              id="connectWalletBtn"
-              class="button connect-wallet is-danger is-rounded"
+              class="button connect-wallet is-rounded"
+              class:pending={isSwapBtnPending}
               on:click={enableBrowser}>
               Connect Wallet
             </button>
           {:else}
-            <button
-              id="performSwapBtn"
-              class="button is-rounded"
-              on:click={console.log('hit')}>
-              Swap
-            </button>
+            {#await $approvedELTAmount}
+              <button
+                class="button connect-wallet connected is-rounded"
+                class:pending={isSwapBtnPending}
+                on:click={approveELTTransfer}>
+                Approve
+              </button>
+            {:then value}
+              {#if value >= 10000}
+                <button
+                  class="button connect-wallet connected is-rounded"
+                  class:pending={isSwapBtnPending}
+                  class:disabled={isSwapBtnDisabled}
+                  on:click={sendSwap}>
+                  Swap
+                </button>
+              {:else}
+                <button
+                  class="button connect-wallet connected is-rounded"
+                  class:pending={isSwapBtnPending}
+                  on:click={approveELTTransfer}>
+                  Approve
+                </button>
+              {/if}
+            {/await}
           {/if}
         </div>
       </div>
