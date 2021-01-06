@@ -1,13 +1,22 @@
-@import "bulma/bulma";
 
-@import "_variables";
+@import "./variables";
+
+@import "./components/range-slider";
 
 .elt-swap-wizard{
-  // @extend .is-10;
   width: 80%;
+  min-width: 320px;
   background-color: $surfaceDark;
   border-radius: 1rem;
   color: #fff;
+  font-family: Monaco, monospace;
+  max-width: 940px;
+  white-space: nowrap;
+}
+
+.input:focus{
+  outline: none;
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,0.50);
 }
 
 .not-connected {
@@ -17,15 +26,26 @@
   cursor: not-allowed;
 }
 
-  .elt-swap-wizard .card {
-    border-radius: 1rem;
+#wizardContent{
+  border-radius: 1rem;
   background-color: $surfaceMid;
-  }
+  padding: 1rem;
+}
 
 .number-bubble{
+  @extend .is-size-4;
   background-color: $surfaceLight;
+  border: none;
   border-radius: 20px;
   height: 40px;
+  color: #def;
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  margin-top: 5px;
+}
+
+.card{
+  padding-bottom: 1rem;
 }
 
 pre{
@@ -35,43 +55,101 @@ pre{
   background-color: transparent;
 }
 
-.connectionIndicator {
-  color: red;
+.connected {
+  color: #37a24a;
 }
 
 h3 {
   color: #fff;
-  padding-left: 1rem;
-  padding-right: 1rem;
+}
+h6{
+  color: #aaa;
+  font-size: 0.6rem;
+  padding: 0.4rem 0.2rem;
 }
 
 .info-pill{
-  @extend .is-flex;
-  @extend .px-1;
-  @extend .py-0;
+  align-items: center;
+  text-align: center;
+}
+.info-pill > pre {
   border-radius: 1rem;
   background-color: $surfaceLight;
 }
 
 #ethPill{
-  @extend .pr-0;
+  display: flex;
+  flex-grow: 1;
+  min-width: 120px;
+  background-color: $surfaceLight;
+  border-radius: 1rem;
+  white-space: nowrap;
+  text-align: center;
 }
-
+#ethPill > span {
+  align-self: center;
+  margin-left: auto;
+  padding: 0 5px;
+}
 #balancePill{
   background-color: $surfaceMid;
   margin-right: 0;
-  padding: 0rem;
+  padding: 2px 5px;
   border: 1px solid $surfaceLight;
-}
-
-#swapHodlBurnRatio{
-  display: flex;
-  flex-grow: 1;
-  justify-content: center;
-}
-
-#swapHodlBurnRatio > meter{
-  width: 100%;
   border-radius: 1rem;
-  
+  margin-left: auto;
+}
+.connectionIndicator {
+  color: #DC3737;
+  position: relative;
+  top: -2px;
+}
+.connectionIndicator.connected {
+  color: #38A24A;
+}
+#hodlPill {
+  @extend .info-pill;
+}
+#hodlPill > pre {
+  background-image: linear-gradient(-189deg, #528BF8 0%, #DE4967 100%);
+}
+
+#eltPill{
+  @extend .info-pill;
+}
+#eltPill > pre {
+  background-image: linear-gradient(-199deg, #000000 0%, #68396E 44%, #000000 100%);
+}
+
+.button.connect-wallet{
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,0.50);
+}
+#performSwapBtn{
+  // background-image: linear-gradient(-189deg, #528BF8 0%, #DE4967 50%, #000000 52%, #68396E 72%, #000000 100%);
+  background-image: linear-gradient(-0deg,  #528bf8 0%, #000 1%, #68396E 50%, #814d5f 52%,  #DE4967 72%, #528BF8 100%);
+  border: none;
+  color: #fff;
+}
+#performSwapBtn::after {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    content: '';
+    border-radius: 24px;
+    box-shadow: 0px 0 3px rgba(82, 139, 248, 0.2);
+    // background-image: linear-gradient(0deg, #000 0%,rgba(200,200,200,0.2) 1%, transparent 30%);
+}
+
+.elt-swap-progress-wrapper > span{
+  font-size: 0.8rem;
+}
+
+// move these to utils
+.ref-asterix{
+  font-size: 0.8rem;
+}
+
+.input::placeholder {
+  color: inherit;
+  opacity: .5;
 }
