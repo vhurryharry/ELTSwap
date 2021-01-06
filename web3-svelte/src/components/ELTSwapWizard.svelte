@@ -25,7 +25,7 @@
   let isSwapBtnPending = false;
 
   // TODO: move to utils
-  const approveAddr = "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e";
+  // $: approveAddr = "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e";
 
   // Creates a connection to own infura node.
   const enable = () => {
@@ -80,25 +80,32 @@
   $: isConnected = $connected ? true : false;
 
   $: approvedValue = $connected
-    ? getAllowance($web3, checkAccount, approveAddr)
+    ? getAllowance(
+        $web3,
+        checkAccount,
+        "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e"
+      )
     : 0;
 
   async function approveELTTransfer() {
     if ($connected & !isSwapBtnDisabled) {
       isSwapBtnDisabled = true;
       isSwapBtnPending = true;
-      approveELT($web3, 10000, $selectedAccount, approveAddr).then(
-        async function (resolve, reject) {
-          if (resolve) {
-            console.log("Approval transaction confirmed!");
-            let eltAllowance = await getApprovedAmount();
-            approvedELTAmount.set(eltAllowance);
-            console.log("Allowance: " + eltAllowance);
-            isSwapBtnDisabled = false;
-            isSwapBtnPending = false;
-          }
+      approveELT(
+        $web3,
+        10000,
+        $selectedAccount,
+        "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e"
+      ).then(async function (resolve, reject) {
+        if (resolve) {
+          console.log("Approval transaction confirmed!");
+          let eltAllowance = await getApprovedAmount();
+          approvedELTAmount.set(eltAllowance);
+          console.log("Allowance: " + eltAllowance);
+          isSwapBtnDisabled = false;
+          isSwapBtnPending = false;
         }
-      );
+      });
     }
   }
 
@@ -106,7 +113,11 @@
 
   function getApprovedAmount() {
     if ($connected) {
-      let allowance = getAllowance($web3, checkAccount, approveAddr);
+      let allowance = getAllowance(
+        $web3,
+        checkAccount,
+        "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e"
+      );
       console.log(allowance);
       return allowance;
     }
