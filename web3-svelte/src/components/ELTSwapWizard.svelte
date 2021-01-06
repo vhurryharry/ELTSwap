@@ -24,6 +24,8 @@
   let isSwapBtnDisabled = false;
   let isSwapBtnPending = false;
 
+  const minELTToSwap = 10000;
+
   // TODO: move to utils
   // $: approveAddr = "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e";
 
@@ -73,7 +75,9 @@
         "0x5c85a93991671dc5886203e0048777a4fd219983"
       )
     : "";
-  $: totalHodlReward = $connected ? getTotalHodlReward($web3, 10000, 25) : "";
+  $: totalHodlReward = $connected
+    ? getTotalHodlReward($web3, minELTToSwap, 25)
+    : "";
   $: hodlInContract = $connected ? getHODLInContract($web3) : "";
   $: eltInContract = $connected ? getELTInContract($web3) : "";
   $: eltBurned = $connected ? getELTBurned($web3) : "";
@@ -88,12 +92,12 @@
     : 0;
 
   async function approveELTTransfer() {
-    if ($connected & !isSwapBtnDisabled) {
+    if ($connected) {
       isSwapBtnDisabled = true;
       isSwapBtnPending = true;
       approveELT(
         $web3,
-        10000,
+        minELTToSwap,
         $selectedAccount,
         "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e"
       ).then(async function (resolve, reject) {
@@ -130,10 +134,11 @@
   }
 
   function sendSwap() {
-    if ($connected & !isSwapBtnDisabled) {
+    if ($connected) {
       isSwapBtnDisabled = true;
       isSwapBtnPending = true;
-      swap($web3, 10000, 25, $selectedAccount).then(async function (
+
+      swap($web3, minELTToSwap, 25, $selectedAccount).then(async function (
         resolve,
         reject
       ) {
@@ -240,7 +245,7 @@
             <span class="px-1">Not Connected</span>
           {:else}<span class="px-1">{fromatAddr($selectedAccount)}</span>{/if}
           <span
-            class="connectionIndicator"
+            id="connectionIndicator"
             class:connected={isConnected}>&#11044;</span>
         </div>
       </div>
@@ -300,7 +305,7 @@
                 Approve
               </button>
             {:then value}
-              {#if value >= 10000}
+              {#if value >= minELTToSwap}
                 <button
                   class="button connect-wallet connected is-rounded"
                   class:pending={isSwapBtnPending}
@@ -353,7 +358,9 @@
       <div class="columns level is-flex-wrap-wrap">
         <div class="column is-hidden-mobile is-3-tablet is-3-desktop">
           <h3>ELT Burn &#128293;</h3>
-          <span class="has-text-danger">{burnPercentage}%</span>
+          <span
+            class="elt-burn-percent"
+            class:disabled={swapAmountELT < minELTToSwap ? 'disabled' : ''}>{burnPercentage}%</span>
         </div>
 
         <div
@@ -364,6 +371,8 @@
             id="burnRatioSlider"
             min="0"
             max="100"
+            class:disabled={swapAmountELT < minELTToSwap}
+            disabled={swapAmountELT < minELTToSwap ? 'disabled' : ''}
             bind:value={burnPercentage} />
         </div>
 
@@ -371,12 +380,12 @@
           <div
             class="column is-hidden-tablet is-hidden-desktop is-6-mobile is-2-tablet is-2-desktop">
             <h3>ELT Burn &#128293;</h3>
-            <span class="has-text-danger">{burnPercentage}%</span>
+            <span class="elt-burn-percent">{burnPercentage}%</span>
           </div>
 
           <div class="column is-6-mobile is-pull-right has-text-right">
-            <h3>Burn Bonus</h3>
-            <span class="has-text-success">{ELTBurnBonus.toFixed(4)} HODL</span>
+            <h3><span class="is-hidden-mobile">HODL</span> Burn Bonus</h3>
+            <span class="hodl-burn-bonus">{ELTBurnBonus.toFixed(4)} HODL</span>
           </div>
         </div>
 
@@ -432,7 +441,7 @@
                 Approve
               </button>
             {:then value}
-              {#if value >= 10000}
+              {#if value >= minELTToSwap}
                 <button
                   class="button connect-wallet connected is-rounded"
                   class:pending={isSwapBtnPending}
@@ -460,7 +469,7 @@
       <h3>
         <span class="">
           Eltswap Progress:
-          <span class="has-text-success">133%</span><sup
+          <span class="eltswap-progress-success">133%</span><sup
             class="ref-asterix">*</sup>
         </span>
       </h3>

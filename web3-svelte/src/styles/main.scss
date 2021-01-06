@@ -14,11 +14,15 @@
   white-space: nowrap;
 }
 
+button:focus,
+.button:focus{
+  outline: none;
+}
+
 .input:focus{
   outline: none;
   box-shadow: 0 2px 4px 0 rgba(0,0,0,0.50);
 }
-
 .not-connected {
   cursor:not-allowed;
 }
@@ -99,12 +103,11 @@ h6{
   border-radius: 1rem;
   margin-left: auto;
 }
-.connectionIndicator {
+#connectionIndicator {
   color: #DC3737;
   position: relative;
-  top: -2px;
 }
-.connectionIndicator.connected {
+#connectionIndicator.connected {
   color: #38A24A;
 }
 #hodlPill {
@@ -127,11 +130,13 @@ h6{
   border-radius: 22px;
   border: none;
   color: #fff;
+  outline: none;
 }
 .button.connect-wallet.disabled{
   // background-color: rgba(181, 72, 72,0.5);
   opacity: 0.5;
   cursor: not-allowed;
+  box-shadow: none;
 }
 .button.connect-wallet.pending{
   // background-color: rgba(181, 72, 72, 0.5);

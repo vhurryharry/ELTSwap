@@ -55,6 +55,7 @@ input[type=range]::-moz-range-track {
   background: $surfaceLight;
   border-radius: 2px;
   border: 0px solid #000000;
+  cursor: pointer;
 }
 input[type=range]::-moz-range-thumb {
   box-shadow: 1px 1px 3px #000000;
@@ -111,6 +112,35 @@ input[type=range]::-moz-range-thumb {
   position: absolute;
   white-space: nowrap;
   content: '30,000,000 ELT'; // JS var
+}
+
+
+#burnRatioSlider{
+  box-shadow: none;
+}
+#burnRatioSlider.disabled::-moz-range-thumb{
+  box-shadow: none;
+  cursor: not-allowed;
+}
+#burnRatioSlider.disabled::-moz-range-track{
+  cursor: not-allowed;
+}
+
+.eltswap-progress-danger,
+.elt-burn-percent{
+  color: #dc3737;
+}
+
+.eltswap-progress-success,
+.hodl-burn-bonus{
+  color: #38A24A;
+}
+
+span.hodl-burn-bonus.disabled,
+span.elt-burn-percent.disabled,
+span.eltswap-progress-success.disabled,
+span.eltswap-progress-danger.disabled{
+  color: #aaa;
 }
 
 
