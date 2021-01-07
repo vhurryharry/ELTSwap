@@ -503,7 +503,7 @@
       <span class="is-pulled-right">40M ELT</span>
     </div>
 
-    <div class="column is-flex">
+    <div class="column is-flex py-0">
       <sup class="ref-asterix">*</sup>
       <h6 class="ref-entry">of 15 million ELT softcap</h6>
     </div>
