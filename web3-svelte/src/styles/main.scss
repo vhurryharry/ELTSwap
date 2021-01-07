@@ -1,21 +1,5 @@
 
-// import variables first so we can customize Bulma the right way
-// https://bulma.io/documentation/customize/variables/
-
-/**
-* variables for defaults & themes
-*/
-@import "./variables";
-/**
-* Bulma overwrites
-* TODO: move to own file
-*/
-$body-line-height: $lineHeight;
-$body-family: $fontFamily;
-
-@import "bulma/bulma";
-
-@import "./components/range-slider";
+@charset "utf-8";
 
 // Import a Google Font
 @import url('https://fonts.googleapis.com/css?family=Nunito:400,700');
@@ -25,10 +9,33 @@ $body-family: $fontFamily;
     src: url("../font/Flama-Book.otf") format("opentype");
 }
 
+@import "./variables";
+@import "./gradients";
+@import "./typography";
+
+// Update Bulma's global variables
+$family-sans-serif: "Flama", sans-serif;
+$grey-dark: $brown;
+$grey-light: $beige-light;
+$primary: $purple;
+$link: $pink;
+$widescreen-enabled: false;
+$fullhd-enabled: false;
+
+// Update some of Bulma's component variables
+$body-background-color: $black;
+$control-border-width: 2px;
+$input-border-color: $beige-light;
+$input-shadow: none;
+
+@import "bulma/bulma";
+
+@import "./components/range-slider";
+
 .elt-swap-wizard{
   width: 80%;
   min-width: 320px;
-  background-color: $surfaceDark;
+  background-color: $themeSurfaceDark;
   border-radius: 1rem;
   color: #fff;
   font-family: Flama;
@@ -55,13 +62,13 @@ button:focus,
 
 #wizardContent{
   border-radius: 1rem;
-  background-color: $surfaceMid;
+  background-color: $themeSurfaceMid;
   padding: 1rem;
 }
 
 .number-bubble{
   @extend .is-size-4;
-  background-color: $surfaceLight;
+  background-color: $themeSurfaceLight;
   border: none;
   border-radius: 20px;
   height: 40px;
@@ -101,14 +108,14 @@ h6{
 }
 .info-pill > pre {
   border-radius: 1rem;
-  background-color: $surfaceLight;
+  background-color: $themeSurfaceLight;
 }
 
 #ethPill{
   display: flex;
   flex-grow: 1;
   min-width: 120px;
-  background-color: $surfaceLight;
+  background-color: $themeSurfaceLight;
   border-radius: 1rem;
   white-space: nowrap;
   text-align: center;
@@ -119,10 +126,10 @@ h6{
   padding: 0 5px;
 }
 #balancePill{
-  background-color: $surfaceMid;
+  background-color: $themeSurfaceMid;
   margin-right: 0;
   padding: 2px 5px;
-  border: 1px solid $surfaceLight;
+  border: 1px solid $themeSurfaceLight;
   border-radius: 1rem;
   margin-left: auto;
 }
@@ -188,7 +195,8 @@ h6{
 
 // move these to utils
 .ref-asterix{
-  font-size: 0.8rem;
+  @extend .disabled;
+  // font-size: 0.8rem;
 }
 
 .input::placeholder {

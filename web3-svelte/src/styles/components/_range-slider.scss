@@ -26,7 +26,7 @@ input[type=range]::-webkit-slider-runnable-track {
   cursor: pointer;
   animate: 0.2s;
   box-shadow: 0px 0px 0px #000000;
-  background: $surfaceLight;
+  background: $themeSurfaceLight;
   border-radius: 1px;
   border: 0px solid #000000;
 }
@@ -42,7 +42,7 @@ input[type=range]::-webkit-slider-thumb {
   margin-top: -7px;
 }
 input[type=range]:focus::-webkit-slider-runnable-track {
-  background: $surfaceLight;
+  background: $themeSurfaceLight;
 }
 
 // FireFox
@@ -52,7 +52,7 @@ input[type=range]::-moz-range-track {
   cursor: pointer;
   animate: 0.2s;
   box-shadow: 0px 0px 0px #000000;
-  background: $surfaceLight;
+  background: $themeSurfaceLight;
   border-radius: 2px;
   border: 0px solid #000000;
   cursor: pointer;
@@ -71,7 +71,7 @@ input[type=range]::-moz-range-thumb {
  
 #swapProgress{
   min-height: 34px;
-  background-color: $surfaceLight;
+  background-color: $themeSurfaceLight;
   padding: 0;
   border-radius: 2rem;
   position: relative;
@@ -120,7 +120,7 @@ span.hodl-burn-bonus.disabled,
 span.elt-burn-percent.disabled,
 span.eltswap-progress-success.disabled,
 span.eltswap-progress-danger.disabled{
-  color: #aaa;
+  color: $disabledTextColor;
 }
 
 #swapProgressGradient{
@@ -165,6 +165,6 @@ span.eltswap-progress-danger.disabled{
 }
 
 .is-underline{
-  border-bottom: 2px solid $surfaceLight;
+  border-bottom: 2px solid $themeSurfaceLight;
 }
 

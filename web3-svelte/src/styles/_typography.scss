@@ -1,0 +1,11 @@
+// Typography
+$themeTextColor: #def;
+
+$lineHeight: 1.5;
+$fontFamily: Flama;
+$disabledTextColor: #aaa;
+
+@font-face {
+    font-family: $fontFamily;
+    src: url("../font/Flama-Book.otf") format("opentype");
+}
