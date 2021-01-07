@@ -208,7 +208,6 @@
 </script>
 
 <style lang="scss" global>
-  @import "bulma/bulma";
   @import "../styles/main.scss";
 </style>
 

@@ -1,7 +1,29 @@
 
+// import variables first so we can customize Bulma the right way
+// https://bulma.io/documentation/customize/variables/
+
+/**
+* variables for defaults & themes
+*/
 @import "./variables";
+/**
+* Bulma overwrites
+* TODO: move to own file
+*/
+$body-line-height: $lineHeight;
+$body-family: $fontFamily;
+
+@import "bulma/bulma";
 
 @import "./components/range-slider";
+
+// Import a Google Font
+@import url('https://fonts.googleapis.com/css?family=Nunito:400,700');
+
+@font-face {
+    font-family: Flama;
+    src: url("../font/Flama-Book.otf") format("opentype");
+}
 
 .elt-swap-wizard{
   width: 80%;
@@ -9,9 +31,10 @@
   background-color: $surfaceDark;
   border-radius: 1rem;
   color: #fff;
-  font-family: Monaco, monospace;
+  font-family: Flama;
   max-width: 940px;
   white-space: nowrap;
+  line-height: 1.5rem;
 }
 
 button:focus,

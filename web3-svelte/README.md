@@ -8,7 +8,7 @@ TODO: add MD table of tontents here
 
 # Current Dev Diqs
 
-
+Please revise and extend the following list at your discretion.
 
 TODO:
 
@@ -29,13 +29,10 @@ TODO:
 - [ ] gather and define scss variables [issue]()
 
 # TESTs
+-[] let's talk about this... [epic]() 
+
 As of now, I'm the only one who's familiar with the details of the flow.
 Please build and run this locally so we can make sure there's no major breakage when the curtain falls.
-
-Please revise and extend the following list at your discretion.
-Will move to their own issues after curation.
-
--[] let's talk about this... [epic]() 
 
 ---
 
