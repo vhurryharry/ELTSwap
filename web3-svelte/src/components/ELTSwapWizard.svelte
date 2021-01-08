@@ -24,11 +24,10 @@
   let isSwapBtnDisabled = false;
   let isSwapBtnPending = false;
 
-  const minELTToSwap = 10000;
+  const swapContractAddress = "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e";
+
+  const minELTToSwap = 2000;
   const absMaxELT = 40 * 10 ** 6;
-  const getSwapProgress = () => {
-    return parseInt((eltInContract * 100) / absMaxELT);
-  };
 
   // TODO: move to utils
   // $: approveAddr = "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e";
@@ -82,18 +81,25 @@
   $: totalHodlReward = $connected
     ? getTotalHodlReward($web3, minELTToSwap, 25)
     : "";
-  $: hodlInContract = $connected ? getHODLInContract($web3) : "";
-  $: eltInContract = $connected ? getELTInContract($web3) : 66;
-  $: eltBurned = $connected ? getELTBurned($web3) : "";
+
+  $: eltInContract = $connected ? getELTInContract($web3) : Number(0);
   $: isConnected = $connected ? true : false;
 
+  $: hodlInContract = $connected ? getHODLInContract($web3) : "";
+  $: eltBurned = $connected ? getELTBurned($web3) : "";
+
   $: approvedValue = $connected
-    ? getAllowance(
-        $web3,
-        checkAccount,
-        "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e"
-      )
+    ? getAllowance($web3, checkAccount, swapContractAddress)
     : 0;
+
+  $: getSwapProgress = (eltAmount) => {
+    console.log(" swapPerc ", eltAmount);
+
+    if (typeof eltAmount !== "number") {
+      return 0;
+    }
+    return (eltAmount * 100) / absMaxELT;
+  };
 
   async function approveELTTransfer() {
     if ($connected) {
@@ -101,9 +107,9 @@
       isSwapBtnPending = true;
       approveELT(
         $web3,
-        minELTToSwap,
+        swapAmountELT,
         $selectedAccount,
-        "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e"
+        swapContractAddress
       ).then(async function (resolve, reject) {
         if (resolve) {
           console.log("Approval transaction confirmed!");
@@ -121,11 +127,7 @@
 
   function getApprovedAmount() {
     if ($connected) {
-      let allowance = getAllowance(
-        $web3,
-        checkAccount,
-        "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e"
-      );
+      let allowance = getAllowance($web3, checkAccount, swapContractAddress);
       console.log(allowance);
       return allowance;
     }
@@ -142,21 +144,21 @@
       isSwapBtnDisabled = true;
       isSwapBtnPending = true;
 
-      swap($web3, minELTToSwap, 25, $selectedAccount).then(async function (
-        resolve,
-        reject
-      ) {
-        if (resolve) {
-          console.log("Swap transaction confirmed!");
+      swap($web3, swapAmountELT, burnPercentage, $selectedAccount).then(
+        async function (resolve, reject) {
+          minELTToSwap;
+          if (resolve) {
+            console.log("Swap transaction confirmed!");
 
-          // Check the allowance again to change the button back to Approve
-          let eltAllowance = await getApprovedAmount();
-          approvedELTAmount.set(eltAllowance);
-          console.log("Allowance: " + eltAllowance);
-          isSwapBtnDisabled = false;
-          isSwapBtnPending = false;
+            // Check the allowance again to change the button back to Approve
+            let eltAllowance = await getApprovedAmount();
+            approvedELTAmount.set(eltAllowance);
+            console.log("Allowance: " + eltAllowance);
+            isSwapBtnDisabled = false;
+            isSwapBtnPending = false;
+          }
         }
-      });
+      );
     }
   }
 
@@ -208,7 +210,6 @@
 </script>
 
 <style lang="scss" global>
-  @import "bulma/bulma";
   @import "../styles/main.scss";
 </style>
 
@@ -482,21 +483,30 @@
       <h3>
         <span class="">
           Eltswap Progress:
-          <span class="eltswap-progress-success">{getSwapProgress()}%</span><sup
-            class="ref-asterix">*</sup>
+          {#await eltInContract}
+            <span class="disabled">0%</span><sup class="ref-asterix">*</sup>
+          {:then value}
+            <span class="">{getSwapProgress(value)}%</span><sup
+              class="ref-asterix">*</sup>
+          {/await}
         </span>
       </h3>
     </div>
 
     <div class="column is-12 elt-swap-progress-wrapper">
       <div id="swapProgress" class="is-flex is-12">
-        <span
-          id="swapProgressGradient"
-          style="--progress-bar-width: {getSwapProgress()}%;" />
-        <span id="minSwapMark" />
-        <span
-          id="currentSwapMark"
-          style="--curr-mark-left: {getSwapProgress()}%;">{getSwapProgress() > 10 ? eltInContract + ' ELT' : ''}</span>
+        {#await eltInContract}
+          <span id="swapProgressGradient" style="--progress-bar-width: 0%;" />
+          <span id="minSwapMark" />
+        {:then value}
+          <span
+            id="swapProgressGradient"
+            style="--progress-bar-width: {getSwapProgress(value)}%;" />
+          <span id="minSwapMark" />
+          <span
+            id="currentSwapMark"
+            style="--curr-mark-left: {getSwapProgress(value)}%;">{getSwapProgress(value) > 10 ? value + ' ELT' : ''}</span>
+        {/await}
       </div>
 
       <span class="">0 ELT</span>
@@ -504,7 +514,7 @@
       <span class="is-pulled-right">40M ELT</span>
     </div>
 
-    <div class="column is-flex">
+    <div class="column is-flex py-0">
       <sup class="ref-asterix">*</sup>
       <h6 class="ref-entry">of 15 million ELT softcap</h6>
     </div>
