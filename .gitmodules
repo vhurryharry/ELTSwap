@@ -1,0 +1,3 @@
+[submodule "web3-svelte/src/components/DAPPerS"]
+	path = web3-svelte/src/components/DAPPerS
+	url = git@github.com:HODL-DAO/DAPPerS.git

@@ -16,6 +16,7 @@ input[type=range] {
 }
 input[type=range]:focus {
   outline: none;
+  box-shadow: 0 3px 5px 0 rgba(0,0,0,0.50);
 }
 
 // Chrome
@@ -54,6 +55,7 @@ input[type=range]::-moz-range-track {
   background: $surfaceLight;
   border-radius: 2px;
   border: 0px solid #000000;
+  cursor: pointer;
 }
 input[type=range]::-moz-range-thumb {
   box-shadow: 1px 1px 3px #000000;
@@ -75,15 +77,15 @@ input[type=range]::-moz-range-thumb {
   position: relative;
 }
 #swapProgress::before{
-  width: 65%;
-  height: 14px;
-  background: linear-gradient(90deg, #009DFF 0%, #65FA67 28%, #FC0707 100%);  // $swapProgressGradient;
-  position: absolute;
-  margin: 10px 0 0rem 10px;
-  border-radius: 2rem;
-  content: '';
-  z-index: 0;
-  box-shadow: 0px 1px 3px #333;
+  // width: 65%;
+  // height: 14px;
+  // background: linear-gradient(90deg, #009DFF 0%, #65FA67 28%, #FC0707 100%);  // $swapProgressGradient;
+  // position: absolute;
+  // margin: 10px 0 0rem 10px;
+  // border-radius: 2rem;
+  // content: '';
+  // z-index: 0;
+  // box-shadow: 0px 1px 3px #333;
 }
 #swapProgressSlider{
   position: absolute;
@@ -93,7 +95,46 @@ input[type=range]::-moz-range-thumb {
   background: transparent;
 }
 
+#burnRatioSlider{
+  box-shadow: none;
+}
+#burnRatioSlider.disabled::-moz-range-thumb{
+  box-shadow: none;
+  cursor: not-allowed;
+}
+#burnRatioSlider.disabled::-moz-range-track{
+  cursor: not-allowed;
+}
+
+.eltswap-progress-danger,
+.elt-burn-percent{
+  color: #dc3737;
+}
+
+.eltswap-progress-success,
+.hodl-burn-bonus{
+  color: #38A24A;
+}
+
+span.hodl-burn-bonus.disabled,
+span.elt-burn-percent.disabled,
+span.eltswap-progress-success.disabled,
+span.eltswap-progress-danger.disabled{
+  color: #aaa;
+}
+
+#swapProgressGradient{
+  width: var(--progress-bar-width, 0);
+  height: 14px;
+  background: linear-gradient(90deg, #009DFF 0%, #65FA67 28%, #FC0707 100%);  // $swapProgressGradient;
+  margin: 10px 0 0rem 10px;
+  border-radius: 2rem;
+  z-index: 0;
+  // box-shadow: 0px 1px 3px #333;
+}
+
 #minSwapMark{
+  position: absolute;
   margin-left: 23%;
   margin-top: 5px;
   height: 25px;
@@ -102,19 +143,25 @@ input[type=range]::-moz-range-thumb {
 }
 #minSwapMark::before{
   position: absolute;
-  top: 34px;
+  top: 38px;
+  font-size: 0.8rem;
   content: '15M ELT';
 }
 
-#currentSwapMark::before{
+#currentSwapMark{
   top: -25px;
-  right: 0%; // JS var
-  left: 0; 
-  margin-left: -5px;
+  left: var(--curr-mark-left, 0); 
+  font-size: 0.8rem;
   text-align: right;
   position: absolute;
   white-space: nowrap;
-  content: '30,000,000 ELT'; // JS var
+}
+#currentSwapMark::after{
+  top: 36px;
+  margin-left: 55px;
+  position: absolute;
+  font-size: 0.8rem;
+  // content: '*';
 }
 
 .is-underline{
