@@ -6,7 +6,7 @@
 
 @font-face {
     font-family: Flama;
-    src: url("../font/Flama-Book.otf") format("opentype");
+    src: url("../static/font/Flama-Basic.otf") format("opentype");
 }
 
 @import "./variables";
@@ -41,7 +41,6 @@ $input-shadow: none;
   font-family: Flama;
   max-width: 940px;
   white-space: nowrap;
-  line-height: 1.5rem;
 }
 
 button:focus,
@@ -136,6 +135,7 @@ h6{
 #connectionIndicator {
   color: #DC3737;
   position: relative;
+  top: -2px
 }
 #connectionIndicator.connected {
   color: #38A24A;
