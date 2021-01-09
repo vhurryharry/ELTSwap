@@ -56,30 +56,6 @@
   $: checkAccount =
     $selectedAccount || "0x0000000000000000000000000000000000000000";
 
-  function eltToHodl(elt) {
-    let transmuted = Number(elt * 0.0000005);
-
-    if (elt >= minELTToSwap) {
-      let decimals = (transmuted + "").split(".")[1] || [];
-      return decimals.length > 8 ? transmuted.toFixed(8) : transmuted;
-    }
-
-    if (elt > maxELTToSwap) return maxELTToSwap;
-
-    return null;
-  }
-
-  function hodlToElt(hodl) {
-    let transmuted = Number(hodl * 2 * 10 ** 6);
-    if (transmuted >= minELTToSwap) {
-      return transmuted;
-    }
-
-    if (transmuted > maxELTToSwap) return maxELTToSwap;
-
-    return null;
-  }
-
   $: ethBalance = $connected
     ? getETHBalance($web3, $selectedAccount)
     : Number(0.0);
@@ -191,10 +167,39 @@
     return str.substr(0, 5) + "..." + str.substr(str.length - 5, str.length);
   };
 
+  function castToPrecision(float, maxDecLen = 8) {
+    let decimals = (float + "").split(".")[1] || [];
+    return decimals.length > maxDecLen ? float.toFixed(maxDecLen) : float;
+  }
+
+  function castValidAmountOfELT(elt) {
+    if (elt >= minELTToSwap) {
+      if (elt > maxELTToSwap) {
+        return false; // maxELTToSwap;
+      }
+      return elt;
+    }
+    return null;
+  }
+
+  function eltToHodl(elt) {
+    return castValidAmountOfELT(elt)
+      ? castToPrecision(Number(elt * 0.0000005), 8)
+      : null;
+  }
+
+  function hodlToElt(hodl) {
+    let transmuted =
+      0 < Number(hodl) <= maxELTToSwap ? Number(hodl * 2 * 10 ** 6) : null;
+    return castValidAmountOfELT(transmuted)
+      ? castToPrecision(transmuted, 0)
+      : null;
+  }
+
   const sanitizeNumberInput = (evt, isGtZeroAbs = true) => {
     evt.preventDefault();
     let cleanNumber = (evt.target.value = evt.target.value.replace(
-      /[^0-9.,]/g,
+      /[^0-9\.,]/g,
       ""
     ));
 
@@ -271,8 +276,12 @@
             on:input={(evt) => {
               return sanitizeNumberInput(evt)((cleanVal) => {
                 console.log(' sanitizeNumberInput swapAmountELT ', cleanVal);
-                swapAmountHodl = eltToHodl(cleanVal);
-                return cleanVal > 0 ? cleanVal : null;
+                if (cleanVal <= maxELTToSwap) {
+                  swapAmountHodl = cleanVal;
+                } else {
+                  swapAmountELT = maxELTToSwap;
+                }
+                swapAmountHodl = eltToHodl(swapAmountELT);
               });
             }}
             on:keydown={(evt) => {
@@ -342,9 +351,13 @@
             on:input={(evt) => {
               return sanitizeNumberInput(evt)((cleanVal) => {
                 console.log(' sanitizeNumberInput swapAmountHodl ', cleanVal);
-
-                swapAmountELT = hodlToElt(cleanVal);
-                return cleanVal > 0 ? cleanVal : null;
+                if (cleanVal <= 50) {
+                  swapAmountELT = hodlToElt(cleanVal);
+                  // return cleanVal > 0 ? cleanVal : null;
+                } else {
+                  swapAmountHodl = 50;
+                  swapAmountELT = hodlToElt(maxELTToSwap);
+                }
               });
             }}
             on:keydown={(evt) => {
@@ -415,11 +428,14 @@
             onwheel="this.blur()"
             bind:value={swapAmountHodl}
             on:input={(evt) => {
-              // console.dir(' .... ', sanitizeNumberInput(evt));
               return sanitizeNumberInput(evt)((cleanVal) => {
-                console.log(' sanitizeNumberInput cleanVal ', cleanVal);
-                swapAmountELT = hodlToElt(cleanVal);
-                return cleanVal > 0 ? (swapAmountELT = cleanVal / 0.0000005) : null;
+                console.log(' sanitizeNumberInput swapAmountHodl ', cleanVal);
+                if (cleanVal <= 50) {
+                  swapAmountELT = hodlToElt(cleanVal);
+                } else {
+                  swapAmountHodl = 50;
+                  swapAmountELT = hodlToElt(maxELTToSwap);
+                }
               });
             }}
             on:keydown={(evt) => {
