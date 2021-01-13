@@ -217,38 +217,67 @@
     <div
       class="screen wizard-pending-screen"
       class:active={currScreen == 'wizard-pending-screen'}>
-      <p>pending...</p>
-      <p>
-        <img
-          src="/src/static/images/HODL_DAO_Logo_icon.svg"
-          alt="http://www.hodldao.xyz" />
-      </p>
-      <p>loading indicator?</p>
+      <div class="screen-header">
+        <p>pending...</p>
+      </div>
+
+      <div class="screen-body">
+        <p>
+          <img
+            src="/src/static/images/HODL_DAO_Logo_icon.svg"
+            alt="http://www.hodldao.xyz" />
+        </p>
+      </div>
+
+      <div class="screen-footer">
+        <p>loading indicator?</p>
+      </div>
     </div>
   {:then currScreen}
     <div
       class="screen prologue-screen"
       class:active={currScreen == 'prologue-screen'}>
-      <p>
-        In ancient Greek drama, the prologos (a word that means basically
-        "speaking before") was the opening portion of the play, before the entry
-        of the all-important chorus. It might be spoken by a single actor, maybe
-        playing a god, who would "set the scene" for the audience. Playwrights
-        today instead often provide the same kind of "scene-setting" information
-        through dialogue near the play's beginning; in movies, it may appear (as
-        in the "Star Wars" series) in the form of actual written text. In a
-        nonfiction book, the lead-in is now usually called a preface or
-        introduction; novels rarely provide any introduction at all. Still,
-        prologue remains a useful word for nonliterary purposes. The saying "The
-        past is prologue" tells us that, in real life, almost everything can be
-        a prologue to what follows it.
-      </p>
+      <div class="screen-header py-5">
+        <button
+          class="button is-flat"
+          class:pending={isSwapBtnPending}
+          on:click={enableBrowser}>
+          X
+        </button>
+      </div>
+
+      <div class="screen-body p-5">
+        <p>
+          In ancient Greek drama, the prologos (a word that means basically
+          "speaking before") was the opening portion of the play, before the
+          entry of the all-important chorus. It might be spoken by a single
+          actor, maybe playing a god, who would "set the scene" for the
+          audience. Playwrights today instead often provide the same kind of
+          "scene-setting" information through dialogue near the play's
+          beginning; in movies, it may appear (as in the "Star Wars" series) in
+          the form of actual written text. In a nonfiction book, the lead-in is
+          now usually called a preface or introduction; novels rarely provide
+          any introduction at all. Still, prologue remains a useful word for
+          nonliterary purposes. The saying "The past is prologue" tells us that,
+          in real life, almost everything can be a prologue to what follows it.
+        </p>
+      </div>
+
+      <div class="screen-footer is-justify-content-center">
+        <button
+          class="button is-rounded"
+          class:pending={isSwapBtnPending}
+          on:click={enableBrowser}>
+          Continue
+        </button>
+      </div>
     </div>
+
     <div
       class="screen elt-swap-wizad-screen"
       class:active={currScreen == 'elt-swap-wizad-screen'}>
       <div
-        class="columns is-flex is-2 level is-multiline is-flex-wrap-wrap
+        class="screen-header columns is-flex is-2 level is-multiline is-flex-wrap-wrap
         is-justify-content-end">
         <div
           class="column is-flex-wrap-nowrap is-12-mobile is-6-tablet is-6-desktop">
@@ -293,7 +322,9 @@
         </div>
       </div>
 
-      <div id="wizardContent" class="columns my-5 is-flex-direction-column">
+      <div
+        id="wizardContent"
+        class="screen-body columns my-5 is-flex-direction-column">
         <div class="column ">
           <div class="columns is-flex-wrap-wrap ">
             <div
@@ -514,7 +545,7 @@
         </div>
       </div>
 
-      <div class="columns is-flex-wrap-wrap">
+      <div class="screen-footer columns is-flex-wrap-wrap">
         <div class="column is-12">
           <h3>
             <span class="">
@@ -552,16 +583,36 @@
     <div
       class="screen eth-purchase-screen"
       class:active={currScreen == 'eth-purchase-screen'}>
-      <p>
-        TBA: same as elt-swap-wizard but now one has to purchase DAO with ETH
-      </p>
+      <div class="screen-header">
+        <p>screen header</p>
+      </div>
+
+      <div class="screen-body">
+        <p>
+          TBA: same as elt-swap-wizard but now one has to purchase DAO with ETH
+        </p>
+      </div>
+
+      <div class="screen-footer">
+        <p>screen footer</p>
+      </div>
     </div>
 
     <div
       class="screen epilogue-screen"
       class:active={currScreen == 'epilogue-screen'}>
-      <p>Too late; it's gone now.</p>
-      <a href="http://www.hodldao.xyz">Catch the next wave here, maybe.</a>
+      <div class="screen-header">
+        <p>screen header</p>
+      </div>
+
+      <div class="screen-body">
+        <p>Too late; it's gone now.</p>
+        <a href="http://www.hodldao.xyz">Catch the next wave here, maybe.</a>
+      </div>
+
+      <div class="screen-footer">
+        <p>screen footer</p>
+      </div>
     </div>
 
     <div
