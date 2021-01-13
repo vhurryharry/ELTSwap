@@ -7,7 +7,7 @@
     chainName,
   } from "svelte-web3";
 
-  import { approvedELTAmount } from "../utility/stores";
+  import { approvedELTAmount, currentWizardScreen } from "../utility/stores";
 
   import {
     getETHBalance,
@@ -213,300 +213,343 @@
 </style>
 
 <div class="elt-swap-wizard mt-5 mb-5 p-5" class:not-connected={!isConnected}>
-  <div
-    class="columns is-flex is-2 level is-multiline is-flex-wrap-wrap is-justify-content-end">
+  {#await $currentWizardScreen}
+    <p>pending...</p>
+    <p>
+      <img
+        src="/src/static/images/HODL_DAO_Logo_icon.svg"
+        alt="http://www.hodldao.xyz" />
+    </p>
+    <p>loading indicator?</p>
+  {:then currScreen}
     <div
-      class="column is-flex-wrap-nowrap is-12-mobile is-6-tablet is-6-desktop">
-      <div class="columns is-2 is-flex is-12-mobile">
-        <div id="hodlPill" class="column is-6-mobile">
-          {#await hodlBalance}
-            <pre class="px-1"> ? HODL </pre>
-          {:then value}
-            <pre class="px-1">{value.toLocaleString('en-US')} HODL</pre>
-          {/await}
-        </div>
-
-        <div id="eltPill" class="column is-6-mobile">
-          {#await eltBalance}
-            <pre class="px-1"> ? ELT </pre>
-          {:then value}
-            <pre class="px-1">{value.toLocaleString('en-US')} ELT</pre>
-          {/await}
-        </div>
-      </div>
-    </div>
+      class="screen prologue-screen"
+      class:active={currScreen == 'prologue-screen'} />
 
     <div
-      class="column is-12-mobile is-6-tablet is-6-desktop is-justify-content-center">
-      <div id="ethPill" class=" is-justify-content-center">
-        {#await ethBalance}
-          <span class="px-1"> ETH </span>
-        {:then value}
-          <span class="px-1">{fixedDecimals(value)} ETH </span>
-        {/await}
-        <div id="balancePill" class="">
-          {#if isConnected === false}
-            <span class="px-1">Not Connected</span>
-          {:else}<span class="px-1">{fromatAddr($selectedAccount)}</span>{/if}
-          <span
-            id="connectionIndicator"
-            class:connected={isConnected}>&#11044;</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="wizardContent" class="columns my-5 is-flex-direction-column">
-    <div class="column ">
-      <div class="columns is-flex-wrap-wrap ">
+      class="screen elt-swap-wizad-screen"
+      class:active={currScreen == 'elt-swap-wizad-screen'}>
+      <div
+        class="columns is-flex is-2 level is-multiline is-flex-wrap-wrap
+        is-justify-content-end">
         <div
-          class="column is-12-mobile is-4-tablet is-4-desktop has-text-centered-mobile">
-          <h3 class="">ELT</h3>
-          <input
-            class="number-bubble input has-text-centered-mobile"
-            type="number"
-            placeholder="0"
-            onwheel="this.blur()"
-            bind:value={swapAmountELT}
-            on:input={(evt) => {
-              return sanitizeNumber(evt)((cleanVal) => {
-                console.log(' sanitizeNumber swapAmountELT ', cleanVal);
-                return cleanVal > 0 ? cleanVal : null;
-              });
-            }}
-            on:keydown={(evt) => {
-              // prevent editing value by arrowKeys
-              if (evt.key == 'ArrowDown' || evt.key == 'ArrowUp') {
-                evt.preventDefault();
-              }
-            }}
-            on:keyup={(evt) => {
-              // prevent pasting negative vals
-              swapAmountELT = Math.abs(swapAmountELT) || null;
-            }} />
+          class="column is-flex-wrap-nowrap is-12-mobile is-6-tablet is-6-desktop">
+          <div class="columns is-2 is-flex is-12-mobile">
+            <div id="hodlPill" class="column is-6-mobile">
+              {#await hodlBalance}
+                <pre class="px-1"> ? HODL </pre>
+              {:then value}
+                <pre class="px-1">{value.toLocaleString('en-US')} HODL</pre>
+              {/await}
+            </div>
+
+            <div id="eltPill" class="column is-6-mobile">
+              {#await eltBalance}
+                <pre class="px-1"> ? ELT </pre>
+              {:then value}
+                <pre class="px-1">{value.toLocaleString('en-US')} ELT</pre>
+              {/await}
+            </div>
+          </div>
         </div>
 
         <div
-          class="column is-flex is-hidden-mobile is-flex-direction-column is-4-tablet is-4-desktop is-justify-content-end ">
-          {#await $approvedELTAmount}
-            <h6>Loading approved</h6>
-          {:then value}
-            <h6>Approved: {value}</h6>
-          {/await}
-          {#if isConnected === false}
-            <button
-              class="button connect-wallet is-rounded"
-              class:pending={isSwapBtnPending}
-              on:click={enableBrowser}>
-              Connect Wallet
-            </button>
-          {:else}
-            {#await $approvedELTAmount}
-              <button
-                class="button connect-wallet connected is-rounded"
-                class:pending={isSwapBtnPending}
-                on:click={approveELTTransfer}>
-                Approve
-              </button>
+          class="column is-12-mobile is-6-tablet is-6-desktop is-justify-content-center">
+          <div id="ethPill" class=" is-justify-content-center">
+            {#await ethBalance}
+              <span class="px-1"> ETH </span>
             {:then value}
-              {#if value >= minELTToSwap}
+              <span class="px-1">{fixedDecimals(value)} ETH </span>
+            {/await}
+            <div id="balancePill" class="">
+              {#if isConnected === false}
+                <span class="px-1">Not Connected</span>
+              {:else}
+                <span class="px-1">{fromatAddr($selectedAccount)}</span>
+              {/if}
+              <span
+                id="connectionIndicator"
+                class:connected={isConnected}>&#11044;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="wizardContent" class="columns my-5 is-flex-direction-column">
+        <div class="column ">
+          <div class="columns is-flex-wrap-wrap ">
+            <div
+              class="column is-12-mobile is-4-tablet is-4-desktop has-text-centered-mobile">
+              <h3 class="">ELT</h3>
+              <input
+                class="number-bubble input has-text-centered-mobile"
+                type="number"
+                placeholder="0"
+                onwheel="this.blur()"
+                bind:value={swapAmountELT}
+                on:input={(evt) => {
+                  return sanitizeNumber(evt)((cleanVal) => {
+                    console.log(' sanitizeNumber swapAmountELT ', cleanVal);
+                    return cleanVal > 0 ? cleanVal : null;
+                  });
+                }}
+                on:keydown={(evt) => {
+                  // prevent editing value by arrowKeys
+                  if (evt.key == 'ArrowDown' || evt.key == 'ArrowUp') {
+                    evt.preventDefault();
+                  }
+                }}
+                on:keyup={(evt) => {
+                  // prevent pasting negative vals
+                  swapAmountELT = Math.abs(swapAmountELT) || null;
+                }} />
+            </div>
+
+            <div
+              class="column is-flex is-hidden-mobile is-flex-direction-column is-4-tablet is-4-desktop is-justify-content-end ">
+              {#await $approvedELTAmount}
+                <h6>Loading approved</h6>
+              {:then value}
+                <h6>Approved: {value}</h6>
+              {/await}
+              {#if isConnected === false}
                 <button
-                  class="button connect-wallet connected is-rounded"
+                  class="button connect-wallet is-rounded"
                   class:pending={isSwapBtnPending}
-                  class:disabled={isSwapBtnDisabled}
-                  on:click={sendSwap}>
-                  Swap
+                  on:click={enableBrowser}>
+                  Connect Wallet
                 </button>
               {:else}
-                <button
-                  class="button connect-wallet connected is-rounded"
-                  class:pending={isSwapBtnPending}
-                  on:click={approveELTTransfer}>
-                  Approve
-                </button>
+                {#await $approvedELTAmount}
+                  <button
+                    class="button connect-wallet connected is-rounded"
+                    class:pending={isSwapBtnPending}
+                    on:click={approveELTTransfer}>
+                    Approve
+                  </button>
+                {:then value}
+                  {#if value >= minELTToSwap}
+                    <button
+                      class="button connect-wallet connected is-rounded"
+                      class:pending={isSwapBtnPending}
+                      class:disabled={isSwapBtnDisabled}
+                      on:click={sendSwap}>
+                      Swap
+                    </button>
+                  {:else}
+                    <button
+                      class="button connect-wallet connected is-rounded"
+                      class:pending={isSwapBtnPending}
+                      on:click={approveELTTransfer}>
+                      Approve
+                    </button>
+                  {/if}
+                {/await}
               {/if}
-            {/await}
-          {/if}
+            </div>
+
+            <div
+              class="column is-hidden-mobile is-4-tablet is-4-desktop has-text-centered-mobile has-text-right">
+              <h3 class="">HODL</h3>
+              <input
+                class="number-bubble input has-text-right"
+                type="number"
+                placeholder="0"
+                onwheel="this.blur()"
+                bind:value={swapAmountHodl}
+                on:input={(evt) => {
+                  return sanitizeNumber(evt)((cleanVal) => {
+                    console.log(' sanitizeNumber swapAmountHodl ', cleanVal);
+                    return cleanVal > 0 ? cleanVal : null;
+                  });
+                }}
+                on:keydown={(evt) => {
+                  // prevent editing value by arrowKeys
+                  if (evt.key == 'ArrowDown' || evt.key == 'ArrowUp') {
+                    evt.preventDefault();
+                  }
+                }}
+                on:keyup={(evt) => {
+                  // prevent pasting negative vals
+                  swapAmountELT = Math.abs(swapAmountELT) || null;
+                }} />
+            </div>
+          </div>
         </div>
 
-        <div
-          class="column is-hidden-mobile is-4-tablet is-4-desktop has-text-centered-mobile has-text-right">
-          <h3 class="">HODL</h3>
-          <input
-            class="number-bubble input has-text-right"
-            type="number"
-            placeholder="0"
-            onwheel="this.blur()"
-            bind:value={swapAmountHodl}
-            on:input={(evt) => {
-              return sanitizeNumber(evt)((cleanVal) => {
-                console.log(' sanitizeNumber swapAmountHodl ', cleanVal);
-                return cleanVal > 0 ? cleanVal : null;
-              });
-            }}
-            on:keydown={(evt) => {
-              // prevent editing value by arrowKeys
-              if (evt.key == 'ArrowDown' || evt.key == 'ArrowUp') {
-                evt.preventDefault();
-              }
-            }}
-            on:keyup={(evt) => {
-              // prevent pasting negative vals
-              swapAmountELT = Math.abs(swapAmountELT) || null;
-            }} />
+        <div class="column">
+          <div class="columns level is-flex-wrap-wrap">
+            <div class="column is-hidden-mobile is-3-tablet is-3-desktop">
+              <h3>ELT Burn &#128293;</h3>
+              <span
+                class="elt-burn-percent"
+                class:disabled={swapAmountELT < minELTToSwap ? 'disabled' : ''}>
+                {burnPercentage}%
+              </span>
+            </div>
+
+            <div
+              id="swapHodlBurnRatio"
+              class="column is-12-mobile is-4-tablet is-6-desktop pb-0">
+              <input
+                type="range"
+                id="burnRatioSlider"
+                min="0"
+                max="100"
+                class:disabled={swapAmountELT < minELTToSwap}
+                disabled={swapAmountELT < minELTToSwap ? 'disabled' : ''}
+                bind:value={burnPercentage} />
+            </div>
+
+            <div class="column is-flex is-3-tablet is-3-desktop p-0">
+              <div
+                class="column is-hidden-tablet is-hidden-desktop is-6-mobile is-2-tablet is-2-desktop">
+                <h3>ELT Burn &#128293;</h3>
+                <span
+                  class="elt-burn-percent"
+                  class:disabled={swapAmountELT < minELTToSwap ? 'disabled' : ''}>
+                  {burnPercentage}%
+                </span>
+              </div>
+
+              <div class="column is-6-mobile is-pull-right has-text-right">
+                <h3><span class="is-hidden-mobile">HODL</span> Burn Bonus</h3>
+                <span class="hodl-burn-bonus" class:disabled={!ELTBurnBonus}>
+                  {ELTBurnBonus.toFixed(4)}
+                  HODL
+                </span>
+              </div>
+            </div>
+
+            <div
+              class="column is-hidden-tablet is-hidden-desktop if-full-mobile is-5-dektop has-text-centered">
+              <h3 class="">HODL</h3>
+              <input
+                class="number-bubble input has-text-centered-mobile"
+                type="number"
+                placeholder="0"
+                onwheel="this.blur()"
+                bind:value={swapAmountHodl}
+                on:input={(evt) => {
+                  // console.dir(' .... ', sanitizeNumber(evt));
+                  return sanitizeNumber(evt)((cleanVal) => {
+                    console.log(' sanitizeNumber cleanVal ', cleanVal);
+                    // swapAmountHodl = cleanVal;
+                    return cleanVal > 0 ? (swapAmountELT = cleanVal / 0.0000005) : null;
+                  });
+                }}
+                on:keydown={(evt) => {
+                  // prevent editing value by arrowKeys
+                  if (evt.key == 'ArrowDown' || evt.key == 'ArrowUp') {
+                    evt.preventDefault();
+                  }
+                }}
+                on:keyup={(evt) => {
+                  // prevent pasting negative vals
+                  swapAmountELT = Math.abs(swapAmountELT) || null;
+                }} />
+            </div>
+
+            <div
+              class="column is-flex is-hidden-tablet is-hidden-desktop is-flex-direction-column is-12-mobile is-justify-content-end ">
+              {#await $approvedELTAmount}
+                <h6>Loading approved</h6>
+              {:then value}
+                <h6>Approved: {value}</h6>
+              {/await}
+              {#if isConnected === false}
+                <button
+                  class="button connect-wallet is-rounded"
+                  class:pending={isSwapBtnPending}
+                  on:click={enableBrowser}>
+                  Connect Wallet
+                </button>
+              {:else}
+                {#await $approvedELTAmount}
+                  <button
+                    class="button connect-wallet connected is-rounded"
+                    class:pending={isSwapBtnPending}
+                    on:click={approveELTTransfer}>
+                    Approve
+                  </button>
+                {:then value}
+                  {#if value >= minELTToSwap}
+                    <button
+                      class="button connect-wallet connected is-rounded"
+                      class:pending={isSwapBtnPending}
+                      class:disabled={isSwapBtnDisabled}
+                      on:click={sendSwap}>
+                      Swap
+                    </button>
+                  {:else}
+                    <button
+                      class="button connect-wallet connected is-rounded"
+                      class:pending={isSwapBtnPending}
+                      on:click={approveELTTransfer}>
+                      Approve
+                    </button>
+                  {/if}
+                {/await}
+              {/if}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="column">
-      <div class="columns level is-flex-wrap-wrap">
-        <div class="column is-hidden-mobile is-3-tablet is-3-desktop">
-          <h3>ELT Burn &#128293;</h3>
-          <span
-            class="elt-burn-percent"
-            class:disabled={swapAmountELT < minELTToSwap ? 'disabled' : ''}>
-            {burnPercentage}%
-          </span>
+      <div class="columns is-flex-wrap-wrap">
+        <div class="column is-12">
+          <h3>
+            <span class="">
+              Eltswap Progress:
+              <span
+                class="eltswap-progress-success">{getSwapProgress()}%</span><sup
+                class="ref-asterix">*</sup>
+            </span>
+          </h3>
         </div>
 
-        <div
-          id="swapHodlBurnRatio"
-          class="column is-12-mobile is-4-tablet is-6-desktop pb-0">
-          <input
-            type="range"
-            id="burnRatioSlider"
-            min="0"
-            max="100"
-            class:disabled={swapAmountELT < minELTToSwap}
-            disabled={swapAmountELT < minELTToSwap ? 'disabled' : ''}
-            bind:value={burnPercentage} />
-        </div>
-
-        <div class="column is-flex is-3-tablet is-3-desktop p-0">
-          <div
-            class="column is-hidden-tablet is-hidden-desktop is-6-mobile is-2-tablet is-2-desktop">
-            <h3>ELT Burn &#128293;</h3>
+        <div class="column is-12 elt-swap-progress-wrapper">
+          <div id="swapProgress" class="is-flex is-12">
             <span
-              class="elt-burn-percent"
-              class:disabled={swapAmountELT < minELTToSwap ? 'disabled' : ''}>
-              {burnPercentage}%
-            </span>
+              id="swapProgressGradient"
+              style="--progress-bar-width: {getSwapProgress()}%;" />
+            <span id="minSwapMark" />
+            <span
+              id="currentSwapMark"
+              style="--curr-mark-left: {getSwapProgress()}%;">{getSwapProgress() > 10 ? eltInContract + ' ELT' : ''}</span>
           </div>
 
-          <div class="column is-6-mobile is-pull-right has-text-right">
-            <h3><span class="is-hidden-mobile">HODL</span> Burn Bonus</h3>
-            <span class="hodl-burn-bonus" class:disabled={!ELTBurnBonus}>
-              {ELTBurnBonus.toFixed(4)}
-              HODL
-            </span>
-          </div>
+          <span class="">0 ELT</span>
+
+          <span class="is-pulled-right">40M ELT</span>
         </div>
 
-        <div
-          class="column is-hidden-tablet is-hidden-desktop if-full-mobile is-5-dektop has-text-centered">
-          <h3 class="">HODL</h3>
-          <input
-            class="number-bubble input has-text-centered-mobile"
-            type="number"
-            placeholder="0"
-            onwheel="this.blur()"
-            bind:value={swapAmountHodl}
-            on:input={(evt) => {
-              // console.dir(' .... ', sanitizeNumber(evt));
-              return sanitizeNumber(evt)((cleanVal) => {
-                console.log(' sanitizeNumber cleanVal ', cleanVal);
-                // swapAmountHodl = cleanVal;
-                return cleanVal > 0 ? (swapAmountELT = cleanVal / 0.0000005) : null;
-              });
-            }}
-            on:keydown={(evt) => {
-              // prevent editing value by arrowKeys
-              if (evt.key == 'ArrowDown' || evt.key == 'ArrowUp') {
-                evt.preventDefault();
-              }
-            }}
-            on:keyup={(evt) => {
-              // prevent pasting negative vals
-              swapAmountELT = Math.abs(swapAmountELT) || null;
-            }} />
-        </div>
-
-        <div
-          class="column is-flex is-hidden-tablet is-hidden-desktop is-flex-direction-column is-12-mobile is-justify-content-end ">
-          {#await $approvedELTAmount}
-            <h6>Loading approved</h6>
-          {:then value}
-            <h6>Approved: {value}</h6>
-          {/await}
-          {#if isConnected === false}
-            <button
-              class="button connect-wallet is-rounded"
-              class:pending={isSwapBtnPending}
-              on:click={enableBrowser}>
-              Connect Wallet
-            </button>
-          {:else}
-            {#await $approvedELTAmount}
-              <button
-                class="button connect-wallet connected is-rounded"
-                class:pending={isSwapBtnPending}
-                on:click={approveELTTransfer}>
-                Approve
-              </button>
-            {:then value}
-              {#if value >= minELTToSwap}
-                <button
-                  class="button connect-wallet connected is-rounded"
-                  class:pending={isSwapBtnPending}
-                  class:disabled={isSwapBtnDisabled}
-                  on:click={sendSwap}>
-                  Swap
-                </button>
-              {:else}
-                <button
-                  class="button connect-wallet connected is-rounded"
-                  class:pending={isSwapBtnPending}
-                  on:click={approveELTTransfer}>
-                  Approve
-                </button>
-              {/if}
-            {/await}
-          {/if}
+        <div class="column is-flex">
+          <sup class="ref-asterix">*</sup>
+          <h6 class="ref-entry">of 15 million ELT softcap</h6>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="columns is-flex-wrap-wrap">
-    <div class="column is-12">
-      <h3>
-        <span class="">
-          Eltswap Progress:
-          <span class="eltswap-progress-success">{getSwapProgress()}%</span><sup
-            class="ref-asterix">*</sup>
-        </span>
-      </h3>
+    <div
+      class="screen eth-purchase-screen"
+      class:active={currScreen == 'eth-purchase-screen'}>
+      <p>
+        TBA: same as elt-swap-wizard but now one has to purchase DAO with ETH
+      </p>
     </div>
 
-    <div class="column is-12 elt-swap-progress-wrapper">
-      <div id="swapProgress" class="is-flex is-12">
-        <span
-          id="swapProgressGradient"
-          style="--progress-bar-width: {getSwapProgress()}%;" />
-        <span id="minSwapMark" />
-        <span
-          id="currentSwapMark"
-          style="--curr-mark-left: {getSwapProgress()}%;">{getSwapProgress() > 10 ? eltInContract + ' ELT' : ''}</span>
-      </div>
-
-      <span class="">0 ELT</span>
-
-      <span class="is-pulled-right">40M ELT</span>
+    <div
+      class="screen epilogue-screen"
+      class:active={currScreen == 'epilogue-screen'}>
+      <p>Too late; it's gone now.</p>
+      <a href="http://www.hodldao.xyz">Catch the next wave here, maybe.</a>
     </div>
 
-    <div class="column is-flex">
-      <sup class="ref-asterix">*</sup>
-      <h6 class="ref-entry">of 15 million ELT softcap</h6>
+    <div
+      class="screen dao-screen-of-doom"
+      class:active={currScreen == 'dao-screen-of-doom'}>
+      <p>Error state</p>
     </div>
-  </div>
+  {/await}
 </div>
