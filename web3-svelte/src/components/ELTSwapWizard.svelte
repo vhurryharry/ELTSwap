@@ -544,7 +544,7 @@
         </div>
       </div>
 
-      <div class="screen-footer columns is-flex-wrap-wrap">
+      <div class="screen-footer">
         <SwapProgressBar />
       </div>
     </div>

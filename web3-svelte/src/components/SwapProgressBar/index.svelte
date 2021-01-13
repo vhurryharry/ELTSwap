@@ -14,7 +14,7 @@
 <style>
 </style>
 
-<div class="">
+<div class="columns is-flex-wrap-wrap">
   <div class="column is-12">
     <h3>
       <span class="">
