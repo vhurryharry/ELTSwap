@@ -7,12 +7,15 @@
     chainName,
   } from "svelte-web3";
 
-  import { approvedELTAmount, currentWizardScreen } from "../utility/stores";
+  import {
+    approvedELTAmount,
+    currentWizardScreen,
+    minELTToSwap,
+  } from "../utility/index";
 
   import {
     getETHBalance,
     getELTBurned,
-    getELTInContract,
     getHODLInContract,
     getTokenBalance,
     getTotalHodlReward,
@@ -21,14 +24,10 @@
     getAllowance,
   } from "../js/web3Helper";
 
+  import SwapProgressBar from "./SwapProgressBar/index.svelte";
+
   let isSwapBtnDisabled = false;
   let isSwapBtnPending = false;
-
-  const minELTToSwap = 10000;
-  const absMaxELT = 40 * 10 ** 6;
-  const getSwapProgress = () => {
-    return parseInt((eltInContract * 100) / absMaxELT);
-  };
 
   // TODO: move to utils
   // $: approveAddr = "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e";
@@ -83,7 +82,6 @@
     ? getTotalHodlReward($web3, minELTToSwap, 25)
     : "";
   $: hodlInContract = $connected ? getHODLInContract($web3) : "";
-  $: eltInContract = $connected ? getELTInContract($web3) : 66;
   $: eltBurned = $connected ? getELTBurned($web3) : "";
   $: isConnected = $connected ? true : false;
 
@@ -216,7 +214,7 @@
   {#await $currentWizardScreen}
     <div
       class="screen wizard-pending-screen"
-      class:active={currScreen == 'wizard-pending-screen'}>
+      class:active={$currentWizardScreen == 'wizard-pending-screen'}>
       <div class="screen-header">
         <p>pending...</p>
       </div>
@@ -234,6 +232,7 @@
       </div>
     </div>
   {:then currScreen}
+    {currScreen}
     <div
       class="screen prologue-screen"
       class:active={currScreen == 'prologue-screen'}>
@@ -546,37 +545,7 @@
       </div>
 
       <div class="screen-footer columns is-flex-wrap-wrap">
-        <div class="column is-12">
-          <h3>
-            <span class="">
-              Eltswap Progress:
-              <span
-                class="eltswap-progress-success">{getSwapProgress()}%</span><sup
-                class="ref-asterix">*</sup>
-            </span>
-          </h3>
-        </div>
-
-        <div class="column is-12 elt-swap-progress-wrapper">
-          <div id="swapProgress" class="is-flex is-12">
-            <span
-              id="swapProgressGradient"
-              style="--progress-bar-width: {getSwapProgress()}%;" />
-            <span id="minSwapMark" />
-            <span
-              id="currentSwapMark"
-              style="--curr-mark-left: {getSwapProgress()}%;">{getSwapProgress() > 10 ? eltInContract + ' ELT' : ''}</span>
-          </div>
-
-          <span class="">0 ELT</span>
-
-          <span class="is-pulled-right">40M ELT</span>
-        </div>
-
-        <div class="column is-flex">
-          <sup class="ref-asterix">*</sup>
-          <h6 class="ref-entry">of 15 million ELT softcap</h6>
-        </div>
+        <SwapProgressBar />
       </div>
     </div>
 

@@ -1,0 +1,48 @@
+<script>
+  import { web3, connected } from "svelte-web3";
+
+  import { absMaxELT } from "../../utility";
+  import { getELTInContract } from "../../js/web3Helper";
+
+  const getSwapProgress = () => {
+    return parseInt((eltInContract * 100) / absMaxELT);
+  };
+
+  $: eltInContract = $connected ? getELTInContract($web3) : 0;
+</script>
+
+<style>
+</style>
+
+<div class="">
+  <div class="column is-12">
+    <h3>
+      <span class="">
+        Eltswap Progress:
+        <span class="eltswap-progress-success">{getSwapProgress()}%</span><sup
+          class="ref-asterix">*</sup>
+      </span>
+    </h3>
+  </div>
+
+  <div class="column is-12 elt-swap-progress-wrapper">
+    <div id="swapProgress" class="is-flex is-12">
+      <span
+        id="swapProgressGradient"
+        style="--progress-bar-width: {getSwapProgress()}%;" />
+      <span id="minSwapMark" />
+      <span
+        id="currentSwapMark"
+        style="--curr-mark-left: {getSwapProgress()}%;">{getSwapProgress() > 10 ? eltInContract + ' ELT' : ''}</span>
+    </div>
+
+    <span class="">0 ELT</span>
+
+    <span class="is-pulled-right">40M ELT</span>
+  </div>
+
+  <div class="column is-flex">
+    <sup class="ref-asterix">*</sup>
+    <h6 class="ref-entry">of 15 million ELT softcap</h6>
+  </div>
+</div>
