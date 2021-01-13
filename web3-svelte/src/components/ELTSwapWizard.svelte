@@ -214,18 +214,36 @@
 
 <div class="elt-swap-wizard mt-5 mb-5 p-5" class:not-connected={!isConnected}>
   {#await $currentWizardScreen}
-    <p>pending...</p>
-    <p>
-      <img
-        src="/src/static/images/HODL_DAO_Logo_icon.svg"
-        alt="http://www.hodldao.xyz" />
-    </p>
-    <p>loading indicator?</p>
+    <div
+      class="screen wizard-pending-screen"
+      class:active={currScreen == 'wizard-pending-screen'}>
+      <p>pending...</p>
+      <p>
+        <img
+          src="/src/static/images/HODL_DAO_Logo_icon.svg"
+          alt="http://www.hodldao.xyz" />
+      </p>
+      <p>loading indicator?</p>
+    </div>
   {:then currScreen}
     <div
       class="screen prologue-screen"
-      class:active={currScreen == 'prologue-screen'} />
-
+      class:active={currScreen == 'prologue-screen'}>
+      <p>
+        In ancient Greek drama, the prologos (a word that means basically
+        "speaking before") was the opening portion of the play, before the entry
+        of the all-important chorus. It might be spoken by a single actor, maybe
+        playing a god, who would "set the scene" for the audience. Playwrights
+        today instead often provide the same kind of "scene-setting" information
+        through dialogue near the play's beginning; in movies, it may appear (as
+        in the "Star Wars" series) in the form of actual written text. In a
+        nonfiction book, the lead-in is now usually called a preface or
+        introduction; novels rarely provide any introduction at all. Still,
+        prologue remains a useful word for nonliterary purposes. The saying "The
+        past is prologue" tells us that, in real life, almost everything can be
+        a prologue to what follows it.
+      </p>
+    </div>
     <div
       class="screen elt-swap-wizad-screen"
       class:active={currScreen == 'elt-swap-wizad-screen'}>

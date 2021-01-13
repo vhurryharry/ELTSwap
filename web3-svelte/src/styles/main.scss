@@ -6,6 +6,7 @@
 .elt-swap-wizard{
   width: 80%;
   min-width: 320px;
+  min-height: 350px;
   background-color: $surfaceDark;
   border-radius: 1rem;
   color: #fff;
@@ -13,6 +14,18 @@
   max-width: 940px;
   white-space: nowrap;
 }
+
+.elt-swap-wizard > .screen{
+  display: none;
+}
+.elt-swap-wizard > .screen.active{
+  display: block;
+}
+
+.elt-swap-wizard .screen.prologue-screen{
+  white-space: normal;
+}
+
 
 button:focus,
 .button:focus{
