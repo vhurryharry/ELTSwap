@@ -542,13 +542,13 @@
                 {/await}
               {/if}
             </div>
-
-            <div class="column is-flex is-12">
-              <div class="column is-6 col-left" />
-              <LiveReceipt class="column is-6 col-right" />
-            </div>
           </div>
         </div>
+      </div>
+
+      <div class="column is-flex is-12">
+        <div class="column is-6 col-left" />
+        <LiveReceipt />
       </div>
 
       <div class="screen-footer">

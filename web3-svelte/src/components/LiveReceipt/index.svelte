@@ -20,17 +20,17 @@
 <style>
 </style>
 
-<div class="live-receipt-wrapper">
+<div class="live-receipt-wrapper column is-6 col-right">
   {#each receiptItems as item}
     <div class="is-flex is-12 key-val-row">
-      <div class="column col-left">{item.lable}</div>
+      <div class="column col-left py-0">{item.lable}</div>
 
-      <div class="column col-right has-text-right">{item.value}</div>
+      <div class="column col-right has-text-right py-0">{item.value}</div>
     </div>
   {/each}
-  <div class="is-flex is-12 key-val-row">
-    <div class="column col-left">HODL TOTAL</div>
+  <div class="is-flex is-12 key-val-row receipt-footer">
+    <div class="column col-left py-0">HODL TOTAL</div>
 
-    <div class="column col-right">{getReceiptTotal()}</div>
+    <div class="column col-right py-0">{getReceiptTotal()}</div>
   </div>
 </div>
