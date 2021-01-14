@@ -24,7 +24,9 @@
     getAllowance,
   } from "../js/web3Helper";
 
+  // TODO: fix imports to omit `/index.svelte`
   import SwapProgressBar from "./SwapProgressBar/index.svelte";
+  import LiveReceipt from "./LiveReceipt/index.svelte";
 
   let isSwapBtnDisabled = false;
   let isSwapBtnPending = false;
@@ -539,6 +541,11 @@
                   {/if}
                 {/await}
               {/if}
+            </div>
+
+            <div class="column is-flex is-12">
+              <div class="column is-6 col-left" />
+              <LiveReceipt class="column is-6 col-right" />
             </div>
           </div>
         </div>
