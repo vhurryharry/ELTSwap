@@ -6,15 +6,13 @@
   let hodlBonusAtBurnRate = 0; // find this in contracts
 
   $: receiptItems = [
-    { lable: "ELTCOIN", value: 0 },
-    { lable: "HODL", value: 0 },
-    { lable: "HODL BONUS @ x% ELT BURN", value: 0 },
-    { lable: "GAS PRICE", value: 0 },
+    { label: "ELTCOIN", value: $connected ? getELTInContract($web3) : 0 },
+    { label: "HODL", value: $connected ? getHODLInContract($web3) : 0 },
+    { label: "HODL BONUS @ x% ELT BURN", value: $connected ? "TBD" : 0 },
+    { label: "GAS PRICE", value: $connected ? "TBD" : 0 },
   ];
 
-  $: getReceiptTotal = async () => {
-    return await getHODLInContract(web3); // is this so?
-  };
+  $: getReceiptTotal = $connected ? getHODLInContract($web3) : 0; // is this so?
 </script>
 
 <style>
@@ -23,14 +21,20 @@
 <div class="live-receipt-wrapper column is-6 col-right">
   {#each receiptItems as item}
     <div class="is-flex is-12 key-val-row">
-      <div class="column col-left py-0">{item.lable}</div>
-
-      <div class="column col-right has-text-right py-0">{item.value}</div>
+      <div class="column col-left py-0">{item.label}</div>
+      {#await item.value}
+        <div class="column col-right has-text-right py-0">0</div>
+      {:then value}
+        <div class="column col-right has-text-right py-0">{value}</div>
+      {/await}
     </div>
   {/each}
   <div class="is-flex is-12 key-val-row receipt-footer">
     <div class="column col-left py-0">HODL TOTAL</div>
-
-    <div class="column col-right py-0">{getReceiptTotal()}</div>
+    {#await getReceiptTotal}
+      <div class="column col-right has-text-right py-0">0</div>
+    {:then value}
+      <div class="column col-right has-text-right py-0">{value}</div>
+    {/await}
   </div>
 </div>
