@@ -1,0 +1,10 @@
+@import "../../styles/variables";
+
+.live-receipt-wrapper {
+  background-color: $surfaceMid;
+  border-radius: 15px;
+}
+
+.live-receipt-wrapper > .receipt-footer {
+  border-top: 1px solid #565656;
+}
