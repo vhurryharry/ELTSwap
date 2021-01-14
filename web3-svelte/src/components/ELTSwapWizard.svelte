@@ -26,9 +26,6 @@
 
   const swapContractAddress = "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e";
 
-  const minELTToSwap = 2000;
-  const absMaxELT = 40 * 10 ** 6;
-
   // TODO: move to utils
   // $: approveAddr = "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e";
 
@@ -48,8 +45,12 @@
     ethStore.setBrowserProvider();
   };
 
+  const minELTToSwap = 2 * 10 ** 3;
+  const maxELTToSwap = 100 * 10 ** 6;
+  const absMaxELT = 40 * 10 ** 6;
+
   $: swapAmountELT = null; //Number();
-  $: swapAmountHodl = swapAmountELT ? Number(swapAmountELT * 0.0000005) : null;
+  $: swapAmountHodl = null; // swapAmountELT ? Number(swapAmountELT * 0.0000005) : null;
   $: burnPercentage = Number(0);
   $: ELTBurnBonus = Number((swapAmountHodl / 100) * burnPercentage);
   $: checkAccount =
@@ -59,9 +60,9 @@
     ? getETHBalance($web3, $selectedAccount)
     : Number(0.0);
 
-  $: fixedDecimals = (number) => {
+  $: fixedDecimals = (number, precision) => {
     if (typeof number !== "number") return;
-    return number.toFixed(4);
+    return number.toFixed(typeof precision == "number" ? precision : 4);
   };
 
   $: eltBalance = $connected
@@ -79,7 +80,7 @@
       )
     : "";
   $: totalHodlReward = $connected
-    ? getTotalHodlReward($web3, minELTToSwap, 25)
+    ? getTotalHodlReward($web3, swapAmountELT, 25)
     : "";
 
   $: eltInContract = $connected ? getELTInContract($web3) : Number(0);
@@ -93,12 +94,12 @@
     : 0;
 
   $: getSwapProgress = (eltAmount) => {
-    console.log(" swapPerc ", eltAmount);
+    // console.log(" swapPerc ", eltAmount);
 
     if (typeof eltAmount !== "number") {
       return 0;
     }
-    return (eltAmount * 100) / absMaxELT;
+    return parseFloat((eltAmount * 100) / absMaxELT);
   };
 
   async function approveELTTransfer() {
@@ -146,7 +147,6 @@
 
       swap($web3, swapAmountELT, burnPercentage, $selectedAccount).then(
         async function (resolve, reject) {
-          minELTToSwap;
           if (resolve) {
             console.log("Swap transaction confirmed!");
 
@@ -162,51 +162,55 @@
     }
   }
 
-  let swapMinThreshold = (15 * 100) / 40;
-
-  // TODO: set {
-  //   right: $currSwapAmountPrc;
-  //   content: $currSwapAmount;
-  // } on #currentSwapMark:before
-
   const fromatAddr = (str) => {
     if (!str) return;
     return str.substr(0, 5) + "..." + str.substr(str.length - 5, str.length);
   };
 
-  const sanitizeNumber = (evt, isGtZeroPositive = true) => {
+  function castToPrecision(float, maxDecLen = 8) {
+    let decimals = (float + "").split(".")[1] || [];
+    return decimals.length > maxDecLen ? float.toFixed(maxDecLen) : float;
+  }
+
+  function castValidAmountOfELT(elt) {
+    if (elt >= minELTToSwap) {
+      if (elt > maxELTToSwap) {
+        return false; // maxELTToSwap;
+      }
+      return elt;
+    }
+    return null;
+  }
+
+  function eltToHodl(elt) {
+    return castValidAmountOfELT(elt)
+      ? castToPrecision(Number(elt * 0.0000005), 8)
+      : null;
+  }
+
+  function hodlToElt(hodl) {
+    let transmuted =
+      0 < Number(hodl) <= maxELTToSwap ? Number(hodl * 2 * 10 ** 6) : null;
+    return castValidAmountOfELT(transmuted)
+      ? castToPrecision(transmuted, 0)
+      : null;
+  }
+
+  const sanitizeNumberInput = (evt, isGtZeroAbs = true) => {
     evt.preventDefault();
     let cleanNumber = (evt.target.value = evt.target.value.replace(
-      /[^0-9.,]/g,
+      /[^0-9\.,]/g,
       ""
-    )).to;
+    ));
 
-    // console.log(" isGtZeroPositive ", isGtZeroPositive);
-    // console.log(" cleanNumber isGtZeroPositive ", Math.abs(cleanNumber));
-
-    if (isGtZeroPositive) {
+    if (isGtZeroAbs) {
       cleanNumber = Math.abs(cleanNumber);
     }
 
-    // console.log(" cleanNumber ", cleanNumber);
     return (valHandler) => {
       valHandler(cleanNumber);
     };
   };
-
-  // TODO: move this to utils
-  /**
-   * Prevent changing value onScroll for input:number
-   */
-  // document.addEventListener("wheel", function (event) {
-  //   if (document.activeElement.type === "number") {
-  //     event.preventDefault();
-  //     document.activeElement.blur();
-  //   }
-  // });
-  // can use ` onwheel="this.blur()" ` instead
-  // from https://stackoverflow.com/questions/9712295/disable-scrolling-on-input-type-number
-  // but only handles the wheel, not the arrow keys, as well
 </script>
 
 <style lang="scss" global>
@@ -247,7 +251,7 @@
         {/await}
         <div id="balancePill" class="">
           {#if isConnected === false}
-            <span class="px-1">Not Connected</span>
+            <span class="px-1">Disonnected</span>
           {:else}<span class="px-1">{fromatAddr($selectedAccount)}</span>{/if}
           <span
             id="connectionIndicator"
@@ -270,9 +274,14 @@
             onwheel="this.blur()"
             bind:value={swapAmountELT}
             on:input={(evt) => {
-              return sanitizeNumber(evt)((cleanVal) => {
-                console.log(' sanitizeNumber swapAmountELT ', cleanVal);
-                return cleanVal > 0 ? cleanVal : null;
+              return sanitizeNumberInput(evt)((cleanVal) => {
+                console.log(' sanitizeNumberInput swapAmountELT ', cleanVal);
+                if (cleanVal <= maxELTToSwap) {
+                  swapAmountHodl = cleanVal;
+                } else {
+                  swapAmountELT = maxELTToSwap;
+                }
+                swapAmountHodl = eltToHodl(swapAmountELT);
               });
             }}
             on:keydown={(evt) => {
@@ -340,9 +349,15 @@
             onwheel="this.blur()"
             bind:value={swapAmountHodl}
             on:input={(evt) => {
-              return sanitizeNumber(evt)((cleanVal) => {
-                console.log(' sanitizeNumber swapAmountHodl ', cleanVal);
-                return cleanVal > 0 ? cleanVal : null;
+              return sanitizeNumberInput(evt)((cleanVal) => {
+                console.log(' sanitizeNumberInput swapAmountHodl ', cleanVal);
+                if (cleanVal <= 50) {
+                  swapAmountELT = hodlToElt(cleanVal);
+                  // return cleanVal > 0 ? cleanVal : null;
+                } else {
+                  swapAmountHodl = 50;
+                  swapAmountELT = hodlToElt(maxELTToSwap);
+                }
               });
             }}
             on:keydown={(evt) => {
@@ -353,7 +368,7 @@
             }}
             on:keyup={(evt) => {
               // prevent pasting negative vals
-              swapAmountELT = Math.abs(swapAmountELT) || null;
+              swapAmountHodl = Math.abs(swapAmountHodl) || null;
             }} />
         </div>
       </div>
@@ -397,7 +412,7 @@
           <div class="column is-6-mobile is-pull-right has-text-right">
             <h3><span class="is-hidden-mobile">HODL</span> Burn Bonus</h3>
             <span class="hodl-burn-bonus" class:disabled={!ELTBurnBonus}>
-              {ELTBurnBonus.toFixed(4)}
+              {fixedDecimals(ELTBurnBonus, 4)}
               HODL
             </span>
           </div>
@@ -413,11 +428,14 @@
             onwheel="this.blur()"
             bind:value={swapAmountHodl}
             on:input={(evt) => {
-              // console.dir(' .... ', sanitizeNumber(evt));
-              return sanitizeNumber(evt)((cleanVal) => {
-                console.log(' sanitizeNumber cleanVal ', cleanVal);
-                // swapAmountHodl = cleanVal;
-                return cleanVal > 0 ? (swapAmountELT = cleanVal / 0.0000005) : null;
+              return sanitizeNumberInput(evt)((cleanVal) => {
+                console.log(' sanitizeNumberInput swapAmountHodl ', cleanVal);
+                if (cleanVal <= 50) {
+                  swapAmountELT = hodlToElt(cleanVal);
+                } else {
+                  swapAmountHodl = 50;
+                  swapAmountELT = hodlToElt(maxELTToSwap);
+                }
               });
             }}
             on:keydown={(evt) => {
@@ -486,7 +504,8 @@
           {#await eltInContract}
             <span class="disabled">0%</span><sup class="ref-asterix">*</sup>
           {:then value}
-            <span class="">{getSwapProgress(value)}%</span><sup
+            <span
+              class="">{fixedDecimals(getSwapProgress(value), 2)}%</span><sup
               class="ref-asterix">*</sup>
           {/await}
         </span>
@@ -501,7 +520,7 @@
         {:then value}
           <span
             id="swapProgressGradient"
-            style="--progress-bar-width: {getSwapProgress(value)}%;" />
+            style="--progress-bar-width: {fixedDecimals(getSwapProgress(value), 2)}%;" />
           <span id="minSwapMark" />
           <span
             id="currentSwapMark"
