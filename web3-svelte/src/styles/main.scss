@@ -30,7 +30,10 @@ $input-shadow: none;
 
 @import "bulma/bulma";
 
-@import "./components/range-slider";
+@import "./fragments/range-slider";
+@import "./fragments/screens";
+
+@import "./components";
 
 .elt-swap-wizard{
   width: 80%;
@@ -189,9 +192,7 @@ h6{
   color: #fff;
 }
 
-.elt-swap-progress-wrapper > span{
-  font-size: 0.8rem;
-}
+
 
 // move these to utils
 .ref-asterix{
