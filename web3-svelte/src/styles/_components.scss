@@ -2,7 +2,10 @@
   This pattern is not ideal but works for now.
 
   TODO: Figure out how to import style.scss in component 
+  that way we can have best of both worlds. ATM it fails because
+  alegedly faulty rollup-config
 */
 
 @import "../components/SwapProgressBar/style";
 @import "../components/LiveReceipt/style";
+@import "../components/TickerBelt/style";

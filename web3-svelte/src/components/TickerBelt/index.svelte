@@ -15,6 +15,16 @@
 </script>
 
 <style>
+  /**
+  * For some reason, styles defined here are not
+  * applyed.
+  * TODO: Figure out why so.
+  */
+  .ticker-belt-wrapper {
+    font-size: 0.8rem;
+
+    background-color: red;
+  }
 </style>
 
 <div class="ticker-belt-wrapper is-flex block is-12">
