@@ -10,16 +10,16 @@
     { label: "ELT staked", value: $connected ? getHODLInContract($web3) : 0 },
     { label: "HODL issued", value: $connected ? "TBD" : 0 },
     { label: "ELT market cap", value: $connected ? "TBD" : 0 },
-    { label: "ELT price", value: $connected ? "TBD" : 0 },
+    // { label: "ELT price", value: $connected ? "TBD" : 0 },
   ];
 </script>
 
 <style>
 </style>
 
-<div class="ticker-belt-wrapper block is-12">
+<div class="ticker-belt-wrapper is-flex block is-12">
   {#each tickers as ticker}
-    <div class="is-flex is-12 key-val-row">
+    <div class="is-flex is-3 key-val-row">
       <div class="column col-left py-0">{ticker.label}</div>
       {#await ticker.value}
         <div class="column col-right has-text-right py-0">0</div>

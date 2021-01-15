@@ -1,10 +1,10 @@
-@import "../../styles/variables";
+// @import "../../styles/variables";
 
-.live-receipt-wrapper {
+.ticker-belt-wrapper {
   background-color: $themeSurfaceMid;
   border-radius: 15px;
 }
 
-.live-receipt-wrapper > .receipt-footer {
+.ticker-belt-wrapper > .receipt-footer {
   border-top: 1px solid #565656;
 }

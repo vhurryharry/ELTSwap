@@ -283,8 +283,8 @@
     </div>
 
     <div
-      class="screen elt-swap-wizad-screen"
-      class:active={currScreen == 'elt-swap-wizad-screen'}>
+      class="screen elt-swap-wizard-screen"
+      class:active={currScreen == 'elt-swap-wizard-screen'}>
       <div
         class="screen-header columns is-flex is-2 level is-multiline is-flex-wrap-wrap
         is-justify-content-end">
