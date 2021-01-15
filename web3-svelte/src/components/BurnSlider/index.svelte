@@ -1,11 +1,11 @@
 <script>
   import { web3, connected, selectedAccount } from "svelte-web3";
 
-  import util from "../../utility/";
-  import { minELTToSwap } from "../../utility/constants";
+  import * as service from "../utility/services";
+  import * as global from "../utility/globals";
   import * as store from "../utility/stores";
 
-  $: ELTBurnBonus = Number((swapAmountHODL / 100) * store.burnPercentage);
+  $: ELTBurnBonus = Number((store.swapAmountHODL / 100) * store.burnPercentage);
 
   function castToPrecision(float, maxDecLen = 8) {
     let decimals = (float + "").split(".")[1] || [];
@@ -38,33 +38,37 @@
 
   function sendSwap() {
     if ($connected) {
-      isSwapBtnDisabled = true;
-      isSwapBtnPending.set(true);
+      store.isSwapBtnDisabled = true;
+      store.isSwapBtnPending.set(true);
 
-      swap($web3, swapAmountELT, store.burnPercentage, $selectedAccount).then(
-        async function (resolve, reject) {
-          if (resolve) {
-            console.log("Swap transaction confirmed!");
+      swap(
+        $web3,
+        store.swapAmountELT,
+        store.burnPercentage,
+        $selectedAccount
+      ).then(async function (resolve, reject) {
+        if (resolve) {
+          console.log("Swap transaction confirmed!");
 
-            // Check the allowance again to change the button back to Approve
-            let eltAllowance = await getApprovedAmount();
-            store.approvedELTAmount.set(eltAllowance);
-            console.log("Allowance: " + eltAllowance);
-            isSwapBtnDisabled.set(false);
-            isSwapBtnPending.set(false);
-          }
+          // Check the allowance again to change the button back to Approve
+          let eltAllowance = await getApprovedAmount();
+          store.approvedELTAmount.set(eltAllowance);
+          console.log("Allowance: " + eltAllowance);
+          store.isSwapBtnDisabled.set(false);
+          store.isSwapBtnPending.set(false);
         }
-      );
+      });
     }
   }
 
   async function approveELTTransfer() {
     if ($connected) {
-      isSwapBtnDisabled = true;
-      isSwapBtnPending.set(true);
+      store.isSwapBtnDisabled.set(true);
+      store.isSwapBtnPending.set(true);
+
       approveELT(
         $web3,
-        swapAmountELT,
+        store.swapAmountELT,
         $selectedAccount,
         swapContractAddress
       ).then(async function (resolve, reject) {
@@ -73,8 +77,8 @@
           let eltAllowance = await getApprovedAmount();
           store.approvedELTAmount.set(eltAllowance);
           console.log("Allowance: " + eltAllowance);
-          isSwapBtnDisabled = false;
-          isSwapBtnPending.set(false);
+          store.isSwapBtnDisabled.set(false);
+          store.isSwapBtnPending.set(false);
         }
       });
     }
@@ -103,7 +107,7 @@
       <h3>ELT Burn &#128293;</h3>
       <span
         class="elt-burn-percent"
-        class:disabled={swapAmountELT < minELTToSwap ? 'disabled' : ''}>
+        class:disabled={store.swapAmountELT < global.minELTToSwap ? 'disabled' : ''}>
         {store.burnPercentage}%
       </span>
     </div>
@@ -116,8 +120,8 @@
         id="burnRatioSlider"
         min="0"
         max="100"
-        class:disabled={swapAmountELT < minELTToSwap}
-        disabled={swapAmountELT < minELTToSwap ? 'disabled' : ''}
+        class:disabled={store.swapAmountELT < minELTToSwap}
+        disabled={store.swapAmountELT < minELTToSwap ? 'disabled' : ''}
         bind:value={store.burnPercentage.set} />
     </div>
 
@@ -127,7 +131,7 @@
         <h3>ELT Burn &#128293;</h3>
         <span
           class="elt-burn-percent"
-          class:disabled={swapAmountELT < minELTToSwap ? 'disabled' : ''}>
+          class:disabled={store.swapAmountELT < minELTToSwap ? 'disabled' : ''}>
           {store.burnPercentage}%
         </span>
       </div>
@@ -149,13 +153,12 @@
         type="number"
         placeholder="0"
         onwheel="this.blur()"
-        bind:value={swapAmountHODL.set}
+        bind:value={store.swapAmountHODL.set}
         on:input={(evt) => {
           // console.dir(' .... ', sanitizeNumberInput(evt));
           return sanitizeNumberInput(evt)((cleanVal) => {
             console.log(' sanitizeNumberInput cleanVal ', cleanVal);
-            // swapAmountHodl = cleanVal;
-            return cleanVal > 0 ? swapAmountELT.set(cleanVal / 0.0000005) : swapAmountELT.set(null);
+            return cleanVal > 0 ? store.swapAmountELT.set(cleanVal / 0.0000005) : store.swapAmountELT.set(null);
           });
         }}
         on:keydown={(evt) => {
@@ -166,7 +169,7 @@
         }}
         on:keyup={(evt) => {
           // prevent pasting negative vals
-          swapAmountELT(Math.abs(swapAmountELT) || null);
+          store.swapAmountELT(Math.abs(store.swapAmountELT) || null);
         }} />
     </div>
 
@@ -180,7 +183,7 @@
       {#if $connected === false}
         <button
           class="button connect-wallet is-rounded"
-          class:pending={isSwapBtnPending}
+          class:pending={store.isSwapBtnPending}
           on:click={enableBrowser}>
           Connect Wallet
         </button>
@@ -188,23 +191,23 @@
         {#await store.approvedELTAmount}
           <button
             class="button connect-wallet connected is-rounded"
-            class:pending={isSwapBtnPending}
-            on:click={approveELTTransfer}>
+            class:pending={store.isSwapBtnPending}
+            on:click={store.approveELTTransfer.set}>
             Approve
           </button>
         {:then value}
           {#if value >= minELTToSwap}
             <button
               class="button connect-wallet connected is-rounded"
-              class:pending={isSwapBtnPending}
-              class:disabled={isSwapBtnDisabled}
+              class:pending={store.isSwapBtnPending}
+              class:disabled={store.isSwapBtnDisabled}
               on:click={sendSwap}>
               Swap
             </button>
           {:else}
             <button
               class="button connect-wallet connected is-rounded"
-              class:pending={isSwapBtnPending}
+              class:pending={store.isSwapBtnPending}
               on:click={approveELTTransfer}>
               Approve
             </button>

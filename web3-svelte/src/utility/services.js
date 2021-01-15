@@ -1,6 +1,3 @@
-// import { approvedELTAmount, currentWizardScreen } from "./stores";
-// import { absMaxELT, minELTToSwap, maxELTToSwap } from "./constants";
-
 // TODO: find a better place for "services"
 
 import {
@@ -10,7 +7,10 @@ import {
   connected,
   chainName,
 } from "svelte-web3";
+import { getELTInContract, getHODLInContract } from "../../js/web3Helper";
 
+import * as global from "./utility/globals";
+import * as store from "./utility/stores";
 
 
 // Creates a connection to own infura node.
@@ -20,18 +20,13 @@ const enable = () => {
       "https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca"
     )
     .then((res) => {
-      isSwapBtnPending.set(false);
+      service.isSwapBtnPending.set(false);
     });
 };
-let enableBrowser = async () => {
-  isSwapBtnPending.set(true);
+export const enableBrowser = async () => {
+  store.isSwapBtnPending.set(true);
   await enable();
   ethStore.setBrowserProvider();
 };
 
-const getSwapProgress = () => parseInt((eltInContract * 100) / absMaxELT) || 0;
-
-export default {
-  enableBrowser,
-  getSwapProgress,
-}
+export const getSwapProgress = () => parseInt(($connected ? getELTInContract($web3) : 0 * 100) / global.absMaxELT) || 0;

@@ -2,7 +2,7 @@
   import { web3, connected } from "svelte-web3";
   import TickerBelt from "../TickerBelt/index.svelte";
 
-  import util from "../../utility";
+  import util from "../../utility/services";
   import { getELTInContract } from "../../js/web3Helper";
 
   $: eltInContract = $connected ? getELTInContract($web3) : 0;

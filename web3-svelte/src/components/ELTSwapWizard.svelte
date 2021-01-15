@@ -7,9 +7,8 @@
     chainName,
   } from "svelte-web3";
 
-  import util from "../utility";
-  import { minELTToSwap, maxELTToSwap, absMaxELT } from "../utility/constants";
-
+  import * as service from "../utility/services";
+  import * as global from "../utility/globals";
   import * as store from "../utility/stores";
 
   import {
@@ -98,10 +97,10 @@
 </style>
 
 <div class="elt-swap-wizard mt-5 mb-5 p-5" class:not-connected={!$connected}>
-  {#await $currentWizardScreen}
+  {#await store.currentWizardScreen}
     <div
       class="screen wizard-pending-screen"
-      class:active={$currentWizardScreen == 'wizard-pending-screen'}>
+      class:active={store.currentWizardScreen == 'wizard-pending-screen'}>
       <div class="screen-header">
         <p>pending...</p>
       </div>
@@ -250,7 +249,7 @@
               {#if $connected === false}
                 <button
                   class="button connect-wallet is-rounded"
-                  class:pending={isSwapBtnPending}
+                  class:pending={store.isSwapBtnPending}
                   on:click={util.enableBrowser}>
                   Connect Wallet
                 </button>
@@ -258,7 +257,7 @@
                 {#await store.approvedELTAmount}
                   <button
                     class="button connect-wallet connected is-rounded"
-                    class:pending={isSwapBtnPending}
+                    class:pending={store.isSwapBtnPending}
                     on:click={approveELTTransfer}>
                     Approve
                   </button>
@@ -266,15 +265,15 @@
                   {#if value >= minELTToSwap}
                     <button
                       class="button connect-wallet connected is-rounded"
-                      class:pending={isSwapBtnPending}
-                      class:disabled={isSwapBtnDisabled}
+                      class:pending={store.isSwapBtnPending}
+                      class:disabled={store.isSwapBtnDisabled}
                       on:click={sendSwap}>
                       Swap
                     </button>
                   {:else}
                     <button
                       class="button connect-wallet connected is-rounded"
-                      class:pending={isSwapBtnPending}
+                      class:pending={store.isSwapBtnPending}
                       on:click={approveELTTransfer}>
                       Approve
                     </button>
