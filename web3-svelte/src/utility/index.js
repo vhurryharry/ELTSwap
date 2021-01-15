@@ -1,9 +1,10 @@
 import { approvedELTAmount, currentWizardScreen } from "./stores";
-import { minELTToSwap, absMaxELT } from "./constants";
+import { absMaxELT, minELTToSwap, maxELTToSwap } from "./constants";
 
 export {
   approvedELTAmount,
   currentWizardScreen,
   minELTToSwap,
+  maxELTToSwap,
   absMaxELT,
 }
