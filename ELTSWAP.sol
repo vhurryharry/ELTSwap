@@ -123,14 +123,41 @@ abstract contract Ownable is Context {
 contract Swap is Ownable {
     using SafeMath for uint256;
     
-    address eltContract = 0xA84a0B15d7c62684b71fECB5Ea8EFE0E5Af1D11B;
-    address hodlContract = 0x5c85A93991671dC5886203e0048777A4Fd219983;
-    address burnAddr = 0x1Cdb00D07b721B98Da52532DB9a7D82D2A4bF2e0;
+    address public eltContract = 0xA84a0B15d7c62684b71fECB5Ea8EFE0E5Af1D11B;
+    address public hodlContract = 0x5c85A93991671dC5886203e0048777A4Fd219983;
+    address public burnAddr = 0x121991Db3784e1a5C661E8532DC94b29B37c841c;
+    
+    uint256 public softCap = 15000000 * (10 ** uint256(eltDecimals));
+    uint256 public hardCap = 50000000 * (10 ** uint256(eltDecimals));
+    uint256 public eltPrice = 604800000000;
+    uint256 public hodlPrice = 1000000000000000;
     
     uint8 eltDecimals = 8;
 
     constructor() public {
 
+    }
+    
+    function setELTPrice(uint256 amount) public onlyOwner {
+        eltPrice = amount;
+    }
+    
+    function setHODLPrice(uint256 amount) public onlyOwner {
+        hodlPrice = amount;
+    }
+    
+    function setSoftCap(uint256 amount) public onlyOwner {
+        softCap = amount;
+    }
+    
+    function setHardCap(uint256 amount) public onlyOwner {
+        hardCap = amount;
+    }
+    
+    function getTotalELTSwapped() public view returns (uint256) {
+        uint256 eltSwapped = getELTInContract();
+        uint256 eltBurned = getELTBurned();
+        return eltSwapped.add(eltBurned);
     }
     
     function getELTInContract() public view returns (uint256) {
@@ -165,12 +192,58 @@ contract Swap is Ownable {
         return getHODLReward(amount).add(getBurnReward(amount, burnPercent));
     }
     
-    function drainHODL () public onlyOwner {
+    function drainHODL() public onlyOwner {
         IERC20(hodlContract).transfer(owner(), IERC20(hodlContract).balanceOf(address(this)));
     }
     
-    function drainELT () public onlyOwner {
+    function drainELT() public onlyOwner {
         IERC20(eltContract).transfer(owner(), IERC20(eltContract).balanceOf(address(this)));
+    }
+    
+    function buyHODLWithETH() public payable {
+        uint256 totalELTSwapped = getTotalELTSwapped();
+        require(totalELTSwapped >= hardCap, "Swap Fail: Soft cap not met, cannot yet pay with ETH.");
+        
+        uint256 ethAmount = msg.value;
+        
+        // Calculate total HODL reward and send to the sender.
+        uint256 hodlPurchased = ethAmount.div(hodlPrice) * (10 ** uint256(eltDecimals));
+        
+        uint256 hodlInContract = getHODLInContract();
+        require(hodlInContract >= hodlPurchased, "Swap Fail: Not enough HODL in contract.");
+        
+        IERC20(hodlContract).transfer(msg.sender, hodlPurchased);
+    }
+    
+    function buyELTWithETH(uint256 burnPercent) public payable {
+        uint256 totalELTSwapped = getTotalELTSwapped();
+        require(totalELTSwapped >= softCap, "Swap Fail: Soft cap not met, cannot yet pay with ETH.");
+        
+        uint256 ethAmount = msg.value;
+        
+        // Require the burn percentage to either be 0, or between 25 and 66.
+        require(burnPercent >= 0 && burnPercent <= 100, "Swap Fail: Burn percentage not within the threshold");
+            
+            
+        uint256 eltInContract = getTotalELTSwapped();
+        // Calculate amount of ELT to purchase
+        uint256 eltPurchased = ethAmount.div(eltPrice) * (10 ** uint256(eltDecimals));
+        require(eltPurchased <= eltInContract, "Swap Fail: Swap contract does not contain enough tokens");
+        
+        // Calculate the amount of ELT to burn.
+        uint256 amountToBurn = getAmountToBurn(eltPurchased, burnPercent);
+        
+        // If the sender has burnt any tokens, send these tokens to the defined burn address.
+        if(amountToBurn > 0) {
+            IERC20(eltContract).transfer(burnAddr, amountToBurn);
+        }
+        
+        // Calculate amount of ELT change to send back to buyer
+        uint256 eltChange = eltPurchased - amountToBurn;
+        IERC20(eltContract).transfer(msg.sender, eltChange);
+        
+        uint256 hodlReward = getHODLReward(amountToBurn);
+        IERC20(hodlContract).transfer(msg.sender, hodlReward);
     }
     
     function swap(uint256 amount, uint256 burnPercent) public {
