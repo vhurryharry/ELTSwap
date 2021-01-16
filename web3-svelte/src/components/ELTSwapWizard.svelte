@@ -1,7 +1,6 @@
 <script>
   import { web3, selectedAccount, connected, chainName } from "svelte-web3";
 
-  import * as service from "../utility/services";
   import * as global from "../utility/globals";
 
   /** TODO: figure out how to properly import these */
@@ -28,6 +27,7 @@
   import LiveReceipt from "./LiveReceipt/index.svelte";
   import BurnSlider from "./BurnSlider/index.svelte";
   import NumberInput from "./NumberInput/index.svelte";
+  import ScreenOverlay from "./ScreenOverlay/index.svelte";
 
   // TODO: move to utils
   // $: approveAddr = "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e";
@@ -471,4 +471,6 @@
       <p>Error state</p>
     </div>
   {/await}
+
+  <ScreenOverlay />
 </div>
