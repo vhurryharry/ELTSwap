@@ -1,9 +1,17 @@
 <script>
   import * as global from "../../utility/globals";
-  import * as store from "../../utility/stores";
+  // import * as store from "../../utility/stores";
   import NumberInput from "../NumberInput/index.svelte";
 
-  $: ELTBurnBonus = Number((store.swapAmountHODL / 100) * store.burnPercentage);
+  import {
+    swapAmountHODL,
+    swapAmountELT,
+    burnPercentage,
+  } from "../../utility/stores";
+
+  $: ELTBurnBonus = Number(($swapAmountHODL / 100) * $burnPercentage);
+
+  console.log(" ================ ", $swapAmountHODL);
 </script>
 
 <style>
@@ -20,8 +28,8 @@
       <h3>ELT Burn &#128293;</h3>
       <span
         class="elt-burn-percent"
-        class:disabled={store.swapAmountELT < global.minELTToSwap ? 'disabled' : ''}>
-        {store.burnPercentage}%
+        class:disabled={$swapAmountELT < global.minELTToSwap ? 'disabled' : ''}>
+        {$burnPercentage}%
       </span>
     </div>
 
@@ -33,9 +41,9 @@
         id="burnRatioSlider"
         min="0"
         max="100"
-        class:disabled={store.swapAmountELT < global.minELTToSwap}
-        disabled={store.swapAmountELT < global.minELTToSwap ? 'disabled' : ''}
-        bind:value={store.burnPercentage.set} />
+        class:disabled={$swapAmountELT < global.minELTToSwap}
+        disabled={$swapAmountELT < global.minELTToSwap ? 'disabled' : ''}
+        bind:value={$burnPercentage} />
     </div>
 
     <div class="column is-flex is-3-tablet is-3-desktop p-0">
@@ -44,8 +52,8 @@
         <h3>ELT Burn &#128293;</h3>
         <span
           class="elt-burn-percent"
-          class:disabled={store.swapAmountELT < global.minELTToSwap ? 'disabled' : ''}>
-          {store.burnPercentage}%
+          class:disabled={$swapAmountELT < global.minELTToSwap ? 'disabled' : ''}>
+          {$burnPercentage}%
         </span>
       </div>
 
@@ -63,11 +71,11 @@
       <h3 class="">HODL</h3>
 
       <NumberInput
-        bindTo={store.swapAmountHODL.set}
+        bindTo={$swapAmountHODL}
         placeholder="0"
         sanitizeClbk={(cleanVal) => {
           console.log(' sanitizeNumberInput cleanVal ', cleanVal);
-          return cleanVal > 0 ? store.swapAmountELT.set(cleanVal / 0.0000005) : store.swapAmountELT.set(null);
+          return cleanVal > 0 ? $swapAmountELT.update(cleanVal / 0.0000005) : $swapAmountELT.update(null);
         }}
         inputClasses="number-bubble input has-text-centered-mobile" />
     </div>
