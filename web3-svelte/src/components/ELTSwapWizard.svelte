@@ -1,63 +1,41 @@
 <script>
-  import {
-    ethStore,
-    web3,
-    selectedAccount,
-    connected,
-    chainName,
-  } from "svelte-web3";
+  import { web3, selectedAccount, connected, chainName } from "svelte-web3";
 
+  import * as service from "../utility/services";
+  import * as global from "../utility/globals";
+
+  /** TODO: figure out how to properly import these */
+  // import * as store from "../utility/stores";
   import {
     approvedELTAmount,
+    burnPercentage,
     currentWizardScreen,
-    minELTToSwap,
-    maxELTToSwap,
-  } from "../utility/index";
+    swapAmountHODL,
+    swapAmountELT,
+    isSwapBtnPending,
+    isSwapBtnDisabled,
+  } from "../utility/stores";
 
   import {
     getETHBalance,
-    getELTBurned,
-    getHODLInContract,
     getTokenBalance,
+    getELTInContract,
     getTotalHodlReward,
-    approveELT,
-    swap,
-    getAllowance,
   } from "../js/web3Helper";
 
   // TODO: fix imports to omit `/index.svelte`
   import SwapProgressBar from "./SwapProgressBar/index.svelte";
   import LiveReceipt from "./LiveReceipt/index.svelte";
-
-  let isSwapBtnDisabled = false;
-  let isSwapBtnPending = false;
+  import BurnSlider from "./BurnSlider/index.svelte";
+  import NumberInput from "./NumberInput/index.svelte";
 
   // TODO: move to utils
   // $: approveAddr = "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e";
 
-  // Creates a connection to own infura node.
-  const enable = () => {
-    ethStore
-      .setProvider(
-        "https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca"
-      )
-      .then((res) => {
-        isSwapBtnPending = false;
-      });
-  };
-  $: enableBrowser = async () => {
-    isSwapBtnPending = true;
-    await enable();
-    ethStore.setBrowserProvider();
-  };
-
-  $: swapAmountELT = null; //Number();
-  $: swapAmountHodl = null; // swapAmountELT ? Number(swapAmountELT * 0.0000005) : null;
-  $: burnPercentage = Number(0);
-  $: ELTBurnBonus = Number((swapAmountHodl / 100) * burnPercentage);
-
   $: checkAccount =
     $selectedAccount || "0x0000000000000000000000000000000000000000";
+
+  $: eltInContract = $connected ? getELTInContract($web3) : 0;
 
   $: ethBalance = $connected
     ? getETHBalance($web3, $selectedAccount)
@@ -82,103 +60,55 @@
         "0x5c85a93991671dc5886203e0048777a4fd219983"
       )
     : "";
-  $: totalHodlReward = $connected
-    ? getTotalHodlReward($web3, swapAmountELT, 25)
-    : "";
 
-  $: eltInContract = $connected ? getELTInContract($web3) : Number(0);
-  $: isConnected = $connected ? true : false;
-
-  $: hodlInContract = $connected ? getHODLInContract($web3) : "";
-  $: eltBurned = $connected ? getELTBurned($web3) : "";
-
-  $: approvedValue = $connected
-    ? getAllowance($web3, checkAccount, swapContractAddress)
-    : 0;
-
-  $: getSwapProgress = (eltAmount) => {
-    // console.log(" swapPerc ", eltAmount);
-
-    if (typeof eltAmount !== "number") {
-      return 0;
-    }
-    return parseFloat((eltAmount * 100) / absMaxELT);
-  };
-
-  async function approveELTTransfer() {
-    if ($connected) {
-      isSwapBtnDisabled = true;
-      isSwapBtnPending = true;
-      approveELT(
-        $web3,
-        swapAmountELT,
-        $selectedAccount,
-        swapContractAddress
-      ).then(async function (resolve, reject) {
-        if (resolve) {
-          console.log("Approval transaction confirmed!");
-          let eltAllowance = await getApprovedAmount();
-          approvedELTAmount.set(eltAllowance);
-          console.log("Allowance: " + eltAllowance);
-          isSwapBtnDisabled = false;
-          isSwapBtnPending = false;
-        }
-      });
-    }
-  }
-
-  $: $chainName, checkChain();
-
-  function getApprovedAmount() {
-    if ($connected) {
-      let allowance = getAllowance($web3, checkAccount, swapContractAddress);
-      console.log(allowance);
-      return allowance;
-    }
-  }
-
+  /** */
   function checkChain() {
     if ($chainName !== undefined) {
       console.log($chainName);
     }
   }
+  $: $chainName, checkChain();
 
-  function sendSwap() {
-    if ($connected) {
-      isSwapBtnDisabled = true;
-      isSwapBtnPending = true;
+  $: checkAccount =
+    $selectedAccount || "0x0000000000000000000000000000000000000000";
 
-      swap($web3, swapAmountELT, burnPercentage, $selectedAccount).then(
-        async function (resolve, reject) {
-          if (resolve) {
-            console.log("Swap transaction confirmed!");
-
-            // Check the allowance again to change the button back to Approve
-            let eltAllowance = await getApprovedAmount();
-            approvedELTAmount.set(eltAllowance);
-            console.log("Allowance: " + eltAllowance);
-            isSwapBtnDisabled = false;
-            isSwapBtnPending = false;
-          }
-        }
-      );
-    }
-  }
-
-  const fromatAddr = (str) => {
-    if (!str) return;
-    return str.substr(0, 5) + "..." + str.substr(str.length - 5, str.length);
+  // Creates a connection to own infura node.
+  const enable = () => {
+    ethStore
+      .setProvider(
+        "https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca"
+      )
+      .then((res) => {
+        $isSwapBtnPending.set(false);
+      });
   };
 
-  function castToPrecision(float, maxDecLen = 8) {
-    let decimals = (float + "").split(".")[1] || [];
-    return decimals.length > maxDecLen ? float.toFixed(maxDecLen) : float;
+  $: enableBrowser = async () => {
+    $isSwapBtnPending.update(true);
+    await enable();
+    ethStore.setBrowserProvider();
+  };
+
+  /** */
+  $: getSwapProgress = () =>
+    parseInt(
+      ($connected ? getELTInContract($web3) : 0 * 100) / global.absMaxELT
+    ) || 0;
+
+  /** */
+  $: totalHodlReward = $connected
+    ? getTotalHodlReward($web3, $swapAmountELT, 25)
+    : "";
+
+  function castToPrecision(floatNum, maxDecLen = 8) {
+    let decimals = (floatNum + "").split(".")[1] || [];
+    return decimals.length > maxDecLen ? floatNum.toFixed(maxDecLen) : floatNum;
   }
 
   function castValidAmountOfELT(elt) {
-    if (elt >= minELTToSwap) {
-      if (elt > maxELTToSwap) {
-        return false; // maxELTToSwap;
+    if (elt >= global.minELTToSwap) {
+      if (elt > global.maxELTToSwap) {
+        return false;
       }
       return elt;
     }
@@ -193,26 +123,71 @@
 
   function hodlToElt(hodl) {
     let transmuted =
-      0 < Number(hodl) <= maxELTToSwap ? Number(hodl * 2 * 10 ** 6) : null;
+      0 < Number(hodl) <= global.maxELTToSwap
+        ? Number(hodl * 2 * 10 ** 6)
+        : null;
     return castValidAmountOfELT(transmuted)
       ? castToPrecision(transmuted, 0)
       : null;
   }
 
-  const sanitizeNumberInput = (evt, isGtZeroAbs = true) => {
-    evt.preventDefault();
-    let cleanNumber = (evt.target.value = evt.target.value.replace(
-      /[^0-9\.,]/g,
-      ""
-    ));
+  function sendSwap() {
+    if ($connected) {
+      $isSwapBtnDisabled.set(true);
+      $isSwapBtnPending.set(true);
 
-    if (isGtZeroAbs) {
-      cleanNumber = Math.abs(cleanNumber);
+      swap($web3, $swapAmountELT, $burnPercentage, $selectedAccount).then(
+        async function (resolve, reject) {
+          if (resolve) {
+            console.log("Swap transaction confirmed!");
+
+            // Check the allowance again to change the button back to Approve
+            let eltAllowance = await getApprovedAmount();
+            $approvedELTAmount.set(eltAllowance);
+            console.log("Allowance: " + eltAllowance);
+            $isSwapBtnDisabled.set(false);
+            $isSwapBtnPending.set(false);
+          }
+        }
+      );
     }
+  }
 
-    return (valHandler) => {
-      valHandler(cleanNumber);
-    };
+  async function approveELTTransfer() {
+    if ($connected) {
+      $isSwapBtnDisabled.set(true);
+      $isSwapBtnPending.set(true);
+
+      approveELT(
+        $web3,
+        $swapAmountELT,
+        $selectedAccount,
+        swapContractAddress
+      ).then(async function (resolve, reject) {
+        if (resolve) {
+          console.log("Approval transaction confirmed!");
+          let eltAllowance = await getApprovedAmount();
+          $approvedELTAmount.set(eltAllowance);
+          console.log("Allowance: " + eltAllowance);
+          $isSwapBtnDisabled.set(false);
+          $isSwapBtnPending.set(false);
+        }
+      });
+    }
+  }
+
+  function getApprovedAmount() {
+    if ($connected) {
+      let allowance = getAllowance($web3, checkAccount, swapContractAddress);
+      console.log(allowance);
+      return allowance;
+    }
+  }
+
+  // TODO: move this to headerValuePill component
+  const fromatAddr = (str) => {
+    if (!str) return;
+    return str.substr(0, 5) + "..." + str.substr(str.length - 5, str.length);
   };
 </script>
 
@@ -220,7 +195,7 @@
   @import "../styles/main.scss";
 </style>
 
-<div class="elt-swap-wizard mt-5 mb-5 p-5" class:not-connected={!isConnected}>
+<div class="elt-swap-wizard mt-5 mb-5 p-5" class:not-connected={!$connected}>
   {#await $currentWizardScreen}
     <div
       class="screen wizard-pending-screen"
@@ -249,7 +224,7 @@
       <div class="screen-header py-5">
         <button
           class="button is-flat"
-          class:pending={isSwapBtnPending}
+          class:pending={$isSwapBtnPending}
           on:click={enableBrowser}>
           X
         </button>
@@ -275,7 +250,7 @@
       <div class="screen-footer is-justify-content-center">
         <button
           class="button is-rounded"
-          class:pending={isSwapBtnPending}
+          class:pending={$isSwapBtnPending}
           on:click={enableBrowser}>
           Continue
         </button>
@@ -318,14 +293,14 @@
               <span class="px-1">{fixedDecimals(value)} ETH </span>
             {/await}
             <div id="balancePill" class="">
-              {#if isConnected === false}
+              {#if $connected === false}
                 <span class="px-1">Not Connected</span>
               {:else}
                 <span class="px-1">{fromatAddr($selectedAccount)}</span>
               {/if}
               <span
                 id="connectionIndicator"
-                class:connected={isConnected}>&#11044;</span>
+                class:connected={$connected}>&#11044;</span>
             </div>
           </div>
         </div>
@@ -339,28 +314,10 @@
             <div
               class="column is-12-mobile is-4-tablet is-4-desktop has-text-centered-mobile">
               <h3 class="">ELT</h3>
-              <input
-                class="number-bubble input has-text-centered-mobile"
-                type="number"
+              <NumberInput
+                bindTo={$swapAmountELT.set}
                 placeholder="0"
-                onwheel="this.blur()"
-                bind:value={swapAmountELT}
-                on:input={(evt) => {
-                  return sanitizeNumberInput(evt)((cleanVal) => {
-                    console.log(' sanitizeNumberInput swapAmountELT ', cleanVal);
-                    return cleanVal > 0 ? cleanVal : null;
-                  });
-                }}
-                on:keydown={(evt) => {
-                  // prevent editing value by arrowKeys
-                  if (evt.key == 'ArrowDown' || evt.key == 'ArrowUp') {
-                    evt.preventDefault();
-                  }
-                }}
-                on:keyup={(evt) => {
-                  // prevent pasting negative vals
-                  swapAmountELT = Math.abs(swapAmountELT) || null;
-                }} />
+                inputClasses="number-bubble input has-text-centered-mobile" />
             </div>
 
             <div
@@ -370,10 +327,10 @@
               {:then value}
                 <h6>Approved: {value}</h6>
               {/await}
-              {#if isConnected === false}
+              {#if $connected === false}
                 <button
                   class="button connect-wallet is-rounded"
-                  class:pending={isSwapBtnPending}
+                  class:pending={$isSwapBtnPending}
                   on:click={enableBrowser}>
                   Connect Wallet
                 </button>
@@ -381,23 +338,23 @@
                 {#await $approvedELTAmount}
                   <button
                     class="button connect-wallet connected is-rounded"
-                    class:pending={isSwapBtnPending}
+                    class:pending={$isSwapBtnPending}
                     on:click={approveELTTransfer}>
                     Approve
                   </button>
                 {:then value}
-                  {#if value >= minELTToSwap}
+                  {#if value >= global.minELTToSwap}
                     <button
                       class="button connect-wallet connected is-rounded"
-                      class:pending={isSwapBtnPending}
-                      class:disabled={isSwapBtnDisabled}
+                      class:pending={$isSwapBtnPending}
+                      class:disabled={$isSwapBtnDisabled}
                       on:click={sendSwap}>
                       Swap
                     </button>
                   {:else}
                     <button
                       class="button connect-wallet connected is-rounded"
-                      class:pending={isSwapBtnPending}
+                      class:pending={$isSwapBtnPending}
                       on:click={approveELTTransfer}>
                       Approve
                     </button>
@@ -409,148 +366,57 @@
             <div
               class="column is-hidden-mobile is-4-tablet is-4-desktop has-text-centered-mobile has-text-right">
               <h3 class="">HODL</h3>
-              <input
-                class="number-bubble input has-text-right"
-                type="number"
+              <NumberInput
+                bindTo={$swapAmountHODL.set}
                 placeholder="0"
-                onwheel="this.blur()"
-                bind:value={swapAmountHodl}
-                on:input={(evt) => {
-                  return sanitizeNumberInput(evt)((cleanVal) => {
-                    console.log(' sanitizeNumberInput swapAmountHodl ', cleanVal);
-                    return cleanVal > 0 ? cleanVal : null;
-                  });
-                }}
-                on:keydown={(evt) => {
-                  // prevent editing value by arrowKeys
-                  if (evt.key == 'ArrowDown' || evt.key == 'ArrowUp') {
-                    evt.preventDefault();
-                  }
-                }}
-                on:keyup={(evt) => {
-                  // prevent pasting negative vals
-                  swapAmountELT = Math.abs(swapAmountELT) || null;
-                }} />
+                inputClasses="number-bubble input has-text-right" />
             </div>
           </div>
         </div>
 
-        <div class="column">
-          <div class="columns level is-flex-wrap-wrap">
-            <div class="column is-hidden-mobile is-3-tablet is-3-desktop">
-              <h3>ELT Burn &#128293;</h3>
-              <span
-                class="elt-burn-percent"
-                class:disabled={swapAmountELT < minELTToSwap ? 'disabled' : ''}>
-                {burnPercentage}%
-              </span>
-            </div>
+        <BurnSlider />
 
-            <div
-              id="swapHodlBurnRatio"
-              class="column is-12-mobile is-4-tablet is-6-desktop pb-0">
-              <input
-                type="range"
-                id="burnRatioSlider"
-                min="0"
-                max="100"
-                class:disabled={swapAmountELT < minELTToSwap}
-                disabled={swapAmountELT < minELTToSwap ? 'disabled' : ''}
-                bind:value={burnPercentage} />
-            </div>
-
-            <div class="column is-flex is-3-tablet is-3-desktop p-0">
-              <div
-                class="column is-hidden-tablet is-hidden-desktop is-6-mobile is-2-tablet is-2-desktop">
-                <h3>ELT Burn &#128293;</h3>
-                <span
-                  class="elt-burn-percent"
-                  class:disabled={swapAmountELT < minELTToSwap ? 'disabled' : ''}>
-                  {burnPercentage}%
-                </span>
-              </div>
-
-              <div class="column is-6-mobile is-pull-right has-text-right">
-                <h3><span class="is-hidden-mobile">HODL</span> Burn Bonus</h3>
-                <span class="hodl-burn-bonus" class:disabled={!ELTBurnBonus}>
-                  {ELTBurnBonus.toFixed(4)}
-                  HODL
-                </span>
-              </div>
-            </div>
-
-            <div
-              class="column is-hidden-tablet is-hidden-desktop if-full-mobile is-5-dektop has-text-centered">
-              <h3 class="">HODL</h3>
-              <input
-                class="number-bubble input has-text-centered-mobile"
-                type="number"
-                placeholder="0"
-                onwheel="this.blur()"
-                bind:value={swapAmountHodl}
-                on:input={(evt) => {
-                  // console.dir(' .... ', sanitizeNumberInput(evt));
-                  return sanitizeNumberInput(evt)((cleanVal) => {
-                    console.log(' sanitizeNumberInput cleanVal ', cleanVal);
-                    // swapAmountHodl = cleanVal;
-                    return cleanVal > 0 ? (swapAmountELT = cleanVal / 0.0000005) : null;
-                  });
-                }}
-                on:keydown={(evt) => {
-                  // prevent editing value by arrowKeys
-                  if (evt.key == 'ArrowDown' || evt.key == 'ArrowUp') {
-                    evt.preventDefault();
-                  }
-                }}
-                on:keyup={(evt) => {
-                  // prevent pasting negative vals
-                  swapAmountELT = Math.abs(swapAmountELT) || null;
-                }} />
-            </div>
-
-            <div
-              class="column is-flex is-hidden-tablet is-hidden-desktop is-flex-direction-column is-12-mobile is-justify-content-end ">
-              {#await $approvedELTAmount}
-                <h6>Loading approved</h6>
-              {:then value}
-                <h6>Approved: {value}</h6>
-              {/await}
-              {#if isConnected === false}
+        <div
+          class="column is-flex is-hidden-tablet is-hidden-desktop is-flex-direction-column is-12-mobile is-justify-content-end ">
+          {#await $approvedELTAmount}
+            <h6>Loading approved</h6>
+          {:then value}
+            <h6>Approved: {value}</h6>
+          {/await}
+          {#if $connected === false}
+            <button
+              class="button connect-wallet is-rounded"
+              class:pending={$isSwapBtnPending}
+              on:click={enableBrowser}>
+              Connect Wallet
+            </button>
+          {:else}
+            {#await $approvedELTAmount}
+              <button
+                class="button connect-wallet connected is-rounded"
+                class:pending={$isSwapBtnPending}
+                on:click={approveELTTransfer.set}>
+                Approve
+              </button>
+            {:then value}
+              {#if value >= global.minELTToSwap}
                 <button
-                  class="button connect-wallet is-rounded"
-                  class:pending={isSwapBtnPending}
-                  on:click={enableBrowser}>
-                  Connect Wallet
+                  class="button connect-wallet connected is-rounded"
+                  class:pending={$isSwapBtnPending}
+                  class:disabled={$isSwapBtnDisabled}
+                  on:click={sendSwap}>
+                  Swap
                 </button>
               {:else}
-                {#await $approvedELTAmount}
-                  <button
-                    class="button connect-wallet connected is-rounded"
-                    class:pending={isSwapBtnPending}
-                    on:click={approveELTTransfer}>
-                    Approve
-                  </button>
-                {:then value}
-                  {#if value >= minELTToSwap}
-                    <button
-                      class="button connect-wallet connected is-rounded"
-                      class:pending={isSwapBtnPending}
-                      class:disabled={isSwapBtnDisabled}
-                      on:click={sendSwap}>
-                      Swap
-                    </button>
-                  {:else}
-                    <button
-                      class="button connect-wallet connected is-rounded"
-                      class:pending={isSwapBtnPending}
-                      on:click={approveELTTransfer}>
-                      Approve
-                    </button>
-                  {/if}
-                {/await}
+                <button
+                  class="button connect-wallet connected is-rounded"
+                  class:pending={$isSwapBtnPending}
+                  on:click={approveELTTransfer.set}>
+                  Approve
+                </button>
               {/if}
-            </div>
-          </div>
+            {/await}
+          {/if}
         </div>
       </div>
 
@@ -560,7 +426,7 @@
       </div>
 
       <div class="screen-footer">
-        <SwapProgressBar />
+        <SwapProgressBar {getELTInContract} {getSwapProgress} {eltInContract} />
       </div>
     </div>
 

@@ -21,8 +21,6 @@
   * TODO: Figure out why so.
   */
   .ticker-belt-wrapper {
-    font-size: 0.8rem;
-
     background-color: red;
   }
 </style>

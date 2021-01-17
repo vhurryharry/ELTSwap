@@ -1,15 +1,8 @@
 <script>
   import { web3, connected } from "svelte-web3";
   import TickerBelt from "../TickerBelt/index.svelte";
-
-  import { absMaxELT } from "../../utility";
-  import { getELTInContract } from "../../js/web3Helper";
-
-  const getSwapProgress = () => {
-    return parseInt((eltInContract * 100) / absMaxELT);
-  };
-
-  $: eltInContract = $connected ? getELTInContract($web3) : 0;
+  // import * as service from "../../utility/services";
+  // import { getELTInContract } from "../../js/web3Helper";
 </script>
 
 <style>
@@ -20,7 +13,8 @@
     <h3>
       <span class="">
         Eltswap Progress:
-        <span class="eltswap-progress-success">{getSwapProgress()}%</span><sup
+        <span
+          class="eltswap-progress-success">{$$props.getSwapProgress()}%</span><sup
           class="ref-asterix">*</sup>
       </span>
     </h3>
@@ -34,11 +28,11 @@
     <div id="swapProgress" class="is-flex is-12">
       <span
         id="swapProgressGradient"
-        style="--progress-bar-width: {getSwapProgress()}%;" />
+        style="--progress-bar-width: {$$props.getSwapProgress()}%;" />
       <span id="minSwapMark" />
       <span
         id="currentSwapMark"
-        style="--curr-mark-left: {getSwapProgress()}%;">{getSwapProgress() > 10 ? eltInContract + ' ELT' : ''}</span>
+        style="--curr-mark-left: {$$props.getSwapProgress()}%;">{$$props.getSwapProgress() > 10 ? $$props.eltInContract + ' ELT' : ''}</span>
     </div>
 
     <span class="">0 ELT</span>
