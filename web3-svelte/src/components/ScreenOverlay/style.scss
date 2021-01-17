@@ -11,8 +11,11 @@
   border-radius: 1rem;
   text-align: center;
   cursor: pointer;
+  display: none;
 }
-
+.screen-overlay.active {
+  display: flex;
+}
 .screen-overlay-wrapper {
   background-color: $themeSurfaceMid;
   margin-top: auto;

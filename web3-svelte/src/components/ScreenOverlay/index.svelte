@@ -2,19 +2,26 @@
   import Icon from "svelte-awesome";
   import { times } from "svelte-awesome/icons";
 
-  const closeOverlay = (evt) => {
-    console.log(" /????? ", evt);
-  };
+  import { isOverlayScreenActive } from "../../utility/stores";
+
+  // const closeOverlay = ;
 </script>
 
 <style>
 </style>
 
-<div class="screen-overlay active is-flex is-12 has-text-center">
+<div
+  class="screen-overlay is-12 has-text-center"
+  class:active={$isOverlayScreenActive}>
   <div
-    class="screen-overlay-wrapper columns is-flex-direction-column is-justify-content-center p-5">
-    <div class="overlay-header column has-text-left">
-      <Icon data={times} class="close-knob" on:click={closeOverlay} />
+    class="screen-overlay-wrapper is-flex-direction-column is-justify-content-center p-5">
+    <div
+      class="overlay-header column has-text-left"
+      on:click={(evt) => {
+        isOverlayScreenActive.set(false);
+        console.log(' /????? ', $isOverlayScreenActive);
+      }}>
+      <Icon data={times} class="close-knob" />
     </div>
     <div class="overlay-content column">
       <div class="block px-5 mb-5">
