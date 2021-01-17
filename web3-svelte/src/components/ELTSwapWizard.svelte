@@ -11,6 +11,7 @@
     approvedELTAmount,
     currentWizardScreen,
     minELTToSwap,
+    maxELTToSwap,
   } from "../utility/index";
 
   import {
@@ -50,14 +51,11 @@
     ethStore.setBrowserProvider();
   };
 
-  const minELTToSwap = 2 * 10 ** 3;
-  const maxELTToSwap = 100 * 10 ** 6;
-  const absMaxELT = 40 * 10 ** 6;
-
   $: swapAmountELT = null; //Number();
   $: swapAmountHodl = null; // swapAmountELT ? Number(swapAmountELT * 0.0000005) : null;
   $: burnPercentage = Number(0);
   $: ELTBurnBonus = Number((swapAmountHodl / 100) * burnPercentage);
+
   $: checkAccount =
     $selectedAccount || "0x0000000000000000000000000000000000000000";
 
@@ -285,8 +283,8 @@
     </div>
 
     <div
-      class="screen elt-swap-wizad-screen"
-      class:active={currScreen == 'elt-swap-wizad-screen'}>
+      class="screen elt-swap-wizard-screen"
+      class:active={currScreen == 'elt-swap-wizard-screen'}>
       <div
         class="screen-header columns is-flex is-2 level is-multiline is-flex-wrap-wrap
         is-justify-content-end">
@@ -348,8 +346,8 @@
                 onwheel="this.blur()"
                 bind:value={swapAmountELT}
                 on:input={(evt) => {
-                  return sanitizeNumber(evt)((cleanVal) => {
-                    console.log(' sanitizeNumber swapAmountELT ', cleanVal);
+                  return sanitizeNumberInput(evt)((cleanVal) => {
+                    console.log(' sanitizeNumberInput swapAmountELT ', cleanVal);
                     return cleanVal > 0 ? cleanVal : null;
                   });
                 }}
@@ -418,8 +416,8 @@
                 onwheel="this.blur()"
                 bind:value={swapAmountHodl}
                 on:input={(evt) => {
-                  return sanitizeNumber(evt)((cleanVal) => {
-                    console.log(' sanitizeNumber swapAmountHodl ', cleanVal);
+                  return sanitizeNumberInput(evt)((cleanVal) => {
+                    console.log(' sanitizeNumberInput swapAmountHodl ', cleanVal);
                     return cleanVal > 0 ? cleanVal : null;
                   });
                 }}
@@ -491,9 +489,9 @@
                 onwheel="this.blur()"
                 bind:value={swapAmountHodl}
                 on:input={(evt) => {
-                  // console.dir(' .... ', sanitizeNumber(evt));
-                  return sanitizeNumber(evt)((cleanVal) => {
-                    console.log(' sanitizeNumber cleanVal ', cleanVal);
+                  // console.dir(' .... ', sanitizeNumberInput(evt));
+                  return sanitizeNumberInput(evt)((cleanVal) => {
+                    console.log(' sanitizeNumberInput cleanVal ', cleanVal);
                     // swapAmountHodl = cleanVal;
                     return cleanVal > 0 ? (swapAmountELT = cleanVal / 0.0000005) : null;
                   });

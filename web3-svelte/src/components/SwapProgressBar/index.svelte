@@ -1,5 +1,6 @@
 <script>
   import { web3, connected } from "svelte-web3";
+  import TickerBelt from "../TickerBelt/index.svelte";
 
   import { absMaxELT } from "../../utility";
   import { getELTInContract } from "../../js/web3Helper";
@@ -23,6 +24,10 @@
           class="ref-asterix">*</sup>
       </span>
     </h3>
+  </div>
+
+  <div class="column is-12">
+    <TickerBelt />
   </div>
 
   <div class="column is-12 elt-swap-progress-wrapper">
