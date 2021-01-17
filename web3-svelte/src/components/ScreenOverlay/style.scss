@@ -1,0 +1,33 @@
+
+.screen-overlay {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  position: absolute;
+  z-index: 10000;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 1rem;
+  text-align: center;
+  cursor: pointer;
+  display: none;
+}
+.screen-overlay.active {
+  display: flex;
+}
+.screen-overlay-wrapper {
+  background-color: $themeSurfaceMid;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 1rem;
+  box-shadow: 0 0 10px #000;
+  white-space: normal;
+  cursor: auto;
+}
+
+.overlay-header{
+  text-align: left;
+}

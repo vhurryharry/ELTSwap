@@ -2529,6 +2529,13 @@ supports-color@^7.0.0, supports-color@^7.1.0:
   dependencies:
     has-flag "^4.0.0"
 
+svelte-awesome@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/svelte-awesome/-/svelte-awesome-2.3.0.tgz#03735c1ba1940e931c41271a5ebf72e2ae9e292c"
+  integrity sha512-xXU3XYJmr5PK9e3pCpW6feU/tNpAhERWDrgDxkC0DU6LNum02zzc00I17bmUWTSRdKLf+IFbA5hWvCm1V8g+/A==
+  dependencies:
+    svelte "^3.15.0"
+
 svelte-preprocess@^4.6.1:
   version "4.6.1"
   resolved "https://registry.yarnpkg.com/svelte-preprocess/-/svelte-preprocess-4.6.1.tgz#a7de4d91b32d5608b6637da960ee81e6089ae276"
@@ -2545,6 +2552,11 @@ svelte-web3@^1.2.9:
 svelte@^3.0.0:
   version "3.31.0"
   resolved "https://registry.yarnpkg.com/svelte/-/svelte-3.31.0.tgz#13966e5f55b975bc86675469bb2c58dd0e558d97"
+
+svelte@^3.15.0:
+  version "3.31.2"
+  resolved "https://registry.yarnpkg.com/svelte/-/svelte-3.31.2.tgz#d2ddf6cacbb95e4cc3796207510b660a25586324"
+  integrity sha512-TxZGrXzX2ggFH3BIKY5fmbeMdJuZrMIMDYPMX6R9255bueuYIuVaBQSLUeY2oD7W4IdeqRZiAVGCjDw2POKBRA==
 
 svgo@^1.0.0:
   version "1.3.2"

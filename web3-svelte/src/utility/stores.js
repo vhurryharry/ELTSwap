@@ -8,4 +8,5 @@ export let swapAmountELT = writable(0);
 
 export let isSwapBtnPending = writable(false);
 export let isSwapBtnDisabled = writable(false);
+export let isOverlayScreenActive = writable(false);
 
