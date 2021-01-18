@@ -1,40 +1,67 @@
 <script>
   import { web3, connected } from "svelte-web3";
+  import { Datatable, rows } from "svelte-simple-datatables";
 
-  let transactionHistory = {
-    columnNames: ["transaction", "action", "time", "status"],
-    rows: [
-      {
-        transaction: "0x0000000000000000000000000000000000000000",
-        action: "swap",
-        timestamp: new Date.now(),
-        status: "pending",
-      },
-      {
-        transaction: "0x0000000000000000000000000000000000000000",
-        action: "swap",
-        timestamp: new Date.now(),
-        status: "success",
-      },
-      {
-        transaction: "0x0000000000000000000000000000000000000000",
-        action: "deposit",
-        timestamp: new Date.now(),
-        status: "failed",
-      },
-      {
-        transaction: "0x0000000000000000000000000000000000000000",
-        action: "swap",
-        timestamp: new Date.now(),
-        status: "success",
-      },
-      {
-        transaction: "0x0000000000000000000000000000000000000000",
-        action: "deposit",
-        timestamp: new Date.now(),
-        status: "success",
-      },
-    ],
+  $: transactionHistory = [
+    {
+      address: "0x1000000000000000000000000000000000000000",
+      action: "swap",
+      timestamp: new Date.now(),
+      status: "pending",
+    },
+    {
+      address: "0x2000000000000000000000000000000000000000",
+      action: "swap",
+      timestamp: new Date.now(),
+      status: "success",
+    },
+    {
+      address: "0x3000000000000000000000000000000000000000",
+      action: "deposit",
+      timestamp: new Date.now(),
+      status: "failed",
+    },
+    {
+      address: "0x4000000000000000000000000000000000000000",
+      action: "swap",
+      timestamp: new Date.now(),
+      status: "success",
+    },
+    {
+      address: "0x5000000000000000000000000000000000000000",
+      action: "deposit",
+      timestamp: new Date.now(),
+      status: "success",
+    },
+  ];
+
+  /** available options https://github.com/vincjo/svelte-simple-datatables */
+  let tableConfig = {
+    // sortable: true,
+    // pagination: true,
+    rowPerPage: 15,
+    // columnFilter: true,
+    // labels: {
+    //   search: "Search...", // search input placeholer
+    //   filter: "Filter", // filter inputs placeholder
+    //   noRows: "No entries to found",
+    //   info: "Showing {start} to {end} of {rows} entries",
+    //   previous: "Previous",
+    //   next: "Next",
+    // },
+  };
+
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case "failed":
+        return "❌";
+      case "success":
+        return "✅";
+      case "pending":
+        return "⏳";
+      default:
+        return "?";
+    }
   };
 </script>
 
@@ -42,32 +69,23 @@
 </style>
 
 <div class="transaction-history-wrapper is-flex block is-12">
-  <div class="is-mobile-hidden">
-    {#each tickers as ticker}
-      <div class="is-flex is-3 key-val-row">
-        <div class="column col-left py-0">{ticker.label}</div>
-        {#await ticker.value}
-          <div class="column col-right has-text-right py-0">0</div>
-        {:then value}
-          <div class="column col-right has-text-right py-0">{value}</div>
-        {/await}
-      </div>
-    {/each}
-  </div>
-
-  <div class="flex-data-table transactions-history">
-    <!-- tablet, desktop -->
-    <div class="data-table-header columns">
-      <div class="table-cell" />
-    </div>
-
-    <div class="table-body">
-      <div claas="table-row">
-        <div claas="table-cell" />
-      </div>
-    </div>
-    <div claas="table-footer">
-      <div claas="table-cell" />
-    </div>
-  </div>
+  <Datatable settings={tableConfig} data={transactionHistory}>
+    <thead>
+      <th data-key="address">address</th>
+      <th data-key="action">action</th>
+      <th data-key="timestamp">timestamp</th>
+      <th data-key="status">status</th>
+    </thead>
+    <tbody>
+      {#each $rows as row}
+        <tr>
+          <td>{row.address}</td>
+          <td>{row.action}</td>
+          <td>{row.timestamp}</td>
+          <td>{row.status}</td>
+          <td class="has-text-right">{getStatusLabel(row.status)}</td>
+        </tr>
+      {/each}
+    </tbody>
+  </Datatable>
 </div>
