@@ -38,9 +38,9 @@
   /** available options https://github.com/vincjo/svelte-simple-datatables */
   let tableConfig = {
     // sortable: true,
-    // pagination: true,
-    rowPerPage: 15,
-    // columnFilter: true,
+    pagination: false,
+    // rowPerPage: 15,
+    columnFilter: false,
     // labels: {
     //   search: "Search...", // search input placeholer
     //   filter: "Filter", // filter inputs placeholder
@@ -49,6 +49,11 @@
     //   previous: "Previous",
     //   next: "Next",
     // },
+    blocks: {
+      searchInput: false,
+      // paginationButtons: false,
+      // paginationRowCount: false,
+    },
   };
 
   const getStatusLabel = (status) => {
@@ -75,6 +80,7 @@
       <th data-key="action">action</th>
       <th data-key="timestamp">timestamp</th>
       <th data-key="status">status</th>
+      <th />
     </thead>
     <tbody>
       {#each $rows as row}

@@ -17,3 +17,8 @@
 /**
  * TODO: find a way of exporting methods based on web3
  */
+
+export const formatAddr = (str) => {
+  if (!str) return;
+  return str.substr(0, 5) + "..." + str.substr(str.length - 5, str.length);
+};
