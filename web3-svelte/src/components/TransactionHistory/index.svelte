@@ -6,31 +6,31 @@
     {
       address: "0x1000000000000000000000000000000000000000",
       action: "swap",
-      timestamp: new Date.now(),
+      timestamp: Date.now(),
       status: "pending",
     },
     {
       address: "0x2000000000000000000000000000000000000000",
       action: "swap",
-      timestamp: new Date.now(),
+      timestamp: Date.now(),
       status: "success",
     },
     {
       address: "0x3000000000000000000000000000000000000000",
       action: "deposit",
-      timestamp: new Date.now(),
+      timestamp: Date.now(),
       status: "failed",
     },
     {
       address: "0x4000000000000000000000000000000000000000",
       action: "swap",
-      timestamp: new Date.now(),
+      timestamp: Date.now(),
       status: "success",
     },
     {
       address: "0x5000000000000000000000000000000000000000",
       action: "deposit",
-      timestamp: new Date.now(),
+      timestamp: Date.now(),
       status: "success",
     },
   ];
