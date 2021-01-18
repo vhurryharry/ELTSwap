@@ -1,6 +1,7 @@
 <script>
   import { web3, connected } from "svelte-web3";
   import { Datatable, rows } from "svelte-simple-datatables";
+  import { formatAddr } from "../../utility/services.js";
 
   $: transactionHistory = [
     {
@@ -73,7 +74,7 @@
 <style>
 </style>
 
-<div class="transaction-history-wrapper is-flex block is-12">
+<div class="transaction-history-wrapper is-flex is-12">
   <Datatable settings={tableConfig} data={transactionHistory}>
     <thead>
       <th data-key="address">address</th>
@@ -82,10 +83,14 @@
       <th data-key="status">status</th>
       <th />
     </thead>
-    <tbody>
+    <tbody class="history-body">
       {#each $rows as row}
         <tr>
-          <td>{row.address}</td>
+          <td>
+            <a
+              href={'https://etherscan.io/tx/' + row.address}
+              target="_blank">{formatAddr(row.address)}</a>
+          </td>
           <td>{row.action}</td>
           <td>{row.timestamp}</td>
           <td>{row.status}</td>

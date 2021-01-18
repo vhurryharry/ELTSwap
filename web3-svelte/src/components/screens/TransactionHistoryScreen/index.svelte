@@ -6,7 +6,7 @@
   class="screen transaction-history-screen"
   class:active={$$props.currScreen == 'transaction-history-screen'}>
   <div class="screen-header">
-    <p>{$$props.currScreen}</p>
+    <h3>Transaction History:</h3>
   </div>
 
   <div class="screen-body">
