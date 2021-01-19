@@ -85,7 +85,8 @@
         "https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca"
       )
       .then((res) => {
-        isSwapBtnPending.set(false);
+        console.dir(res);
+        // isSwapBtnPending.set(false);
       });
   };
 
@@ -162,11 +163,11 @@
   }
 
   async function approveELTTransfer() {
-    if ($connected) {
-      console.log("2 --- : " + $isSwapBtnDisabled);
-      isSwapBtnDisabled.set(true);
-      isSwapBtnPending.set(true);
+    console.log("2 --- : " + $isSwapBtnDisabled);
+    isSwapBtnDisabled.set(true);
+    isSwapBtnPending.set(true);
 
+    if ($connected) {
       approveELT(
         $web3,
         $swapAmountELT,
@@ -260,12 +261,16 @@
           class="column is-12-mobile is-4-tablet is-4-desktop has-text-centered-mobile">
           <h3 class="">ELT {$swapAmountELT}</h3>
           <NumberInput
-            bindTo={swapAmountELT}
-            storeKey={'swapAmountELT'}
+            bindTo={$swapAmountELT}
             placeholder="0"
             sanitizeClbk={(cleanVal) => {
-              console.log(' sanitizeNumber swapAmountELT ', cleanVal);
-              swapAmountELT.set(cleanVal > 0 ? cleanVal : 0);
+              if (cleanVal <= global.maxELTToSwap) {
+                console.log(' sanitizeNumberInput swapAmountELT ', $swapAmountELT);
+                swapAmountELT.set(cleanVal);
+              } else {
+                swapAmountELT.set(global.maxELTToSwap);
+              }
+              swapAmountHODL.set(eltToHodl($swapAmountELT));
             }}
             inputClasses="number-bubble input has-text-centered-mobile" />
         </div>
@@ -273,7 +278,7 @@
         <div
           class="column is-flex is-hidden-mobile is-flex-direction-column is-4-tablet is-4-desktop is-justify-content-end ">
           {#await $approvedELTAmount}
-            <h6>Loading approved</h6>
+            <h6>Loading...</h6>
           {:then value}
             <h6>Approved: {value}</h6>
           {/await}
@@ -315,13 +320,21 @@
 
         <div
           class="column is-hidden-mobile is-4-tablet is-4-desktop has-text-centered-mobile has-text-right">
-          <h3 class="">HODL</h3>
+          <h3 class="">{$swapAmountHODL} HODL</h3>
           <NumberInput
-            bindTo={swapAmountHODL}
+            bindTo={$swapAmountHODL}
             placeholder="0"
             sanitizeClbk={(cleanVal) => {
-              // console.log(' sanitizeNumber swapAmountHODL ', cleanVal);
-              swapAmountHODL.set(cleanVal > 0 ? cleanVal : 0);
+              if (cleanVal <= 50) {
+                swapAmountELT.set(hodlToElt(cleanVal));
+                swapAmountHODL.set(cleanVal);
+
+                console.log(' sanitizeNumberInput swapAmountHodl ', cleanVal);
+                // return cleanVal > 0 ? cleanVal : null;
+              } else {
+                swapAmountHODL.set(50);
+                swapAmountELT.set(hodlToElt(global.maxELTToSwap));
+              }
             }}
             inputClasses="number-bubble input has-text-right" />
         </div>
