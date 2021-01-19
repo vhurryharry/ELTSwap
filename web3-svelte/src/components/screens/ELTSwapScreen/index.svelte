@@ -1,10 +1,10 @@
 <script>
   import { web3, selectedAccount, connected, chainName } from "svelte-web3";
 
-  import * as global from "../../../utility/globals";
+  import * as global from "../../../utils/globals";
 
   /** TODO: figure out how to properly import these */
-  // import * as store from "../utility/stores";
+  // import * as store from "../utils/stores";
   import {
     approvedELTAmount,
     burnPercentage,
@@ -12,7 +12,7 @@
     swapAmountELT,
     isSwapBtnPending,
     isSwapBtnDisabled,
-  } from "../../../utility/stores";
+  } from "../../../utils/stores";
 
   import {
     getETHBalance,
@@ -83,7 +83,7 @@
   };
 
   $: enableBrowser = async () => {
-    $isSwapBtnPending.update(true);
+    $isSwapBtnPending.set(true);
     await enable();
     ethStore.setBrowserProvider();
   };
@@ -132,6 +132,7 @@
 
   function sendSwap() {
     if ($connected) {
+      console.log("0 --- : " + $isSwapBtnDisabled);
       $isSwapBtnDisabled.set(true);
       $isSwapBtnPending.set(true);
 
@@ -144,6 +145,7 @@
             let eltAllowance = await getApprovedAmount();
             $approvedELTAmount.set(eltAllowance);
             console.log("Allowance: " + eltAllowance);
+            console.log("1 --- : " + $isSwapBtnDisabled);
             $isSwapBtnDisabled.set(false);
             $isSwapBtnPending.set(false);
           }
@@ -154,6 +156,7 @@
 
   async function approveELTTransfer() {
     if ($connected) {
+      console.log("2 --- : " + $isSwapBtnDisabled);
       $isSwapBtnDisabled.set(true);
       $isSwapBtnPending.set(true);
 
@@ -168,6 +171,7 @@
           let eltAllowance = await getApprovedAmount();
           $approvedELTAmount.set(eltAllowance);
           console.log("Allowance: " + eltAllowance);
+          console.log("3 --- : " + $isSwapBtnDisabled);
           $isSwapBtnDisabled.set(false);
           $isSwapBtnPending.set(false);
         }
@@ -247,10 +251,15 @@
       <div class="columns is-flex-wrap-wrap ">
         <div
           class="column is-12-mobile is-4-tablet is-4-desktop has-text-centered-mobile">
-          <h3 class="">ELT</h3>
+          <h3 class="">ELT {$swapAmountELT}</h3>
           <NumberInput
-            bindTo={$swapAmountELT.set}
+            bindTo={swapAmountELT}
+            storeKey={'swapAmountELT'}
             placeholder="0"
+            sanitizeClbk={(cleanVal) => {
+              console.log(' sanitizeNumber swapAmountELT ', cleanVal);
+              swapAmountELT.set(cleanVal > 0 ? cleanVal : 0);
+            }}
             inputClasses="number-bubble input has-text-centered-mobile" />
         </div>
 
@@ -301,8 +310,12 @@
           class="column is-hidden-mobile is-4-tablet is-4-desktop has-text-centered-mobile has-text-right">
           <h3 class="">HODL</h3>
           <NumberInput
-            bindTo={$swapAmountHODL.set}
+            bindTo={swapAmountHODL}
             placeholder="0"
+            sanitizeClbk={(cleanVal) => {
+              console.log(' sanitizeNumber swapAmountHODL ', cleanVal);
+              swapAmountHODL.set(cleanVal > 0 ? cleanVal : 0);
+            }}
             inputClasses="number-bubble input has-text-right" />
         </div>
       </div>

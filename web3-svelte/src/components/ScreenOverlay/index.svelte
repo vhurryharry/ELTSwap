@@ -2,7 +2,7 @@
   import Icon from "svelte-awesome";
   import { times } from "svelte-awesome/icons";
 
-  import { isOverlayScreenActive } from "../../utility/stores";
+  import { isOverlayScreenActive } from "../../utils/stores";
 
   // const closeOverlay = ;
 </script>

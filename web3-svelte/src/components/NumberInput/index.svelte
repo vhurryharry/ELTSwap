@@ -1,6 +1,4 @@
 <script>
-  import * as store from "../../utility/stores";
-
   const sanitizeNumberInput = (evt, isGtZeroAbs = true) => {
     evt.preventDefault();
     let cleanNumber = (evt.target.value = evt.target.value.replace(
@@ -13,9 +11,13 @@
     }
 
     return (valHandler) => {
-      valHandler(cleanNumber);
+      if (typeof valHandler === "function") {
+        valHandler(Number(cleanNumber));
+      }
     };
   };
+
+  let config = $$props;
 </script>
 
 <style>
@@ -23,27 +25,34 @@
 
 <div class="numper-input-wrapper is-flex block is-12">
   <input
-    class={$$props.inputClasses || 'number-bubble input has-text-centered-mobile'}
+    class={config.inputClasses || 'number-bubble input has-text-centered-mobile'}
     type="number"
-    placeholder={$$props.placeholder || '0'}
+    placeholder={config.placeholder || '0'}
     onwheel="this.blur()"
-    bind:value={$$props.bindTo}
+    bind:value={config.bindTo}
     on:input={(evt) => {
-      return sanitizeNumberInput(evt)($$props.sanitizeClbk);
+      return sanitizeNumberInput(evt)(config.sanitizeClbk);
     }}
     on:keydown={(evt) => {
       // prevent editing value by arrowKeys
       if (evt.key == 'ArrowDown' || evt.key == 'ArrowUp') {
         evt.preventDefault();
       }
+      // NB: excluding `-` here would work but not for copy-paste
     }}
-    on:keyup={(evt) => {
+    on:blur={(evt) => {
+      // NB: this will abs th value but will not replace the
+      // value in the input
+      // TODO: make sure negative values are rewritten
+      ///////// past variations:
+      // if (typeof swapValues[config.storeKey].set === 'function') {
+      //   swapValues[config.storeKey].set(Math.abs(swapValues[config.storeKey]) || 0);
+      // }
       // prevent pasting negative vals
-      if (typeof $$props.bondTo == 'function') {
-        // assumes we've passed a store value with a .set()
-        $$props.bindTo(Math.abs(store.swapAmountELT) || null);
-      } else {
-        $$props.bindTo = Math.abs(store.swapAmountELT) || null;
-      }
+      // NB: this causes rerendering; reconsider
+      // console.log(' ??????? ', config.bindTo).set;
+      // if (config.bindTo && typeof config.bindTo.set === 'function') {
+      //   config.bindTo = Number(Math.abs(config.storeKey)) || 0;
+      // }
     }} />
 </div>

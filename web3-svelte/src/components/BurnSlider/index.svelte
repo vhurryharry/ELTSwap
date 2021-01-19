@@ -1,17 +1,15 @@
 <script>
-  import * as global from "../../utility/globals";
-  // import * as store from "../../utility/stores";
+  import * as global from "../../utils/globals";
+  // import * as store from "../../utils/stores";
   import NumberInput from "../NumberInput/index.svelte";
 
   import {
     swapAmountHODL,
     swapAmountELT,
     burnPercentage,
-  } from "../../utility/stores";
+  } from "../../utils/stores";
 
   $: ELTBurnBonus = Number(($swapAmountHODL / 100) * $burnPercentage);
-
-  console.log(" ================ ", $swapAmountHODL);
 </script>
 
 <style>
@@ -70,14 +68,14 @@
       class="column is-hidden-tablet is-hidden-desktop if-full-mobile is-5-dektop has-text-centered">
       <h3 class="">HODL</h3>
 
-      <NumberInput
+      <!-- <NumberInput
         bindTo={$swapAmountHODL}
         placeholder="0"
         sanitizeClbk={(cleanVal) => {
           console.log(' sanitizeNumberInput cleanVal ', cleanVal);
           return cleanVal > 0 ? $swapAmountELT.update(cleanVal / 0.0000005) : $swapAmountELT.update(null);
         }}
-        inputClasses="number-bubble input has-text-centered-mobile" />
+        inputClasses="number-bubble input has-text-centered-mobile" /> -->
     </div>
   </div>
 </div>
