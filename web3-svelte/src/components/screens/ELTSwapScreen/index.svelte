@@ -1,5 +1,11 @@
 <script>
-  import { web3, selectedAccount, connected, chainName } from "svelte-web3";
+  import {
+    web3,
+    selectedAccount,
+    connected,
+    chainName,
+    ethStore,
+  } from "svelte-web3";
 
   import * as global from "../../../utils/globals";
 
@@ -73,17 +79,18 @@
 
   // Creates a connection to own infura node.
   const enable = () => {
+    // console.dir(ethStore);
     ethStore
       .setProvider(
         "https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca"
       )
       .then((res) => {
-        $isSwapBtnPending.set(false);
+        isSwapBtnPending.set(false);
       });
   };
 
   $: enableBrowser = async () => {
-    $isSwapBtnPending.set(true);
+    isSwapBtnPending.set(true);
     await enable();
     ethStore.setBrowserProvider();
   };
@@ -133,8 +140,8 @@
   function sendSwap() {
     if ($connected) {
       console.log("0 --- : " + $isSwapBtnDisabled);
-      $isSwapBtnDisabled.set(true);
-      $isSwapBtnPending.set(true);
+      isSwapBtnDisabled.set(true);
+      isSwapBtnPending.set(true);
 
       swap($web3, $swapAmountELT, $burnPercentage, $selectedAccount).then(
         async function (resolve, reject) {
@@ -143,11 +150,11 @@
 
             // Check the allowance again to change the button back to Approve
             let eltAllowance = await getApprovedAmount();
-            $approvedELTAmount.set(eltAllowance);
+            approvedELTAmount.set(eltAllowance);
             console.log("Allowance: " + eltAllowance);
             console.log("1 --- : " + $isSwapBtnDisabled);
-            $isSwapBtnDisabled.set(false);
-            $isSwapBtnPending.set(false);
+            isSwapBtnDisabled.set(false);
+            isSwapBtnPending.set(false);
           }
         }
       );
@@ -157,8 +164,8 @@
   async function approveELTTransfer() {
     if ($connected) {
       console.log("2 --- : " + $isSwapBtnDisabled);
-      $isSwapBtnDisabled.set(true);
-      $isSwapBtnPending.set(true);
+      isSwapBtnDisabled.set(true);
+      isSwapBtnPending.set(true);
 
       approveELT(
         $web3,
@@ -169,11 +176,11 @@
         if (resolve) {
           console.log("Approval transaction confirmed!");
           let eltAllowance = await getApprovedAmount();
-          $approvedELTAmount.set(eltAllowance);
+          approvedELTAmount.set(eltAllowance);
           console.log("Allowance: " + eltAllowance);
           console.log("3 --- : " + $isSwapBtnDisabled);
-          $isSwapBtnDisabled.set(false);
-          $isSwapBtnPending.set(false);
+          isSwapBtnDisabled.set(false);
+          isSwapBtnPending.set(false);
         }
       });
     }
@@ -313,7 +320,7 @@
             bindTo={swapAmountHODL}
             placeholder="0"
             sanitizeClbk={(cleanVal) => {
-              console.log(' sanitizeNumber swapAmountHODL ', cleanVal);
+              // console.log(' sanitizeNumber swapAmountHODL ', cleanVal);
               swapAmountHODL.set(cleanVal > 0 ? cleanVal : 0);
             }}
             inputClasses="number-bubble input has-text-right" />
