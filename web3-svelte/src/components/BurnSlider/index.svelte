@@ -10,8 +10,6 @@
   } from "../../utility/stores";
 
   $: ELTBurnBonus = Number(($swapAmountHODL / 100) * $burnPercentage);
-
-  console.log(" ================ ", $swapAmountHODL);
 </script>
 
 <style>

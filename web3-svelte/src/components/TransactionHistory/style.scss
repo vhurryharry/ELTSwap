@@ -1,0 +1,52 @@
+.transaction-history-wrapper {
+  color: #aaa;
+}
+
+.screen-header,
+.screen-body{
+  padding: 15px 0;
+}
+
+.history-body,
+.transaction-history-wrapper table,
+.transaction-history-wrapper article,
+.transaction-history-wrapper section{
+  width: 100%;
+}
+
+.history-body {
+  width: 100%;
+}
+.history-body a{
+  color: blue;
+}
+.history-body a:visited{
+  color: #999;
+}
+.history-body a:hover{
+  color: rgb(0, 0, 133);
+}
+.history-body a:active{
+  color: #fff;
+}
+.history-body tr:nth-child(odd) {
+  background-color: #262626; // $themeSurfaceDark;
+}
+
+.transaction-history-wrapper th:first-child,
+.history-body td:first-child {
+  padding-left: 15px;
+}
+
+.transaction-history-wrapper th:last-child,
+.history-body td:last-child {
+  padding-right: 15px;
+}
+
+.transaction-history-wrapper th{
+  text-transform: uppercase;
+}
+.transaction-history-wrapper th,
+.transaction-history-wrapper td {
+  padding: 5px;
+}
