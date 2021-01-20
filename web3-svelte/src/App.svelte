@@ -2,6 +2,6 @@
   import ELTSwapWizard from "./components/ELTSwapWizard.svelte";
 </script>
 
-<main class="block is-flex is-justify-content-center">
+<main class="block is-flex is-justify-content-center is-flex-direction-column">
   <ELTSwapWizard />
 </main>

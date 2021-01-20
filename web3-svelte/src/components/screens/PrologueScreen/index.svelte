@@ -1,11 +1,19 @@
+<script>
+  import { currentWizardScreen } from "../../../utils/stores";
+</script>
+
+<style>
+</style>
+
 <div
   class="screen prologue-screen"
-  class:active={currScreen == 'prologue-screen'}>
+  class:active={$currentWizardScreen === 'prologue-screen'}>
   <div class="screen-header py-5">
     <button
       class="button is-flat"
-      class:pending={$isSwapBtnPending}
-      on:click={enableBrowser}>
+      on:click={(evt) => {
+        currentWizardScreen.set('elt-swap-screen');
+      }}>
       X
     </button>
   </div>
@@ -30,8 +38,9 @@
   <div class="screen-footer is-justify-content-center">
     <button
       class="button is-rounded"
-      class:pending={$isSwapBtnPending}
-      on:click={enableBrowser}>
+      on:click={(evt) => {
+        currentWizardScreen.set('elt-swap-screen');
+      }}>
       Continue
     </button>
   </div>

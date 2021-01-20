@@ -1,6 +1,13 @@
+<script>
+  import { currentWizardScreen } from "../../../utils/stores";
+</script>
+
+<style>
+</style>
+
 <div
-  class="screen wizard-pending-screen"
-  class:active={$currentWizardScreen == 'wizard-pending-screen'}>
+  class="screen pending-screen"
+  class:active={$currentWizardScreen === 'pending-screen'}>
   <div class="screen-header">
     <p>pending...</p>
   </div>
