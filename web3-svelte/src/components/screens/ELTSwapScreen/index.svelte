@@ -1,10 +1,16 @@
 <script>
-  import { web3, selectedAccount, connected, chainName } from "svelte-web3";
+  import {
+    web3,
+    selectedAccount,
+    connected,
+    chainName,
+    ethStore,
+  } from "svelte-web3";
 
-  import * as global from "../../../utility/globals";
+  import * as global from "../../../utils/globals";
 
   /** TODO: figure out how to properly import these */
-  // import * as store from "../utility/stores";
+  // import * as store from "../utils/stores";
   import {
     approvedELTAmount,
     burnPercentage,
@@ -12,7 +18,7 @@
     swapAmountELT,
     isSwapBtnPending,
     isSwapBtnDisabled,
-  } from "../../../utility/stores";
+  } from "../../../utils/stores";
 
   import {
     getETHBalance,
@@ -73,17 +79,19 @@
 
   // Creates a connection to own infura node.
   const enable = () => {
+    // console.dir(ethStore);
     ethStore
       .setProvider(
         "https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca"
       )
       .then((res) => {
-        $isSwapBtnPending.set(false);
+        console.dir(res);
+        // isSwapBtnPending.set(false);
       });
   };
 
   $: enableBrowser = async () => {
-    $isSwapBtnPending.update(true);
+    isSwapBtnPending.set(true);
     await enable();
     ethStore.setBrowserProvider();
   };
@@ -132,8 +140,9 @@
 
   function sendSwap() {
     if ($connected) {
-      $isSwapBtnDisabled.set(true);
-      $isSwapBtnPending.set(true);
+      console.log("0 --- : " + $isSwapBtnDisabled);
+      isSwapBtnDisabled.set(true);
+      isSwapBtnPending.set(true);
 
       swap($web3, $swapAmountELT, $burnPercentage, $selectedAccount).then(
         async function (resolve, reject) {
@@ -142,10 +151,11 @@
 
             // Check the allowance again to change the button back to Approve
             let eltAllowance = await getApprovedAmount();
-            $approvedELTAmount.set(eltAllowance);
+            approvedELTAmount.set(eltAllowance);
             console.log("Allowance: " + eltAllowance);
-            $isSwapBtnDisabled.set(false);
-            $isSwapBtnPending.set(false);
+            console.log("1 --- : " + $isSwapBtnDisabled);
+            isSwapBtnDisabled.set(false);
+            isSwapBtnPending.set(false);
           }
         }
       );
@@ -153,10 +163,11 @@
   }
 
   async function approveELTTransfer() {
-    if ($connected) {
-      $isSwapBtnDisabled.set(true);
-      $isSwapBtnPending.set(true);
+    console.log("2 --- : " + $isSwapBtnDisabled);
+    isSwapBtnDisabled.set(true);
+    isSwapBtnPending.set(true);
 
+    if ($connected) {
       approveELT(
         $web3,
         $swapAmountELT,
@@ -166,10 +177,11 @@
         if (resolve) {
           console.log("Approval transaction confirmed!");
           let eltAllowance = await getApprovedAmount();
-          $approvedELTAmount.set(eltAllowance);
+          approvedELTAmount.set(eltAllowance);
           console.log("Allowance: " + eltAllowance);
-          $isSwapBtnDisabled.set(false);
-          $isSwapBtnPending.set(false);
+          console.log("3 --- : " + $isSwapBtnDisabled);
+          isSwapBtnDisabled.set(false);
+          isSwapBtnPending.set(false);
         }
       });
     }
@@ -243,17 +255,26 @@
       <div class="columns is-flex-wrap-wrap ">
         <div
           class="column is-12-mobile is-4-tablet is-4-desktop has-text-centered-mobile">
-          <h3 class="">ELT</h3>
+          <h3 class="">ELT {$swapAmountELT}</h3>
           <NumberInput
-            bindTo={$swapAmountELT.set}
+            bindTo={$swapAmountELT}
             placeholder="0"
+            sanitizeClbk={(cleanVal) => {
+              if (cleanVal <= global.maxELTToSwap) {
+                console.log(' sanitizeNumberInput swapAmountELT ', $swapAmountELT);
+                swapAmountELT.set(cleanVal);
+              } else {
+                swapAmountELT.set(global.maxELTToSwap);
+              }
+              swapAmountHODL.set(eltToHodl($swapAmountELT));
+            }}
             inputClasses="number-bubble input has-text-centered-mobile" />
         </div>
 
         <div
           class="column is-flex is-hidden-mobile is-flex-direction-column is-4-tablet is-4-desktop is-justify-content-end ">
           {#await $approvedELTAmount}
-            <h6>Loading approved</h6>
+            <h6>Loading...</h6>
           {:then value}
             <h6>Approved: {value}</h6>
           {/await}
@@ -295,10 +316,22 @@
 
         <div
           class="column is-hidden-mobile is-4-tablet is-4-desktop has-text-centered-mobile has-text-right">
-          <h3 class="">HODL</h3>
+          <h3 class="">{$swapAmountHODL} HODL</h3>
           <NumberInput
-            bindTo={$swapAmountHODL.set}
+            bindTo={$swapAmountHODL}
             placeholder="0"
+            sanitizeClbk={(cleanVal) => {
+              if (cleanVal <= 50) {
+                swapAmountELT.set(hodlToElt(cleanVal));
+                swapAmountHODL.set(cleanVal);
+
+                console.log(' sanitizeNumberInput swapAmountHodl ', cleanVal);
+                // return cleanVal > 0 ? cleanVal : null;
+              } else {
+                swapAmountHODL.set(50);
+                swapAmountELT.set(hodlToElt(global.maxELTToSwap));
+              }
+            }}
             inputClasses="number-bubble input has-text-right" />
         </div>
       </div>

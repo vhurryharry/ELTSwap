@@ -3,8 +3,26 @@
 .live-receipt-wrapper {
   background-color: $themeSurfaceMid;
   border-radius: 15px;
+  flex-grow: 1;
+}
+
+.live-receipt-wrapper > .receipt-content {
+  padding: 0;
+  padding-bottom: .5rem;
 }
 
 .live-receipt-wrapper > .receipt-footer {
   border-top: 1px solid #565656;
+  padding: 0.5rem 0 0 0;
+}
+
+span.hodl-total{
+  color: #38A24A;
+}
+
+.key-val-row > .col-left{
+  padding-left: 0;
+}
+.key-val-row > .col-right{
+  padding-right: 0;
 }
