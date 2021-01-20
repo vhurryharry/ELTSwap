@@ -2,7 +2,7 @@ import { writable } from 'svelte/store';
 
 export let approvedELTAmount = writable(null);
 export let burnPercentage = writable(0);
-export let currentWizardScreen = writable('transaction-history-screen');
+export let currentWizardScreen = writable('prologue-screen');
 export let swapAmountHODL = writable(0);
 export let swapAmountELT = writable(0);
 

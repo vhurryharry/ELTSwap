@@ -195,7 +195,7 @@
     }
   }
 
-  import { formatAddr } from "../../../utility/services.js";
+  import { formatAddr } from "../../../utils/services.js";
 </script>
 
 <style>
