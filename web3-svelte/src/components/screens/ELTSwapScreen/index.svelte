@@ -383,9 +383,11 @@
     </div>
   </div>
 
-  <div class="column is-flex is-12">
+  <div class="columns is-flex is-12">
     <div class="column is-6 col-left" />
-    <LiveReceipt />
+    <div class="column is-6 col-right">
+      <LiveReceipt />
+    </div>
   </div>
 
   <div class="screen-footer">
