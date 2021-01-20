@@ -11,6 +11,7 @@
   import ScreenOverlay from "./ScreenOverlay/index.svelte";
 
   import ELTSwapScreen from "./screens/ELTSwapScreen/index.svelte";
+  import TransactionHistoryScreen from "./screens/TransactionHistoryScreen/index.svelte";
 </script>
 
 <style lang="scss" global>
@@ -20,6 +21,7 @@
 <div class="elt-swap-wizard mt-5 mb-5 p-5" class:not-connected={!$connected}>
   {#await $currentWizardScreen then currScreen}
     <ELTSwapScreen {currScreen} />
+    <TransactionHistoryScreen {currScreen} />
   {/await}
 
   <ScreenOverlay />
