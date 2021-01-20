@@ -7,6 +7,7 @@ import postcss from 'rollup-plugin-postcss';
 import autoPreprocess from 'svelte-preprocess';
 import purgecss from '@fullhuman/postcss-purgecss';
 import autoprefixer from 'autoprefixer';
+import copy from 'rollup-plugin-copy'
 
 import path from 'path';
 
@@ -67,7 +68,14 @@ export default {
       minimize: production,
       sourceMap: !production,
     }),
-
+    copy({
+      targets: [
+        {
+          src: ['./src/static/font/Flama-Basic.otf'],
+          dest: 'public/static/font'
+        }
+      ]
+    }),
     // If you have external dependencies installed from
     // npm, you'll most likely need these plugins. In
     // some cases you'll need additional configuration -
