@@ -19,7 +19,6 @@
       class="overlay-header column has-text-left"
       on:click={(evt) => {
         isOverlayScreenActive.set(false);
-        console.log(' /????? ', $isOverlayScreenActive);
       }}>
       <Icon data={times} class="close-knob" />
     </div>

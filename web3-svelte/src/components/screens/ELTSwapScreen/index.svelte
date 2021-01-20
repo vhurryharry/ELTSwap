@@ -195,11 +195,7 @@
     }
   }
 
-  // TODO: move this to headerValuePill component
-  const fromatAddr = (str) => {
-    if (!str) return;
-    return str.substr(0, 5) + "..." + str.substr(str.length - 5, str.length);
-  };
+  import { formatAddr } from "../../../utility/services.js";
 </script>
 
 <style>
@@ -243,7 +239,7 @@
         <div id="balancePill" class="">
           {#if $connected === false}
             <span class="px-1">Not Connected</span>
-          {:else}<span class="px-1">{fromatAddr($selectedAccount)}</span>{/if}
+          {:else}<span class="px-1">{formatAddr($selectedAccount)}</span>{/if}
           <span
             id="connectionIndicator"
             class:connected={$connected}>&#11044;</span>
