@@ -1,13 +1,34 @@
 <script>
-  import * as global from "../../utils/globals";
-  // import * as store from "../../utils/stores";
-  import NumberInput from "../NumberInput/index.svelte";
+  import { spring } from "svelte/motion";
 
+  import { connected } from "svelte-web3";
+
+  import * as global from "../../utils/globals";
   import {
+    approvedELTAmount,
     swapAmountHODL,
     swapAmountELT,
     burnPercentage,
   } from "../../utils/stores";
+
+  const heightSpring = spring(0, { stiffness: 1, damping: 1 });
+  console.log($connected, ".........", heightSpring);
+
+  if ($connected) {
+    // if ($approvedELTAmount) {
+    heightSpring.update((val) => (val ? 0 : 60));
+  }
+
+  const heightTransition = (node, { delay = 0, duration = 400 }) => {
+    const h = +getComputedStyle(node).height;
+
+    console.log(" ??? ", h);
+    return {
+      delay,
+      duration,
+      css: (t) => `height: ${t * h}`,
+    };
+  };
 
   $: ELTBurnBonus = Number(($swapAmountHODL / 100) * $burnPercentage);
 </script>
@@ -20,8 +41,8 @@
   */
 </style>
 
-<div class="burn-slider-wrapper column is-12 ">
-  <div class="columns level is-flex-wrap-wrap">
+<div in:heightTransition class="burn-slider-wrapper column p-0">
+  <div class="columns p-3 level is-flex-wrap-wrap">
     <div class="column is-hidden-mobile is-3-tablet is-3-desktop">
       <h3>ELT Burn &#128293;</h3>
       <span

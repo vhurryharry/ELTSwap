@@ -337,7 +337,11 @@
       </div>
     </div>
 
-    <BurnSlider />
+    {#await $connected}
+      <div />
+    {:then}
+      <BurnSlider />
+    {/await}
 
     <div
       class="column is-flex is-hidden-tablet is-hidden-desktop is-flex-direction-column is-12-mobile is-justify-content-end ">
