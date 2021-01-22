@@ -129,3 +129,9 @@ jetificableGroups.json
 
 # convention for backup naming
 *.bak
+
+/artifacts
+/cache
+/dist
+/export
+/web3-svelte/src/types
