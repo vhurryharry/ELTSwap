@@ -6,11 +6,8 @@ export let currentWizardScreen = writable('prologue-screen');
 export let swapAmountHODL = writable(0);
 export let swapAmountELT = writable(0);
 
-export let swapValues = writable({
-  swapAmountELT: swapAmountELT,
-});
-
 export let isSwapBtnPending = writable(false);
 export let isSwapBtnDisabled = writable(false);
 export let isOverlayScreenActive = writable(false);
 
+export let isBurnSliderVisible = writable(false);

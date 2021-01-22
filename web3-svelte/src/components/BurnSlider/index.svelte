@@ -1,6 +1,7 @@
 <script>
   import { circOut } from "svelte/easing";
   import * as global from "../../utils/globals";
+  import { fly } from "svelte/transition";
   import {
     swapAmountHODL,
     swapAmountELT,
@@ -14,14 +15,14 @@
       delay: 0,
       duration,
       css: (t) => {
-        console.log(" -------- ", circOut(t) * 60);
+        console.log(" -------- ", t * 60);
 
-        return `height: ${circOut(t) * 60}px`;
+        return `min-height: ${t * 60}px;height: ${t * 60}px;`;
       },
     };
   }
 
-  $: isVisible = false; // $$props.isVisible;
+  $: isVisible = $$props.isVisible();
 
   $: setVisible = (val) => {
     console.log(val, " ... ", $$props.isVisible);
@@ -39,12 +40,6 @@
   * TODO: Figure out why so.
   */
 </style>
-
-<label>
-  <input type="checkbox" bind:checked={isVisible} />
-  visible
-  {isVisible}
-</label>
 
 {#if isVisible}
   <div in:slideDown={{ duration: 250 }} class="burn-slider-wrapper column p-0">

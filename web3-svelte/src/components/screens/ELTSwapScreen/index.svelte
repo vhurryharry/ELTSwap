@@ -335,11 +335,10 @@
       </div>
     </div>
 
-    {#await $connected}
-      <div />
-    {:then}
-      <BurnSlider isVisible={() => ($connected ? true : false)} />
-    {/await}
+    <BurnSlider
+      isVisible={() => {
+        return $connected ? true : false;
+      }} />
 
     <div
       class="column is-flex is-hidden-tablet is-hidden-desktop is-flex-direction-column is-12-mobile is-justify-content-end ">
