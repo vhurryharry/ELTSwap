@@ -9,26 +9,24 @@
   } from "../../utils/stores";
 
   function slideDown(node, { duration = 500 }) {
-    let height = +getComputedStyle(node)["height"].match(/(\d+)px/)[1];
+    console.log(" .... ", node.firstChild);
+
+    let height = +getComputedStyle(node.firstChild)["height"].match(
+      /(\d+)px/
+    )[1];
 
     return {
       delay: 0,
       duration,
       css: (t) => {
-        console.log(" -------- ", t * 60);
+        // console.log(" -------- ", t * height);
 
-        return `min-height: ${t * 60}px;height: ${t * 60}px;`;
+        return `min-height: ${circOut(t) * height}px;`;
       },
     };
   }
 
-  $: isVisible = $$props.isVisible();
-
-  $: setVisible = (val) => {
-    console.log(val, " ... ", $$props.isVisible);
-    console.log($$props.isVisible);
-    $$props.isVisible ? true : false;
-  };
+  $: isVisible = $$props.isVisible;
 
   $: ELTBurnBonus = Number(($swapAmountHODL / 100) * $burnPercentage);
 </script>
@@ -42,7 +40,7 @@
 </style>
 
 {#if isVisible}
-  <div in:slideDown={{ duration: 250 }} class="burn-slider-wrapper column p-0">
+  <div in:slideDown class="burn-slider-wrapper ">
     <div class="columns p-3 level is-flex-wrap-wrap">
       <div class="column is-hidden-mobile is-3-tablet is-3-desktop">
         <h3>ELT Burn &#128293;</h3>

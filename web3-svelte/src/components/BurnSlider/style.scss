@@ -1,9 +1,10 @@
 .burn-slider-wrapper {
-overflow: hidden;
-display: flex;
-flex-flow: column-reverse;
-position: relative;
-background: #666;
+  // height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-flow: column-reverse;
+  position: relative;
+  // background: #666;
 }
 .burn-slider-wrapper > .columns:first-child{
   margin-top: auto;

@@ -85,7 +85,8 @@
         "https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca"
       )
       .then((res) => {
-        console.dir(res);
+        // TODO: enable the button if valid swapAmount
+        // console.dir(res);
         // isSwapBtnPending.set(false);
       });
   };
@@ -335,10 +336,12 @@
       </div>
     </div>
 
-    <BurnSlider
-      isVisible={() => {
-        return $connected ? true : false;
-      }} />
+    <!-- <BurnSlider isVisible={$connected} /> -->
+    {#await $connected}
+      <div />
+    {:then value}
+      <BurnSlider isVisible={value} />
+    {/await}
 
     <div
       class="column is-flex is-hidden-tablet is-hidden-desktop is-flex-direction-column is-12-mobile is-justify-content-end ">
