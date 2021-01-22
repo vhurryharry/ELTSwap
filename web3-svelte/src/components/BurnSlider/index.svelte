@@ -1,33 +1,32 @@
 <script>
-  import { spring } from "svelte/motion";
-
-  import { connected } from "svelte-web3";
-
+  import { circOut } from "svelte/easing";
   import * as global from "../../utils/globals";
   import {
-    approvedELTAmount,
     swapAmountHODL,
     swapAmountELT,
     burnPercentage,
   } from "../../utils/stores";
 
-  const heightSpring = spring(0, { stiffness: 1, damping: 1 });
-  console.log($connected, ".........", heightSpring);
+  function slideDown(node, { duration = 500 }) {
+    let height = +getComputedStyle(node)["height"].match(/(\d+)px/)[1];
 
-  if ($connected) {
-    // if ($approvedELTAmount) {
-    heightSpring.update((val) => (val ? 0 : 60));
+    return {
+      delay: 0,
+      duration,
+      css: (t) => {
+        console.log(" -------- ", circOut(t) * 60);
+
+        return `height: ${circOut(t) * 60}px`;
+      },
+    };
   }
 
-  const heightTransition = (node, { delay = 0, duration = 400 }) => {
-    const h = +getComputedStyle(node).height;
+  $: isVisible = false; // $$props.isVisible;
 
-    console.log(" ??? ", h);
-    return {
-      delay,
-      duration,
-      css: (t) => `height: ${t * h}`,
-    };
+  $: setVisible = (val) => {
+    console.log(val, " ... ", $$props.isVisible);
+    console.log($$props.isVisible);
+    $$props.isVisible ? true : false;
   };
 
   $: ELTBurnBonus = Number(($swapAmountHODL / 100) * $burnPercentage);
@@ -41,33 +40,16 @@
   */
 </style>
 
-<div in:heightTransition class="burn-slider-wrapper column p-0">
-  <div class="columns p-3 level is-flex-wrap-wrap">
-    <div class="column is-hidden-mobile is-3-tablet is-3-desktop">
-      <h3>ELT Burn &#128293;</h3>
-      <span
-        class="elt-burn-percent"
-        class:disabled={$swapAmountELT < global.minELTToSwap ? 'disabled' : ''}>
-        {$burnPercentage}%
-      </span>
-    </div>
+<label>
+  <input type="checkbox" bind:checked={isVisible} />
+  visible
+  {isVisible}
+</label>
 
-    <div
-      id="swapHodlBurnRatio"
-      class="column is-12-mobile is-4-tablet is-6-desktop pb-0">
-      <input
-        type="range"
-        id="burnRatioSlider"
-        min="0"
-        max="100"
-        class:disabled={$swapAmountELT < global.minELTToSwap}
-        disabled={$swapAmountELT < global.minELTToSwap ? 'disabled' : ''}
-        bind:value={$burnPercentage} />
-    </div>
-
-    <div class="column is-flex is-3-tablet is-3-desktop p-0">
-      <div
-        class="column is-hidden-tablet is-hidden-desktop is-6-mobile is-2-tablet is-2-desktop">
+{#if isVisible}
+  <div in:slideDown={{ duration: 250 }} class="burn-slider-wrapper column p-0">
+    <div class="columns p-3 level is-flex-wrap-wrap">
+      <div class="column is-hidden-mobile is-3-tablet is-3-desktop">
         <h3>ELT Burn &#128293;</h3>
         <span
           class="elt-burn-percent"
@@ -76,20 +58,44 @@
         </span>
       </div>
 
-      <div class="column is-6-mobile is-pull-right has-text-right">
-        <h3><span class="is-hidden-mobile">HODL</span> Burn Bonus</h3>
-        <span class="hodl-burn-bonus" class:disabled={!ELTBurnBonus}>
-          {ELTBurnBonus.toFixed(4)}
-          HODL
-        </span>
+      <div
+        id="swapHodlBurnRatio"
+        class="column is-12-mobile is-4-tablet is-6-desktop pb-0">
+        <input
+          type="range"
+          id="burnRatioSlider"
+          min="0"
+          max="100"
+          class:disabled={$swapAmountELT < global.minELTToSwap}
+          disabled={$swapAmountELT < global.minELTToSwap ? 'disabled' : ''}
+          bind:value={$burnPercentage} />
       </div>
-    </div>
 
-    <div
-      class="column is-hidden-tablet is-hidden-desktop if-full-mobile is-5-dektop has-text-centered">
-      <h3 class="">HODL</h3>
+      <div class="column is-flex is-3-tablet is-3-desktop p-0">
+        <div
+          class="column is-hidden-tablet is-hidden-desktop is-6-mobile is-2-tablet is-2-desktop">
+          <h3>ELT Burn &#128293;</h3>
+          <span
+            class="elt-burn-percent"
+            class:disabled={$swapAmountELT < global.minELTToSwap ? 'disabled' : ''}>
+            {$burnPercentage}%
+          </span>
+        </div>
 
-      <!-- <NumberInput
+        <div class="column is-6-mobile is-pull-right has-text-right">
+          <h3><span class="is-hidden-mobile">HODL</span> Burn Bonus</h3>
+          <span class="hodl-burn-bonus" class:disabled={!ELTBurnBonus}>
+            {ELTBurnBonus.toFixed(4)}
+            HODL
+          </span>
+        </div>
+      </div>
+
+      <div
+        class="column is-hidden-tablet is-hidden-desktop if-full-mobile is-5-dektop has-text-centered">
+        <h3 class="">HODL</h3>
+
+        <!-- <NumberInput
         bindTo={$swapAmountHODL}
         placeholder="0"
         sanitizeClbk={(cleanVal) => {
@@ -97,6 +103,7 @@
           return cleanVal > 0 ? $swapAmountELT.update(cleanVal / 0.0000005) : $swapAmountELT.update(null);
         }}
         inputClasses="number-bubble input has-text-centered-mobile" /> -->
+      </div>
     </div>
   </div>
-</div>
+{/if}

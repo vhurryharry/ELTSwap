@@ -175,11 +175,9 @@
         swapContractAddress
       ).then(async function (resolve, reject) {
         if (resolve) {
-          console.log("Approval transaction confirmed!");
           let eltAllowance = await getApprovedAmount();
+          console.log("Approval transaction confirmed!", eltAllowance);
           approvedELTAmount.set(eltAllowance);
-          console.log("Allowance: " + eltAllowance);
-          console.log("3 --- : " + $isSwapBtnDisabled);
           isSwapBtnDisabled.set(false);
           isSwapBtnPending.set(false);
         }
@@ -340,7 +338,7 @@
     {#await $connected}
       <div />
     {:then}
-      <BurnSlider />
+      <BurnSlider isVisible={() => ($connected ? true : false)} />
     {/await}
 
     <div
