@@ -7,6 +7,15 @@ const eltContract = "0xa84a0b15d7c62684b71fecb5ea8efe0e5af1d11b";
 const hodlDecimals = 8;
 const eltDecimals = 8;
 
+export const onRejectHandler = async (err, callback) => {
+  // use err codes to update state
+
+  // if is a function, execute callback
+  if (typeof callback === 'function') {
+    callback(err)
+  }
+}
+
 export let getTokenBalance = async (web3, address, tokenContract, decimals = 8) => {
   let amount = 0;
 
@@ -85,16 +94,24 @@ export let approveELT = async (web3, amount, fromAddress, toAddress) => {
   });
 
   return new Promise((resolve, reject) => {
-    contract.methods.approve(toAddress, decimalToAtomic(amount)).send({ to: eltContract, from: fromAddress, gasLimit: gasEstimate })
-      .on('confirmation', (confirmationNumber) => {
-        if (confirmationNumber === 1) {
-          resolve(true)
-        }
+    try {
+      contract.methods.approve(toAddress, decimalToAtomic(amount)).send({ to: eltContract, from: fromAddress, gasLimit: gasEstimate })
+        .on('confirmation', (confirmationNumber) => {
+          if (confirmationNumber === 1) {
+            resolve(true)
+          }
+        })
+        .on('error', (error) => {
+          reject(error)
+        })
+    } catch (err) {
+      console.log(' approveELT catch err ', err)
+      onRejectHandler(err, (err) => {
+        console.log(' approveELT callback err ', err);
       })
-      .on('error', (error) => {
-        reject(error)
-      })
-  })
+    }
+  });
+
 }
 
 export let swap = async (web3, amount, burnPercent = 0, fromAddress) => {
@@ -104,17 +121,25 @@ export let swap = async (web3, amount, burnPercent = 0, fromAddress) => {
     return res;
   });
 
-  return new Promise((resolve, reject) => {
-    contract.methods.swap(decimalToAtomic(amount), burnPercent).send({ to: swapContract, from: fromAddress, gasLimit: gasEstimate })
-      .on('confirmation', (confirmationNumber) => {
-        if (confirmationNumber === 1) {
-          resolve(true)
-        }
-      })
-      .on('error', (error) => {
-        reject(error)
-      })
-  })
+  try {
+    return new Promise((resolve, reject) => {
+      contract.methods.swap(decimalToAtomic(amount), burnPercent).send({ to: swapContract, from: fromAddress, gasLimit: gasEstimate })
+        .on('confirmation', (confirmationNumber) => {
+          if (confirmationNumber === 1) {
+            resolve(true)
+          }
+        })
+        .on('error', (error) => {
+          reject(error)
+        })
+    });
+  } catch (err) {
+    console.log(' swap catch err ', err)
+    onRejectHandler(err, (err) => {
+      console.log(' swap callback err ', err);
+    })
+  }
+
 }
 
 /*

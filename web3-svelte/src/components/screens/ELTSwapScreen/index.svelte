@@ -5,6 +5,7 @@
     connected,
     chainName,
     ethStore,
+    walletType,
   } from "svelte-web3";
 
   import * as global from "../../../utils/globals";
@@ -78,22 +79,30 @@
     $selectedAccount || "0x0000000000000000000000000000000000000000";
 
   // Creates a connection to own infura node.
-  const enable = () => {
+  const enable = async () => {
     // console.dir(ethStore);
-    ethStore
-      .setProvider(
-        "https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca"
-      )
-      .then((res) => {
-        console.dir(res);
-        // isSwapBtnPending.set(false);
-      });
+    await ethStore.setProvider(
+      "https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca"
+    );
   };
 
   $: enableBrowser = async () => {
     isSwapBtnPending.set(true);
     await enable();
-    ethStore.setBrowserProvider();
+    console.dir($ethStore);
+    console.log(" accounts[0] ", $ethStore["accounts"][0]);
+    // ethStore.setBrowserProvider();
+    try {
+      console.log(
+        " ethStore.setBrowserProvider ",
+        ethStore.setBrowserProvider().then((res) => {
+          console.log(" ########## ", res);
+        })
+      );
+    } catch (err) {
+      console.log(" ********** ", err);
+    }
+    console.log(" $ethStore.instance.abi ", $ethStore["instance"]["abi"]);
   };
 
   /** */
@@ -144,21 +153,28 @@
       isSwapBtnDisabled.set(true);
       isSwapBtnPending.set(true);
 
-      swap($web3, $swapAmountELT, $burnPercentage, $selectedAccount).then(
-        async function (resolve, reject) {
-          if (resolve) {
-            console.log("Swap transaction confirmed!");
+      try {
+        swap($web3, $swapAmountELT, $burnPercentage, $selectedAccount).then(
+          async function (resolve, reject) {
+            if (resolve) {
+              console.log("Swap transaction confirmed!");
 
-            // Check the allowance again to change the button back to Approve
-            let eltAllowance = await getApprovedAmount();
-            approvedELTAmount.set(eltAllowance);
-            console.log("Allowance: " + eltAllowance);
-            console.log("1 --- : " + $isSwapBtnDisabled);
-            isSwapBtnDisabled.set(false);
-            isSwapBtnPending.set(false);
+              // Check the allowance again to change the button back to Approve
+              let eltAllowance = await getApprovedAmount();
+              approvedELTAmount.set(eltAllowance);
+              console.log("Allowance: " + eltAllowance);
+              console.log("1 --- : " + $isSwapBtnDisabled);
+              isSwapBtnDisabled.set(false);
+              isSwapBtnPending.set(false);
+            }
           }
-        }
-      );
+        );
+      } catch (err) {
+        console.log(" sendSwap catch err ", err);
+        onRejectHandler(err, (err) => {
+          console.log(" sendSwap callback err ", err);
+        });
+      }
     }
   }
 
@@ -168,22 +184,27 @@
     isSwapBtnPending.set(true);
 
     if ($connected) {
-      approveELT(
-        $web3,
-        $swapAmountELT,
-        $selectedAccount,
-        swapContractAddress
-      ).then(async function (resolve, reject) {
-        if (resolve) {
-          console.log("Approval transaction confirmed!");
-          let eltAllowance = await getApprovedAmount();
-          approvedELTAmount.set(eltAllowance);
-          console.log("Allowance: " + eltAllowance);
-          console.log("3 --- : " + $isSwapBtnDisabled);
-          isSwapBtnDisabled.set(false);
-          isSwapBtnPending.set(false);
-        }
-      });
+      try {
+        approveELT(
+          $web3,
+          $swapAmountELT,
+          $selectedAccount,
+          swapContractAddress
+        ).then(async function (resolve, reject) {
+          if (resolve) {
+            let eltAllowance = await getApprovedAmount();
+            console.log("Approval transaction confirmed!", eltAllowance);
+            approvedELTAmount.set(eltAllowance);
+            isSwapBtnDisabled.set(false);
+            // isSwapBtnPending.set(false);
+          }
+        });
+      } catch (err) {
+        console.log(" approveELTTransfer catch err ", err);
+        onRejectHandler(err, (err) => {
+          console.log(" approveELTTransfer callback err ", err);
+        });
+      }
     }
   }
 
@@ -290,6 +311,7 @@
               <button
                 class="button connect-wallet connected is-rounded"
                 class:pending={$isSwapBtnPending}
+                disabled={$isSwapBtnPending ? 'disabled' : ''}
                 on:click={approveELTTransfer}>
                 Approve
               </button>
@@ -337,7 +359,12 @@
       </div>
     </div>
 
-    <BurnSlider />
+    <!-- <BurnSlider isVisible={$connected} /> -->
+    {#await $connected}
+      <div />
+    {:then value}
+      <BurnSlider isVisible={value} />
+    {/await}
 
     <div
       class="column is-flex is-hidden-tablet is-hidden-desktop is-flex-direction-column is-12-mobile is-justify-content-end ">

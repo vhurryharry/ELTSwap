@@ -14,3 +14,8 @@ export let isSwapBtnPending = writable(false);
 export let isSwapBtnDisabled = writable(false);
 export let isOverlayScreenActive = writable(false);
 
+export let transactionHistory = writable(false);
+
+export let web3Handlers = writable({
+
+})

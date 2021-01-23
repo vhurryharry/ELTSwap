@@ -1,5 +1,5 @@
 <script>
-  import { web3, connected } from "svelte-web3";
+  import { connected } from "svelte-web3";
 
   import Icon from "svelte-awesome";
 
