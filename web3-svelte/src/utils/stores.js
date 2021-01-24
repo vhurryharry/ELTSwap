@@ -39,8 +39,6 @@ const createWritableStore = (key, startValue) => {
   };
 }
 
-// store the promise of RPC requests for later resolution
-export const latestRPCPromise = createWritableStore('latestRPCPromise', null);
 // set to true while async 
 export const isAppPending = createWritableStore('isAppPending', false);
 // set to true if fatal error

@@ -18,7 +18,6 @@
     isAppPending,
     isRPCEnabled,
     latestAccount,
-    latestRPCPromise,
     swapAmountELT,
     swapAmountHODL,
     transactionHistory,
@@ -26,7 +25,6 @@
   // initialize from localStorage
   isAppBroken.useLocalStorage();
   isAppPending.useLocalStorage();
-  latestRPCPromise.useLocalStorage();
   transactionHistory.useLocalStorage();
 
   import { formatAddr } from "../../../utils/services.js";
@@ -79,23 +77,16 @@
       )
     : "";
 
-  /** */
-  // function checkChain() {
-  //   if ($chainName !== undefined) {
-  //     console.log($chainName);
-  //   }
-  // }
-  // $: $chainName, checkChain();
-
   $: checkAccount = $selectedAccount || global.nilAccount;
+
+  window.ethereum.on("chainChanged", (_chainId) => {
+    // We recommend reloading the page, unless you must do otherwise
+    window.location.reload();
+  });
 
   // Creates a connection to own infura node.
   const enable = () => {
-    if (latestRPCPromise) {
-      console.dir($latestRPCPromise);
-    }
-
-    let connInfura = ethStore
+    ethStore
       .setProvider(
         "https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca"
       )
@@ -129,16 +120,10 @@
         );
       });
 
-    latestRPCPromise.set(connInfura);
-
     window.ethereum.on("accountsChanged", (accounts) => {
-      console.log(" ------------- ");
-      console.dir(accounts);
-
       if (accounts[0] !== $latestAccount) {
         isRPCEnabled.set(accounts.length);
         isAppPending.set(false);
-        latestRPCPromise.set(null);
         latestAccount.set(accounts[0]);
         isAppBroken.set(false); // just in case...
       }
