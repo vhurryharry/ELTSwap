@@ -10,16 +10,32 @@ export let swapValues = writable({
   swapAmountELT: swapAmountELT,
 });
 
-export let isRPCPending = writable(false);
+// export let isRPCPending = writable(false);
 export let isSwapBtnPending = writable(false);
 export let isSwapBtnDisabled = writable(false);
 export let isOverlayScreenActive = writable(false);
 
 export let transactionHistory = writable(false);
 
-export let web3Handlers = writable(
-  localStorage.getItem('web3Handlers'))
 
-export let hasPendingPermissions = derived(web3Handlers, ($web3Handlers) => {
-  return $web3Handlers.rpcHistory.length > 0;
-});
+
+const createWritableStore = (key, startValue) => {
+  const { subscribe, set } = writable(startValue);
+
+  return {
+    subscribe,
+    set,
+    useLocalStorage: () => {
+      const json = localStorage.getItem(key);
+      if (json) {
+        set(JSON.parse(json));
+      }
+
+      subscribe(current => {
+        localStorage.setItem(key, JSON.stringify(current));
+      });
+    }
+  };
+}
+
+export const isRPCPending = createWritableStore('isRPCPending', false);

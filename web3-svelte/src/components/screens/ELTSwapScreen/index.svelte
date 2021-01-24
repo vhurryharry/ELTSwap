@@ -18,10 +18,10 @@
     swapAmountELT,
     isSwapBtnPending,
     isSwapBtnDisabled,
-    web3Handlers,
     isRPCPending,
-    hasPendingPermissions,
   } from "../../../utils/stores";
+  // from https://github.com/higsch/higsch.me/blob/master/content/post/2019-06-21-svelte-local-storage.md
+  isRPCPending.useLocalStorage();
 
   import {
     getETHBalance,
@@ -233,17 +233,17 @@
     console.log(" $$$$$$$ ");
     console.dir(data);
     // web3Handlers.hasPendingPermissions.set(true);
+    localStorage.setItem("isRPCPending", true);
   }
 
   async function connectRPC() {
     console.log(" ////????/// ", window.ethereum);
 
-    console.log(" @@@@@ ", await $web3Handlers);
+    console.log(" @@@@@ ", $isRPCPending);
 
     // abort if already requested and pending
-    if ($web3Handlers.rpcHistory.length > 0) {
+    if ($isRPCPending) {
       /** state is now 'pending' */
-      isRPCPending.set(true);
       isSwapBtnPending.set(true);
 
       /** display tooltip/screen with instructions */
@@ -253,9 +253,9 @@
       return null;
     }
 
-    let currentRPCCall = null;
-
     try {
+      localStorage.setItem("isRPCPending", true);
+
       currentRPCCall = window.ethereum
         .request({ method: "eth_requestAccounts" })
         .then(handleAccountsChanged)
@@ -286,7 +286,7 @@
       // hasPendingPermissions.set(true),
       // });
 
-      console.dir($web3Handlers);
+      console.log(" isRPCPending ", $isRPCPending);
 
       // make note of request
       // web3Handlers.update((current) => {
@@ -301,14 +301,17 @@
       //   rpcHistory: currHistList.push(currReq),
       // });
 
-      web3Handlers.subscribe((val) => {
-        localStorage.setItem("web3Handlers", {
-          ...val,
-          rpcHistory: [...val.rpcHistory, currentRPCCall],
-        });
-        console.log(" ???444? ", localStorage.getItem("web3Handlers"));
-        console.log(" ???? ", { foo: "bar" });
-      });
+      // web3Handlers.subscribe((val) => {
+      //   // localStorage.setItem("web3Handlers", {
+      //   //   ...val,
+      //   //   rpcHistory: [...val.rpcHistory, currentRPCCall],
+      //   // });
+
+      //   localStorage.setItem(true);
+
+      //   console.log(" ???444? ", localStorage.getItem("web3Handlers"));
+      //   console.log(" ???? ", { foo: "bar" });
+      // });
 
       // web3Handlers.hasPendingPermissions.set(
       //   $web3Handlers.rpcHistory.length > 0 ? true : false
