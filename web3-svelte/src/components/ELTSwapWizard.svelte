@@ -9,7 +9,7 @@
   import { currentWizardScreen } from "../utils/stores";
 
   import ScreenOverlay from "./ScreenOverlay/index.svelte";
-  import { isOverlayScreenActive } from "../utils/stores";
+  import { isOverlayScreenActive, isAppBroken } from "../utils/stores";
 
   import DAOScreenOfDoom from "./screens/DAOScreenOfDoom/index.svelte";
   import ELTSwapScreen from "./screens/ELTSwapScreen/index.svelte";
@@ -23,6 +23,12 @@
     console.log(" --- ", slug);
     currentWizardScreen.set(slug);
   };
+
+  isAppBroken.useLocalStorage();
+
+  if ($isAppBroken) {
+    currentWizardScreen.set("dao-screen-of-doom");
+  }
 </script>
 
 <style lang="scss" global>
@@ -93,7 +99,6 @@
     <ELTSwapScreen {currScreen} />
     <EpilogueScreen {currScreen} />
     <ETHPurchaseScreen {currScreen} />
-    <PendingScreen {currScreen} />
     <PrologueScreen {currScreen} />
   {/await}
 
