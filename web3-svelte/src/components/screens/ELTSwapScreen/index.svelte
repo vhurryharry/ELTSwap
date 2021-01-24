@@ -5,7 +5,6 @@
     connected,
     chainName,
     ethStore,
-    walletType,
   } from "svelte-web3";
 
   import * as global from "../../../utils/globals";
@@ -19,6 +18,9 @@
     swapAmountELT,
     isSwapBtnPending,
     isSwapBtnDisabled,
+    web3Handlers,
+    isRPCPending,
+    hasPendingPermissions,
   } from "../../../utils/stores";
 
   import {
@@ -26,6 +28,7 @@
     getTokenBalance,
     getELTInContract,
     getTotalHodlReward,
+    discernAppStatus,
   } from "../../../js/web3Helper";
 
   // TODO: fix imports to omit `/index.svelte`
@@ -40,32 +43,35 @@
   $: checkAccount =
     $selectedAccount || "0x0000000000000000000000000000000000000000";
 
-  $: eltInContract = $connected ? getELTInContract($web3) : 0;
+  $: eltInContract = 0; // $connected ? getELTInContract($web3) : 0;
 
-  $: ethBalance = $connected
-    ? getETHBalance($web3, $selectedAccount)
-    : Number(0.0);
+  $: ethBalance = "";
+  // $: ethBalance = $connected
+  //   ? getETHBalance($web3, $selectedAccount)
+  //   : Number(0.0);
 
   $: fixedDecimals = (number, precision) => {
     if (typeof number !== "number") return;
     return number.toFixed(typeof precision == "number" ? precision : 4);
   };
 
-  $: eltBalance = $connected
-    ? getTokenBalance(
-        $web3,
-        checkAccount,
-        "0xa84a0b15d7c62684b71fecb5ea8efe0e5af1d11b"
-      )
-    : "";
+  $: eltBalance = "";
+  // $: eltBalance = $connected
+  //   ? getTokenBalance(
+  //       $web3,
+  //       checkAccount,
+  //       "0xa84a0b15d7c62684b71fecb5ea8efe0e5af1d11b"
+  //     )
+  //   : "";
 
-  $: hodlBalance = $connected
-    ? getTokenBalance(
-        $web3,
-        checkAccount,
-        "0x5c85a93991671dc5886203e0048777a4fd219983"
-      )
-    : "";
+  $: hodlBalance = "";
+  // $: hodlBalance = $connected
+  //   ? getTokenBalance(
+  //       $web3,
+  //       checkAccount,
+  //       "0x5c85a93991671dc5886203e0048777a4fd219983"
+  //     )
+  //   : "";
 
   /** */
   function checkChain() {
@@ -90,7 +96,7 @@
     isSwapBtnPending.set(true);
     await enable();
     console.dir($ethStore);
-    console.log(" accounts[0] ", $ethStore["accounts"][0]);
+    console.log(" accounts[0] ", $ethStore["instance"]["accounts"][0]);
     // ethStore.setBrowserProvider();
     try {
       console.log(
@@ -106,15 +112,18 @@
   };
 
   /** */
-  $: getSwapProgress = () =>
+  $: getSwapProgress = () => {
+    return 0;
     parseInt(
       ($connected ? getELTInContract($web3) : 0 * 100) / global.absMaxELT
     ) || 0;
+  };
 
   /** */
-  $: totalHodlReward = $connected
-    ? getTotalHodlReward($web3, $swapAmountELT, 25)
-    : "";
+  $: totalHodlReward = "";
+  // $: totalHodlReward = $connected
+  //   ? getTotalHodlReward($web3, $swapAmountELT, 25)
+  //   : "";
 
   function castToPrecision(floatNum, maxDecLen = 8) {
     let decimals = (floatNum + "").split(".")[1] || [];
@@ -148,7 +157,8 @@
   }
 
   function sendSwap() {
-    if ($connected) {
+    if (false) {
+      // if ($connected) {
       console.log("0 --- : " + $isSwapBtnDisabled);
       isSwapBtnDisabled.set(true);
       isSwapBtnPending.set(true);
@@ -183,7 +193,8 @@
     isSwapBtnDisabled.set(true);
     isSwapBtnPending.set(true);
 
-    if ($connected) {
+    if (false) {
+      // if ($connected) {
       try {
         approveELT(
           $web3,
@@ -210,13 +221,100 @@
 
   function getApprovedAmount() {
     if ($connected) {
-      let allowance = getAllowance($web3, checkAccount, swapContractAddress);
+      // let allowance = getAllowance($web3, checkAccount, swapContractAddress);
       console.log(allowance);
       return allowance;
     }
   }
 
   import { formatAddr } from "../../../utils/services.js";
+
+  function handleAccountsChanged(data) {
+    console.log(" $$$$$$$ ");
+    console.dir(data);
+    // web3Handlers.hasPendingPermissions.set(true);
+  }
+
+  async function connectRPC() {
+    console.log(" ////????/// ", window.ethereum);
+
+    console.log(" @@@@@ ", await $web3Handlers);
+
+    // abort if already requested and pending
+    if ($web3Handlers.rpcHistory.length > 0) {
+      /** state is now 'pending' */
+      isRPCPending.set(true);
+      isSwapBtnPending.set(true);
+
+      /** display tooltip/screen with instructions */
+      // currentWizardScreen.set('pending-screen');
+      console.log("TODO: Go to MetaMask and decide");
+
+      return null;
+    }
+
+    let currentRPCCall = null;
+
+    try {
+      currentRPCCall = window.ethereum
+        .request({ method: "eth_requestAccounts" })
+        .then(handleAccountsChanged)
+        .catch((error) => {
+          console.error(" !!!!!!!!!!!! ", error);
+          if (error.code === 4001) {
+            // EIP-1193 userRejectedRequest error
+            console.log("Please connect to MetaMask.");
+          }
+
+          if (Math.abs(error.code) === 32002) {
+            /**
+             * Object { code: -32002, message: "Request of type 'wallet_requestPermissions' already pending for origin http://localhost:5000. Please wait." }
+             */
+          }
+        });
+    } catch (err) {
+      // this is not able to catch RPC errors :(
+      console.dir(err);
+    } finally {
+      // set falg for pending
+      // web3Handlers.update((current) => {
+      //   // prepend for easy access; use spread for rerender
+      //   current.rpcHistory = [req, ...current.rpcHistory];
+      //   current.hasPendingPermissions = true;
+
+      //   // ...$web3Handlers,
+      // hasPendingPermissions.set(true),
+      // });
+
+      console.dir($web3Handlers);
+
+      // make note of request
+      // web3Handlers.update((current) => {
+      //   console.dir(current);
+      //   current.isRPCPending = true;
+      //   current.rpcHistory = [req, ...current.rpcHistory];
+      // });
+
+      // let currHistList = $web3Handlers.rpcHistory;
+      // web3Handlers.set({
+      //   ...web3Handlers,
+      //   rpcHistory: currHistList.push(currReq),
+      // });
+
+      web3Handlers.subscribe((val) => {
+        localStorage.setItem("web3Handlers", {
+          ...val,
+          rpcHistory: [...val.rpcHistory, currentRPCCall],
+        });
+        console.log(" ???444? ", localStorage.getItem("web3Handlers"));
+        console.log(" ???? ", { foo: "bar" });
+      });
+
+      // web3Handlers.hasPendingPermissions.set(
+      //   $web3Handlers.rpcHistory.length > 0 ? true : false
+      // );
+    }
+  }
 </script>
 
 <style>
@@ -377,7 +475,7 @@
         <button
           class="button connect-wallet is-rounded"
           class:pending={$isSwapBtnPending}
-          on:click={enableBrowser}>
+          on:click={connectRPC()}>
           Connect Wallet
         </button>
       {:else}
