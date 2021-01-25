@@ -3,16 +3,20 @@
 
   import { getELTInContract, getHODLInContract } from "../../js/web3Helper";
 
+  import { isRPCEnabled } from "../../utils/stores";
   let hodlBonusAtBurnRate = 0; // find this in contracts
 
   $: receiptItems = [
-    { label: "ELTCOIN", value: $connected ? getELTInContract($web3) : 1000000 },
-    { label: "HODL", value: $connected ? getHODLInContract($web3) : 0.5 },
-    { label: "HODL BONUS", value: $connected ? "TBD" : 0.033 },
-    { label: "GAS ESTIMATE", value: $connected ? "~?~ ETH" : 0.01 + " ETH" },
+    {
+      label: "ELTCOIN",
+      value: $isRPCEnabled ? getELTInContract($web3) : 1000000,
+    },
+    { label: "HODL", value: $isRPCEnabled ? getHODLInContract($web3) : 0.5 },
+    { label: "HODL BONUS", value: $isRPCEnabled ? "TBD" : 0.033 },
+    { label: "GAS ESTIMATE", value: $isRPCEnabled ? "ETH" : 0.01 + " ETH" },
   ];
 
-  $: getReceiptTotal = $connected ? getHODLInContract($web3) : 0.533; // is this so?
+  $: getReceiptTotal = $isRPCEnabled ? getHODLInContract($web3) : 0.533; // is this so?
 </script>
 
 <style>

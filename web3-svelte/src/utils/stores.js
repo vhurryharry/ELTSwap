@@ -19,6 +19,8 @@ export let isOverlayScreenActive = writable(false);
 export const isRPCEnabled = writable(false);
 // note latest account
 export const latestAccount = writable(null);
+// set to true while async; if reload, can help guide the user
+export const isAppPending = writable(false);
 
 const createWritableStore = (key, startValue) => {
   const { subscribe, set } = writable(startValue);
@@ -39,8 +41,6 @@ const createWritableStore = (key, startValue) => {
   };
 }
 
-// set to true while async 
-export const isAppPending = createWritableStore('isAppPending', false);
 // set to true if fatal error
 export const isAppBroken = createWritableStore('isAppBroken', false);
 // keep track of transaction history

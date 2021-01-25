@@ -74,7 +74,7 @@
   </div>
 {/await}
 
-<div class="elt-swap-wizard mt-5 mb-5 p-5" class:not-connected={!$connected}>
+<div class="elt-swap-wizard mt-5 mb-5 p-5">
   <div class="columns">
     <div class="col-left is-6">
       <span
