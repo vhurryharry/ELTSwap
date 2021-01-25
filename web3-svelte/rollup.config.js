@@ -58,8 +58,9 @@ export default {
       plugins: [
         purgecss({
           content: [
-            './src/**/*.svelte',
             './node_modules/svelte/*.js',
+            './src/**/*.scss',
+            './src/**/*.svelte',
           ],
         }),
         autoprefixer()

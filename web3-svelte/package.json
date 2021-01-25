@@ -31,6 +31,7 @@
     "sirv-cli": "^1.0.0",
     "svelte-awesome": "^2.3.0",
     "svelte-simple-datatables": "^0.1.25",
+    "svelte-tooltip": "^1.2.0",
     "svelte-web3": "^1.2.9"
   }
 }

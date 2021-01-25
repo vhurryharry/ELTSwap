@@ -1,5 +1,6 @@
 <script>
   import { web3, selectedAccount, ethStore } from "svelte-web3";
+  import SvelteTooltip from "svelte-tooltip";
 
   import * as global from "../../../utils/globals";
 
@@ -73,6 +74,24 @@
     window.location.reload();
   });
 
+  window.onbeforeunload = () => {
+    // cleanup before leaving
+    isRPCEnabled.set(false);
+    isAppPending.set(false);
+    latestAccount.set(null);
+    isAppBroken.set(false); // just in case...
+  };
+
+  window.ethereum.on("accountsChanged", (accounts) => {
+    console.dir(" accounts ", accounts);
+    if (accounts[0] !== $latestAccount) {
+      isRPCEnabled.set(accounts.length ? true : false);
+      isAppPending.set(false);
+      latestAccount.set(accounts[0]);
+      isAppBroken.set(false); // just in case...
+    }
+  });
+
   // Creates a connection to own infura node.
   const enable = () => {
     ethStore
@@ -108,15 +127,6 @@
           }
         );
       });
-
-    window.ethereum.on("accountsChanged", (accounts) => {
-      if (accounts[0] !== $latestAccount) {
-        isRPCEnabled.set(accounts.length ? true : false);
-        isAppPending.set(false);
-        latestAccount.set(accounts[0]);
-        isAppBroken.set(false); // just in case...
-      }
-    });
   };
 
   $: enableBrowser = async () => {
@@ -225,6 +235,23 @@
       );
     }
   }
+
+  $: contractStatusIndicator = () => {
+    let statusStr = $isRPCEnabled ? "connected" : "disconnected";
+
+    if ($isAppPending) {
+      let pendingAction = "";
+      // TODO revise this
+      if (appPhase === 0) {
+        statusStr = "swap pending";
+      }
+      if (appPhase === 1) {
+        statusStr = `${$swapAmountELT}ELT deposited`;
+      }
+    }
+
+    return statusStr;
+  };
 </script>
 
 <style>
@@ -267,7 +294,7 @@
         {/await}
         <div id="balancePill" class="">
           {#if !$latestAccount}
-            <span class="px-1">Not Connected</span>
+            <span class="px-1">Disconnected</span>
           {:else}<span class="px-1">{formatAddr($latestAccount)}</span>{/if}
           <span
             id="connectionIndicator"
@@ -276,6 +303,10 @@
       </div>
     </div>
   </div>
+
+  <SvelteTooltip tip="view on github" bottom>
+    <p class="has-text-right">contract status: {contractStatusIndicator()}</p>
+  </SvelteTooltip>
 
   <div
     id="wizardContent"
@@ -303,16 +334,23 @@
         <div
           class="column is-flex is-hidden-mobile is-flex-direction-column is-4-tablet is-4-desktop is-justify-content-end ">
           {#await $approvedELTAmount}
-            <h6>Loading...</h6>
+            <h6>Pending...</h6>
           {:then value}
-            <h6>Approved: {value}</h6>
+            <h6
+              class="has-tooltip-arrow"
+              data-tooltip="type valid amount of ELT">
+              Approved:
+              {value || 0}
+            </h6>
           {/await}
+
           {#if $isRPCEnabled === false}
             <button
-              class="button connect-wallet is-rounded"
+              class="button connect-wallet is-rounded has-tooltip-arrow"
               class:pending={$isAppPending}
               class:disabled={$isAppPending}
-              on:click={enableBrowser}>
+              on:click={enableBrowser}
+              data-tooltip="type valid amount of ELT">
               Connect Wallet
             </button>
           {:else}
@@ -368,7 +406,6 @@
         </div>
       </div>
     </div>
-
 
     {#await $isRPCEnabled}
       <div />

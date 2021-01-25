@@ -18,7 +18,7 @@
   ];
 </script>
 
-<style>
+<style lang="scss">
   /**
   * For some reason, styles defined here are not
   * applyed.
