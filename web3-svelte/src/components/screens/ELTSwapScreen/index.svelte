@@ -254,10 +254,14 @@
   };
 </script>
 
-<style>
+<style lang="scss">
+  #rrr {
+    background-color: red !important;
+  }
 </style>
 
 <div
+  id="rrr"
   class="screen elt-swap-screen"
   class:active={$$props.currScreen == 'elt-swap-screen'}>
   <div

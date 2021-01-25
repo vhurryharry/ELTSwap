@@ -3,11 +3,12 @@ import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
-import postcss from 'rollup-plugin-postcss';
 import autoPreprocess from 'svelte-preprocess';
 import purgecss from '@fullhuman/postcss-purgecss';
 import autoprefixer from 'autoprefixer';
 import copy from 'rollup-plugin-copy'
+import scssPlugin from 'rollup-plugin-scss';
+import postcss from 'rollup-plugin-postcss';
 
 import path from 'path';
 
@@ -59,6 +60,9 @@ export default {
         purgecss({
           content: [
             './node_modules/svelte/*.js',
+            // './node_modules/svelte/*.css',
+            // './node_modules/svelte/*.scss',
+            // './src/**/*.css',
             './src/**/*.scss',
             './src/**/*.svelte',
           ],

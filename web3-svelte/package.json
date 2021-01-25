@@ -28,6 +28,7 @@
     "node-sass": "^5.0.0",
     "postcss-load-config": "^3.0.0",
     "rollup-plugin-postcss": "^4.0.0",
+    "rollup-plugin-scss": "^2.6.1",
     "sirv-cli": "^1.0.0",
     "svelte-awesome": "^2.3.0",
     "svelte-simple-datatables": "^0.1.25",
