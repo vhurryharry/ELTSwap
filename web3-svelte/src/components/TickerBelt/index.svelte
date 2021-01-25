@@ -4,7 +4,6 @@
   import { getELTInContract, getHODLInContract } from "../../js/web3Helper";
   import { isRPCEnabled } from "../../utils/stores";
 
-  console.dir(isRPCEnabled);
   let hodlBonusAtBurnRate = 0; // find this in contracts
 
   $: tickers = [
