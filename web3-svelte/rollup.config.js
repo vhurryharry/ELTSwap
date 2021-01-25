@@ -3,11 +3,10 @@ import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
-import autoPreprocess from 'svelte-preprocess';
-import purgecss from '@fullhuman/postcss-purgecss';
 import autoprefixer from 'autoprefixer';
 import copy from 'rollup-plugin-copy'
-import scssPlugin from 'rollup-plugin-scss';
+import sveltePreprocess from 'svelte-preprocess';
+import purgecss from '@fullhuman/postcss-purgecss';
 import postcss from 'rollup-plugin-postcss';
 
 import path from 'path';
@@ -45,14 +44,15 @@ export default {
   },
   plugins: [
     svelte({
-      preprocess: autoPreprocess({
+      emitCss: false,
+      preprocess: sveltePreprocess({
         postcss: true,
         sourceMap: !production,
       }),
-
       compilerOptions: {
         // enable run-time checks when not in production
         dev: !production,
+
       },
     }),
     postcss({
@@ -60,9 +60,9 @@ export default {
         purgecss({
           content: [
             './node_modules/svelte/*.js',
-            // './node_modules/svelte/*.css',
-            // './node_modules/svelte/*.scss',
-            // './src/**/*.css',
+            './node_modules/svelte/*.css',
+            './node_modules/svelte/*.scss',
+            './src/**/*.css',
             './src/**/*.scss',
             './src/**/*.svelte',
           ],

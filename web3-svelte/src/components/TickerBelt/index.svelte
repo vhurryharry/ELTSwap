@@ -19,14 +19,8 @@
 </script>
 
 <style lang="scss">
-  /**
-  * For some reason, styles defined here are not
-  * applyed.
-  * TODO: Figure out why so.
-  */
-  .ticker-belt-wrapper {
-    background-color: red;
-  }
+  //   .ticker-belt-wrapper {
+  //  }
 </style>
 
 <div class="ticker-belt-wrapper is-flex block is-12">
