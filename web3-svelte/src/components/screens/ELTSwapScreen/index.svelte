@@ -199,9 +199,10 @@
         global.swapContractAddress
       ).then(async function (resolve, reject) {
         if (resolve) {
-          console.log("Approval transaction confirmed!");
           let eltAllowance = await getApprovedAmount();
+          console.log("Approval transaction confirmed!", eltAllowance);
           approvedELTAmount.set(eltAllowance);
+
           console.log("Allowance: " + eltAllowance);
 
           isAppPending.set(false);
@@ -367,6 +368,7 @@
         </div>
       </div>
     </div>
+
 
     {#await $isRPCEnabled}
       <div />
