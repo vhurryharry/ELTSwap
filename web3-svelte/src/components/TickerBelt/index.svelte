@@ -2,15 +2,20 @@
   import { web3, connected } from "svelte-web3";
 
   import { getELTInContract, getHODLInContract } from "../../js/web3Helper";
+  import { isRPCEnabled } from "../../utils/stores";
 
+  console.dir(isRPCEnabled);
   let hodlBonusAtBurnRate = 0; // find this in contracts
 
   $: tickers = [
-    { label: "ELT burned", value: $connected ? getELTInContract($web3) : 0 },
-    { label: "ELT staked", value: $connected ? getHODLInContract($web3) : 0 },
-    { label: "HODL issued", value: $connected ? "TBD" : 0 },
-    { label: "ELT market cap", value: $connected ? "TBD" : 0 },
-    // { label: "ELT price", value: $connected ? "TBD" : 0 },
+    { label: "ELT burned", value: $isRPCEnabled ? getELTInContract($web3) : 0 },
+    {
+      label: "ELT staked",
+      value: $isRPCEnabled ? getHODLInContract($web3) : 0,
+    },
+    { label: "HODL issued", value: $isRPCEnabled ? "TBD" : 0 },
+    { label: "ELT market cap", value: $isRPCEnabled ? "TBD" : 0 },
+    // { label: "ELT price", value: $isRPCEnabled ? "TBD" : 0 },
   ];
 </script>
 

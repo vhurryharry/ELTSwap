@@ -1,11 +1,5 @@
 <script>
-  import {
-    web3,
-    selectedAccount,
-    connected,
-    chainName,
-    ethStore,
-  } from "svelte-web3";
+  import { web3, selectedAccount, ethStore } from "svelte-web3";
 
   import * as global from "../../../utils/globals";
 
@@ -14,19 +8,26 @@
   import {
     approvedELTAmount,
     burnPercentage,
-    swapAmountHODL,
+    isAppBroken,
+    isAppPending,
+    isRPCEnabled,
+    latestAccount,
     swapAmountELT,
-    isSwapBtnPending,
-    isSwapBtnDisabled,
-    isRPCPending,
+    swapAmountHODL,
+    transactionHistory,
   } from "../../../utils/stores";
-  // from https://github.com/higsch/higsch.me/blob/master/content/post/2019-06-21-svelte-local-storage.md
-  isRPCPending.useLocalStorage();
+  // initialize from localStorage
+  isAppBroken.useLocalStorage();
+  transactionHistory.useLocalStorage();
+
+  import { formatAddr } from "../../../utils/services.js";
 
   import {
+    approveELT,
+    getAllowance,
+    getELTInContract,
     getETHBalance,
     getTokenBalance,
-    getELTInContract,
     getTotalHodlReward,
     discernAppStatus,
   } from "../../../js/web3Helper";
@@ -39,91 +40,103 @@
 
   // TODO: move to utils
   // $: approveAddr = "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e";
+  $: checkAccount = $selectedAccount || global.nilAccount;
 
-  $: checkAccount =
-    $selectedAccount || "0x0000000000000000000000000000000000000000";
+  $: eltInContract = $isRPCEnabled ? getELTInContract($web3) : 0;
 
-  $: eltInContract = 0; // $connected ? getELTInContract($web3) : 0;
-
-  $: ethBalance = "";
-  // $: ethBalance = $connected
-  //   ? getETHBalance($web3, $selectedAccount)
-  //   : Number(0.0);
+  $: ethBalance = $isRPCEnabled
+    ? getETHBalance($web3, $selectedAccount)
+    : Number(0.0);
 
   $: fixedDecimals = (number, precision) => {
     if (typeof number !== "number") return;
     return number.toFixed(typeof precision == "number" ? precision : 4);
   };
 
-  $: eltBalance = "";
-  // $: eltBalance = $connected
-  //   ? getTokenBalance(
-  //       $web3,
-  //       checkAccount,
-  //       "0xa84a0b15d7c62684b71fecb5ea8efe0e5af1d11b"
-  //     )
-  //   : "";
+  $: eltBalance = $isRPCEnabled
+    ? getTokenBalance(
+        $web3,
+        checkAccount,
+        "0xa84a0b15d7c62684b71fecb5ea8efe0e5af1d11b"
+      )
+    : "";
 
-  $: hodlBalance = "";
-  // $: hodlBalance = $connected
-  //   ? getTokenBalance(
-  //       $web3,
-  //       checkAccount,
-  //       "0x5c85a93991671dc5886203e0048777a4fd219983"
-  //     )
-  //   : "";
+  $: hodlBalance = $isRPCEnabled
+    ? getTokenBalance(
+        $web3,
+        checkAccount,
+        "0x5c85a93991671dc5886203e0048777a4fd219983"
+      )
+    : "";
 
-  /** */
-  function checkChain() {
-    if ($chainName !== undefined) {
-      console.log($chainName);
-    }
-  }
-  $: $chainName, checkChain();
-
-  $: checkAccount =
-    $selectedAccount || "0x0000000000000000000000000000000000000000";
+  window.ethereum.on("chainChanged", (_chainId) => {
+    // We recommend reloading the page, unless you must do otherwise
+    window.location.reload();
+  });
 
   // Creates a connection to own infura node.
-  const enable = async () => {
-    // console.dir(ethStore);
-    await ethStore.setProvider(
-      "https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca"
-    );
+  const enable = () => {
+    ethStore
+      .setProvider(
+        "https://ropsten.infura.io/v3/952d8bd0e20b4bbfac856dc18285b6ca"
+      )
+      .then(() => {
+        ethStore.setBrowserProvider().then(
+          () => {
+            isAppPending.set(false);
+          },
+          (error) => {
+            console.dir(error);
+            // set state to "pending"
+            isAppPending.set(true);
+
+            // handle codes
+            switch (error.code) {
+              case 4001:
+                // EIP-1193 userRejectedRequest error
+                console.log("Permissions needed to continue.");
+                // tooltip
+                break;
+              case -32002:
+                // there's a pending request for permissions
+                console.log("Please check Metamask for pending requests.");
+                // tooltip
+                break;
+              default:
+                // impossible to recover;
+                isAppBroken.set(true);
+            }
+          }
+        );
+      });
+
+    window.ethereum.on("accountsChanged", (accounts) => {
+      if (accounts[0] !== $latestAccount) {
+        isRPCEnabled.set(accounts.length ? true : false);
+        isAppPending.set(false);
+        latestAccount.set(accounts[0]);
+        isAppBroken.set(false); // just in case...
+      }
+    });
   };
 
   $: enableBrowser = async () => {
-    isSwapBtnPending.set(true);
+    isAppPending.set(true);
     await enable();
-    console.dir($ethStore);
-    console.log(" accounts[0] ", $ethStore["instance"]["accounts"][0]);
-    // ethStore.setBrowserProvider();
-    try {
-      console.log(
-        " ethStore.setBrowserProvider ",
-        ethStore.setBrowserProvider().then((res) => {
-          console.log(" ########## ", res);
-        })
-      );
-    } catch (err) {
-      console.log(" ********** ", err);
-    }
-    console.log(" $ethStore.instance.abi ", $ethStore["instance"]["abi"]);
   };
 
   /** */
   $: getSwapProgress = () => {
     return 0;
     parseInt(
-      ($connected ? getELTInContract($web3) : 0 * 100) / global.absMaxELT
+      ($isRPCEnabled ? getELTInContract($web3) : 0 * 100) / global.absMaxELT
     ) || 0;
   };
 
   /** */
-  $: totalHodlReward = "";
-  // $: totalHodlReward = $connected
-  //   ? getTotalHodlReward($web3, $swapAmountELT, 25)
-  //   : "";
+  $: totalHodlReward = $isRPCEnabled
+    ? getTotalHodlReward($web3, $swapAmountELT, 25)
+    : "";
 
   function castToPrecision(floatNum, maxDecLen = 8) {
     let decimals = (floatNum + "").split(".")[1] || [];
@@ -157,26 +170,19 @@
   }
 
   function sendSwap() {
-    if (false) {
-      // if ($connected) {
-      console.log("0 --- : " + $isSwapBtnDisabled);
-      isSwapBtnDisabled.set(true);
-      isSwapBtnPending.set(true);
+    if ($isRPCEnabled) {
+      isAppPending.set(true);
 
-      try {
-        swap($web3, $swapAmountELT, $burnPercentage, $selectedAccount).then(
-          async function (resolve, reject) {
-            if (resolve) {
-              console.log("Swap transaction confirmed!");
+      swap($web3, $swapAmountELT, $burnPercentage, $selectedAccount).then(
+        async function (resolve, reject) {
+          if (resolve) {
+            console.log("Swap transaction confirmed!");
 
-              // Check the allowance again to change the button back to Approve
-              let eltAllowance = await getApprovedAmount();
-              approvedELTAmount.set(eltAllowance);
-              console.log("Allowance: " + eltAllowance);
-              console.log("1 --- : " + $isSwapBtnDisabled);
-              isSwapBtnDisabled.set(false);
-              isSwapBtnPending.set(false);
-            }
+            // Check the allowance again to change the button back to Approve
+            let eltAllowance = await getApprovedAmount();
+            approvedELTAmount.set(eltAllowance);
+            console.log("Allowance: " + eltAllowance);
+            isAppPending.set(false);
           }
         );
       } catch (err) {
@@ -189,133 +195,39 @@
   }
 
   async function approveELTTransfer() {
-    console.log("2 --- : " + $isSwapBtnDisabled);
-    isSwapBtnDisabled.set(true);
-    isSwapBtnPending.set(true);
+    isAppPending.set(true);
 
-    if (false) {
-      // if ($connected) {
-      try {
-        approveELT(
-          $web3,
-          $swapAmountELT,
-          $selectedAccount,
-          swapContractAddress
-        ).then(async function (resolve, reject) {
-          if (resolve) {
-            let eltAllowance = await getApprovedAmount();
-            console.log("Approval transaction confirmed!", eltAllowance);
-            approvedELTAmount.set(eltAllowance);
-            isSwapBtnDisabled.set(false);
-            // isSwapBtnPending.set(false);
-          }
-        });
-      } catch (err) {
-        console.log(" approveELTTransfer catch err ", err);
-        onRejectHandler(err, (err) => {
-          console.log(" approveELTTransfer callback err ", err);
-        });
-      }
+    if ($isRPCEnabled) {
+      approveELT(
+        $web3,
+        $swapAmountELT,
+        $selectedAccount,
+        global.swapContractAddress
+      ).then(async function (resolve, reject) {
+        if (resolve) {
+          console.log("Approval transaction confirmed!");
+          let eltAllowance = await getApprovedAmount();
+          approvedELTAmount.set(eltAllowance);
+          console.log("Allowance: " + eltAllowance);
+
+          isAppPending.set(false);
+        }
+      });
     }
   }
 
   function getApprovedAmount() {
-    if ($connected) {
-      // let allowance = getAllowance($web3, checkAccount, swapContractAddress);
-      console.log(allowance);
-      return allowance;
-    }
-  }
-
-  import { formatAddr } from "../../../utils/services.js";
-
-  function handleAccountsChanged(data) {
-    console.log(" $$$$$$$ ");
-    console.dir(data);
-    // web3Handlers.hasPendingPermissions.set(true);
-    localStorage.setItem("isRPCPending", true);
-  }
-
-  async function connectRPC() {
-    console.log(" ////????/// ", window.ethereum);
-
-    console.log(" @@@@@ ", $isRPCPending);
-
-    // abort if already requested and pending
-    if ($isRPCPending) {
-      /** state is now 'pending' */
-      isSwapBtnPending.set(true);
-
-      /** display tooltip/screen with instructions */
-      // currentWizardScreen.set('pending-screen');
-      console.log("TODO: Go to MetaMask and decide");
-
-      return null;
-    }
-
-    try {
-      localStorage.setItem("isRPCPending", true);
-
-      currentRPCCall = window.ethereum
-        .request({ method: "eth_requestAccounts" })
-        .then(handleAccountsChanged)
-        .catch((error) => {
-          console.error(" !!!!!!!!!!!! ", error);
-          if (error.code === 4001) {
-            // EIP-1193 userRejectedRequest error
-            console.log("Please connect to MetaMask.");
-          }
-
-          if (Math.abs(error.code) === 32002) {
-            /**
-             * Object { code: -32002, message: "Request of type 'wallet_requestPermissions' already pending for origin http://localhost:5000. Please wait." }
-             */
-          }
-        });
-    } catch (err) {
-      // this is not able to catch RPC errors :(
-      console.dir(err);
-    } finally {
-      // set falg for pending
-      // web3Handlers.update((current) => {
-      //   // prepend for easy access; use spread for rerender
-      //   current.rpcHistory = [req, ...current.rpcHistory];
-      //   current.hasPendingPermissions = true;
-
-      //   // ...$web3Handlers,
-      // hasPendingPermissions.set(true),
-      // });
-
-      console.log(" isRPCPending ", $isRPCPending);
-
-      // make note of request
-      // web3Handlers.update((current) => {
-      //   console.dir(current);
-      //   current.isRPCPending = true;
-      //   current.rpcHistory = [req, ...current.rpcHistory];
-      // });
-
-      // let currHistList = $web3Handlers.rpcHistory;
-      // web3Handlers.set({
-      //   ...web3Handlers,
-      //   rpcHistory: currHistList.push(currReq),
-      // });
-
-      // web3Handlers.subscribe((val) => {
-      //   // localStorage.setItem("web3Handlers", {
-      //   //   ...val,
-      //   //   rpcHistory: [...val.rpcHistory, currentRPCCall],
-      //   // });
-
-      //   localStorage.setItem(true);
-
-      //   console.log(" ???444? ", localStorage.getItem("web3Handlers"));
-      //   console.log(" ???? ", { foo: "bar" });
-      // });
-
-      // web3Handlers.hasPendingPermissions.set(
-      //   $web3Handlers.rpcHistory.length > 0 ? true : false
-      // );
+    if ($isRPCEnabled) {
+      isAppPending.set(true);
+      return getAllowance($web3, checkAccount, global.swapContractAddress).then(
+        (result) => {
+          console.log(" approvedAmount ", result);
+          isAppPending.set(false);
+        },
+        (error) => {
+          console.log(" getApprovedAmount err ", error);
+        }
+      );
     }
   }
 </script>
@@ -359,12 +271,12 @@
           <span class="px-1">{fixedDecimals(value)} ETH </span>
         {/await}
         <div id="balancePill" class="">
-          {#if $connected === false}
+          {#if !$latestAccount}
             <span class="px-1">Not Connected</span>
-          {:else}<span class="px-1">{formatAddr($selectedAccount)}</span>{/if}
+          {:else}<span class="px-1">{formatAddr($latestAccount)}</span>{/if}
           <span
             id="connectionIndicator"
-            class:connected={$connected}>&#11044;</span>
+            class:connected={$isRPCEnabled}>&#11044;</span>
         </div>
       </div>
     </div>
@@ -400,10 +312,11 @@
           {:then value}
             <h6>Approved: {value}</h6>
           {/await}
-          {#if $connected === false}
+          {#if $isRPCEnabled === false}
             <button
               class="button connect-wallet is-rounded"
-              class:pending={$isSwapBtnPending}
+              class:pending={$isAppPending}
+              class:disabled={$isAppPending}
               on:click={enableBrowser}>
               Connect Wallet
             </button>
@@ -411,8 +324,8 @@
             {#await $approvedELTAmount}
               <button
                 class="button connect-wallet connected is-rounded"
-                class:pending={$isSwapBtnPending}
-                disabled={$isSwapBtnPending ? 'disabled' : ''}
+                class:pending={$isAppPending}
+                class:disabled={$isAppPending}
                 on:click={approveELTTransfer}>
                 Approve
               </button>
@@ -420,15 +333,16 @@
               {#if value >= global.minELTToSwap}
                 <button
                   class="button connect-wallet connected is-rounded"
-                  class:pending={$isSwapBtnPending}
-                  class:disabled={$isSwapBtnDisabled}
+                  class:pending={$isAppPending}
+                  class:disabled={$isAppPending}
                   on:click={sendSwap}>
                   Swap
                 </button>
               {:else}
                 <button
                   class="button connect-wallet connected is-rounded"
-                  class:pending={$isSwapBtnPending}
+                  class:pending={$isAppPending}
+                  class:disabled={$isAppPending}
                   on:click={approveELTTransfer}>
                   Approve
                 </button>
@@ -474,18 +388,20 @@
       {:then value}
         <h6>Approved: {value}</h6>
       {/await}
-      {#if $connected === false}
+      {#if $isRPCEnabled === false}
         <button
           class="button connect-wallet is-rounded"
-          class:pending={$isSwapBtnPending}
-          on:click={connectRPC()}>
+          class:pending={$isAppPending}
+          class:disabled={$isAppPending}
+          on:click={enableBrowser}>
           Connect Wallet
         </button>
       {:else}
         {#await $approvedELTAmount}
           <button
             class="button connect-wallet connected is-rounded"
-            class:pending={$isSwapBtnPending}
+            class:pending={$isAppPending}
+            class:disabled={$isAppPending}
             on:click={approveELTTransfer.set}>
             Approve
           </button>
@@ -493,15 +409,16 @@
           {#if value >= global.minELTToSwap}
             <button
               class="button connect-wallet connected is-rounded"
-              class:pending={$isSwapBtnPending}
-              class:disabled={$isSwapBtnDisabled}
+              class:pending={$isAppPending}
+              class:disabled={$isAppPending}
               on:click={sendSwap}>
               Swap
             </button>
           {:else}
             <button
               class="button connect-wallet connected is-rounded"
-              class:pending={$isSwapBtnPending}
+              class:pending={$isAppPending}
+              class:disabled={$isAppPending}
               on:click={approveELTTransfer.set}>
               Approve
             </button>
