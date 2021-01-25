@@ -1,5 +1,5 @@
 <script>
-  import { web3, connected } from "svelte-web3";
+  import { web3 } from "svelte-web3";
 
   import { getELTInContract, getHODLInContract } from "../../js/web3Helper";
 

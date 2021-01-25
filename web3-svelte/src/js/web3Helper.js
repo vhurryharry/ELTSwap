@@ -7,49 +7,6 @@ const eltContract = "0xa84a0b15d7c62684b71fecb5ea8efe0e5af1d11b";
 const hodlDecimals = 8;
 const eltDecimals = 8;
 
-export const discernAppStatus = async (query, value) => {
-  return false;
-
-
-  if (!query) return false;
-  if (!window.ethereum) return false;
-
-  // return current model instance for the query
-  switch (query) {
-    case 'connected':
-      return await (() => {
-        // if not signed into Metamask
-        if (!window.ethereum['_state']['isUnlocked']) return false;
-        // if no account is listed
-        if (!$ethStore["accounts"][0]) return false;
-
-        window.ethereum.
-
-          window.ethereum.on('accountsChanged', (accounts) => {
-            console.log(' accounts changed ', accounts);
-
-            // ethereum.on('chainChanged', handler: (chainId: string) => void);
-
-          })
-        console.log(' connnected ', true)
-        return true;
-      })();
-    default:
-      return false;
-  }
-  // if value, set(...)
-
-}
-
-export const onRejectHandler = async (err, callback) => {
-  // use err codes to update state
-
-  // if is a function, execute callback
-  if (typeof callback === 'function') {
-    callback(err)
-  }
-}
-
 export let getTokenBalance = async (web3, address, tokenContract, decimals = 8) => {
   let amount = 0;
 

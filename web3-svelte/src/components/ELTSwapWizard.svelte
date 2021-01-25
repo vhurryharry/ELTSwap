@@ -1,6 +1,4 @@
 <script>
-  import { connected } from "svelte-web3";
-
   import Icon from "svelte-awesome";
 
   /** TODO: figure out how to properly import these */

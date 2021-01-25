@@ -29,7 +29,6 @@
     getETHBalance,
     getTokenBalance,
     getTotalHodlReward,
-    discernAppStatus,
   } from "../../../js/web3Helper";
 
   // TODO: fix imports to omit `/index.svelte`
@@ -184,13 +183,8 @@
             console.log("Allowance: " + eltAllowance);
             isAppPending.set(false);
           }
-        );
-      } catch (err) {
-        console.log(" sendSwap catch err ", err);
-        onRejectHandler(err, (err) => {
-          console.log(" sendSwap callback err ", err);
-        });
-      }
+        }
+      );
     }
   }
 
@@ -374,8 +368,7 @@
       </div>
     </div>
 
-    <!-- <BurnSlider isVisible={$connected} /> -->
-    {#await $connected}
+    {#await $isRPCEnabled}
       <div />
     {:then value}
       <BurnSlider isVisible={value} />

@@ -1,5 +1,4 @@
 <script>
-  import { web3, connected } from "svelte-web3";
   import { Datatable, rows } from "svelte-simple-datatables";
   import { formatAddr } from "../../utility/services.js";
 
