@@ -1,11 +1,5 @@
 <script>
-  import {
-    web3,
-    selectedAccount,
-    connected,
-    chainName,
-    ethStore,
-  } from "svelte-web3";
+  import { web3, selectedAccount, ethStore } from "svelte-web3";
 
   import * as global from "../../../utils/globals";
 
@@ -45,6 +39,7 @@
 
   // TODO: move to utils
   // $: approveAddr = "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e";
+  $: checkAccount = $selectedAccount || global.nilAccount;
 
   $: eltInContract = $isRPCEnabled ? getELTInContract($web3) : 0;
 
@@ -72,8 +67,6 @@
         "0x5c85a93991671dc5886203e0048777a4fd219983"
       )
     : "";
-
-  $: checkAccount = $selectedAccount || global.nilAccount;
 
   window.ethereum.on("chainChanged", (_chainId) => {
     // We recommend reloading the page, unless you must do otherwise
@@ -201,7 +194,7 @@
         $web3,
         $swapAmountELT,
         $selectedAccount,
-        swapContractAddress
+        global.swapContractAddress
       ).then(async function (resolve, reject) {
         if (resolve) {
           console.log("Approval transaction confirmed!");
@@ -218,7 +211,7 @@
   function getApprovedAmount() {
     if ($isRPCEnabled) {
       isAppPending.set(true);
-      return getAllowance($web3, checkAccount, swapContractAddress).then(
+      return getAllowance($web3, checkAccount, global.swapContractAddress).then(
         (result) => {
           console.log(" approvedAmount ", result);
           isAppPending.set(false);

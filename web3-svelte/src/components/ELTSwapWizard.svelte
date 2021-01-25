@@ -15,7 +15,6 @@
   import ELTSwapScreen from "./screens/ELTSwapScreen/index.svelte";
   import EpilogueScreen from "./screens/EpilogueScreen/index.svelte";
   import ETHPurchaseScreen from "./screens/ETHPurchaseScreen/index.svelte";
-  import PendingScreen from "./screens/PendingScreen/index.svelte";
   import PrologueScreen from "./screens/PrologueScreen/index.svelte";
   import { clockO, questionCircle } from "svelte-awesome/icons";
 
@@ -61,11 +60,6 @@
       on:click={(evt) => {
         btnHandler('epilogue-screen');
       }}>EpilogueScreen</button>
-    <button
-      class="button is-ghost"
-      on:click={(evt) => {
-        btnHandler('pending-screen');
-      }}>PendingScreen</button>
     <button
       class="button is-ghost"
       on:click={(evt) => {
