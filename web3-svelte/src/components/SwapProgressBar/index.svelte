@@ -1,5 +1,4 @@
 <script>
-  import { web3, connected } from "svelte-web3";
   import TickerBelt from "../TickerBelt/index.svelte";
   // import * as service from "../../utils/services";
   // import { getELTInContract } from "../../js/web3Helper";

@@ -85,16 +85,24 @@ export let approveELT = async (web3, amount, fromAddress, toAddress) => {
   });
 
   return new Promise((resolve, reject) => {
-    contract.methods.approve(toAddress, decimalToAtomic(amount)).send({ to: eltContract, from: fromAddress, gasLimit: gasEstimate })
-      .on('confirmation', (confirmationNumber) => {
-        if (confirmationNumber === 1) {
-          resolve(true)
-        }
+    try {
+      contract.methods.approve(toAddress, decimalToAtomic(amount)).send({ to: eltContract, from: fromAddress, gasLimit: gasEstimate })
+        .on('confirmation', (confirmationNumber) => {
+          if (confirmationNumber === 1) {
+            resolve(true)
+          }
+        })
+        .on('error', (error) => {
+          reject(error)
+        })
+    } catch (err) {
+      console.log(' approveELT catch err ', err)
+      onRejectHandler(err, (err) => {
+        console.log(' approveELT callback err ', err);
       })
-      .on('error', (error) => {
-        reject(error)
-      })
-  })
+    }
+  });
+
 }
 
 export let swap = async (web3, amount, burnPercent = 0, fromAddress) => {
@@ -104,17 +112,25 @@ export let swap = async (web3, amount, burnPercent = 0, fromAddress) => {
     return res;
   });
 
-  return new Promise((resolve, reject) => {
-    contract.methods.swap(decimalToAtomic(amount), burnPercent).send({ to: swapContract, from: fromAddress, gasLimit: gasEstimate })
-      .on('confirmation', (confirmationNumber) => {
-        if (confirmationNumber === 1) {
-          resolve(true)
-        }
-      })
-      .on('error', (error) => {
-        reject(error)
-      })
-  })
+  try {
+    return new Promise((resolve, reject) => {
+      contract.methods.swap(decimalToAtomic(amount), burnPercent).send({ to: swapContract, from: fromAddress, gasLimit: gasEstimate })
+        .on('confirmation', (confirmationNumber) => {
+          if (confirmationNumber === 1) {
+            resolve(true)
+          }
+        })
+        .on('error', (error) => {
+          reject(error)
+        })
+    });
+  } catch (err) {
+    console.log(' swap catch err ', err)
+    onRejectHandler(err, (err) => {
+      console.log(' swap callback err ', err);
+    })
+  }
+
 }
 
 /*

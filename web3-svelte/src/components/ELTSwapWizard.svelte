@@ -1,6 +1,4 @@
 <script>
-  import { web3, connected } from "svelte-web3";
-
   import Icon from "svelte-awesome";
 
   /** TODO: figure out how to properly import these */
@@ -9,13 +7,12 @@
   import { currentWizardScreen } from "../utils/stores";
 
   import ScreenOverlay from "./ScreenOverlay/index.svelte";
-  import { isOverlayScreenActive } from "../utils/stores";
+  import { isOverlayScreenActive, isAppBroken } from "../utils/stores";
 
   import DAOScreenOfDoom from "./screens/DAOScreenOfDoom/index.svelte";
   import ELTSwapScreen from "./screens/ELTSwapScreen/index.svelte";
   import EpilogueScreen from "./screens/EpilogueScreen/index.svelte";
   import ETHPurchaseScreen from "./screens/ETHPurchaseScreen/index.svelte";
-  import PendingScreen from "./screens/PendingScreen/index.svelte";
   import PrologueScreen from "./screens/PrologueScreen/index.svelte";
   import { clockO, questionCircle } from "svelte-awesome/icons";
 
@@ -23,6 +20,12 @@
     console.log(" --- ", slug);
     currentWizardScreen.set(slug);
   };
+
+  isAppBroken.useLocalStorage();
+
+  if ($isAppBroken) {
+    currentWizardScreen.set("dao-screen-of-doom");
+  }
 </script>
 
 <style lang="scss" global>
@@ -58,17 +61,12 @@
     <button
       class="button is-ghost"
       on:click={(evt) => {
-        btnHandler('pending-screen');
-      }}>PendingScreen</button>
-    <button
-      class="button is-ghost"
-      on:click={(evt) => {
         btnHandler('dao-screen-of-doom');
       }}>DAOScreenOfDoom</button>
   </div>
 {/await}
 
-<div class="elt-swap-wizard mt-5 mb-5 p-5" class:not-connected={!$connected}>
+<div class="elt-swap-wizard mt-5 mb-5 p-5">
   <div class="columns">
     <div class="col-left is-6">
       <span
@@ -93,7 +91,6 @@
     <ELTSwapScreen {currScreen} />
     <EpilogueScreen {currScreen} />
     <ETHPurchaseScreen {currScreen} />
-    <PendingScreen {currScreen} />
     <PrologueScreen {currScreen} />
   {/await}
 
