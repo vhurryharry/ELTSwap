@@ -1,7 +1,6 @@
 <script>
   import { web3, selectedAccount, ethStore } from "svelte-web3";
-  import SvelteTooltip from "svelte-tooltip";
-
+  import tippy from "sveltejs-tippy";
   import * as global from "../../../utils/globals";
 
   /** TODO: figure out how to properly import these */
@@ -252,9 +251,20 @@
 
     return statusStr;
   };
+
+  const tooltips = {
+    connStatus: {
+      content: "<span class='tooltip'>please (re)connect</span>",
+      placement: "top",
+    },
+  };
 </script>
 
 <style lang="scss">
+  :global(.tooltip) {
+    font-size: 1.2rem;
+    text-transform: uppercase;
+  }
 </style>
 
 <div
@@ -304,9 +314,10 @@
     </div>
   </div>
 
-  <SvelteTooltip tip="view on github" bottom>
-    <p class="has-text-right">contract status: {contractStatusIndicator()}</p>
-  </SvelteTooltip>
+  <p use:tippy={tooltips.connStatus}>
+    contract status:
+    {contractStatusIndicator()}
+  </p>
 
   <div
     id="wizardContent"

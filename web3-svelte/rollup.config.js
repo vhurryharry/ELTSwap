@@ -3,12 +3,11 @@ import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
-import autoprefixer from 'autoprefixer';
 import copy from 'rollup-plugin-copy'
-import sveltePreprocess from 'svelte-preprocess';
+import autoPreprocess from 'svelte-preprocess';
 import purgecss from '@fullhuman/postcss-purgecss';
 import postcss from 'rollup-plugin-postcss';
-
+import replace from "rollup-plugin-replace";
 import path from 'path';
 
 const production = !process.env.ROLLUP_WATCH;
@@ -43,31 +42,31 @@ export default {
     file: 'public/build/bundle.js'
   },
   plugins: [
+    replace({
+      'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development')
+    }),
     svelte({
-      emitCss: false,
-      preprocess: sveltePreprocess({
+      emitCss: true,
+      preprocess: autoPreprocess({
         postcss: true,
         sourceMap: !production,
+        scss: { includePaths: ['src', 'node_modules'] },
       }),
       compilerOptions: {
-        // enable run-time checks when not in production
         dev: !production,
-
       },
     }),
     postcss({
+      config: {
+        parser: 'sugarss',
+      },
       plugins: [
         purgecss({
           content: [
-            './node_modules/svelte/*.js',
-            './node_modules/svelte/*.css',
             './node_modules/svelte/*.scss',
-            './src/**/*.css',
             './src/**/*.scss',
-            './src/**/*.svelte',
           ],
         }),
-        autoprefixer()
       ],
       extract: path.resolve('public/build/bundle.css'),
       minimize: production,
@@ -102,7 +101,7 @@ export default {
 
     // If we're building for production (npm run build
     // instead of npm run dev), minify
-    production && terser()
+    production && terser(),
   ],
   watch: {
     clearScreen: false
