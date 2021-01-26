@@ -63,8 +63,10 @@ export default {
       plugins: [
         purgecss({
           content: [
+            './node_modules/svelte/*.css',
             './node_modules/svelte/*.scss',
             './src/**/*.scss',
+            './src/**/*.svelte',
           ],
         }),
       ],
