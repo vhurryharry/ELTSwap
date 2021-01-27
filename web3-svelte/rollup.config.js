@@ -5,10 +5,11 @@ import livereload from 'rollup-plugin-livereload';
 import path from 'path';
 import postcss from 'rollup-plugin-postcss';
 import replace from "rollup-plugin-replace";
-import resolve from '@rollup/plugin-node-resolve';
 import svelte from 'rollup-plugin-svelte';
 import { terser } from 'rollup-plugin-terser';
 import typescript from "@rollup/plugin-commonjs";
+import resolve from '@rollup/plugin-node-resolve';
+import babel from '@rollup/plugin-babel';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -93,6 +94,9 @@ export default {
       browser: true,
       dedupe: ['svelte']
     }),
+
+    babel({ babelHelpers: 'bundled' }),
+
     commonjs(),
 
     // In dev mode, call `npm run start` once

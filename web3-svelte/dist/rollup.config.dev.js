@@ -19,11 +19,13 @@ var _rollupPluginPostcss = _interopRequireDefault(require("rollup-plugin-postcss
 
 var _rollupPluginReplace = _interopRequireDefault(require("rollup-plugin-replace"));
 
-var _pluginNodeResolve = _interopRequireDefault(require("@rollup/plugin-node-resolve"));
-
 var _rollupPluginSvelte = _interopRequireDefault(require("rollup-plugin-svelte"));
 
 var _rollupPluginTerser = require("rollup-plugin-terser");
+
+var _pluginNodeResolve = _interopRequireDefault(require("@rollup/plugin-node-resolve"));
+
+var _pluginBabel = _interopRequireDefault(require("@rollup/plugin-babel"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -107,6 +109,8 @@ var _default = {
   (0, _pluginNodeResolve["default"])({
     browser: true,
     dedupe: ['svelte']
+  }), (0, _pluginBabel["default"])({
+    babelHelpers: 'bundled'
   }), (0, _pluginCommonjs["default"])(), // In dev mode, call `npm run start` once
   // the bundle has been generated
   !production && serve(), // Watch the `public` directory and refresh the
