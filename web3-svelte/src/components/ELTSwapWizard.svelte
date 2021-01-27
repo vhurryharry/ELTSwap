@@ -1,4 +1,4 @@
-<script>
+<script type="ts">
   import Icon from "svelte-awesome";
 
   /** TODO: figure out how to properly import these */
@@ -16,7 +16,7 @@
   import PrologueScreen from "./screens/PrologueScreen/index.svelte";
   import { clockO, questionCircle } from "svelte-awesome/icons";
 
-  const btnHandler = (slug) => {
+  const btnHandler = (slug: string) => {
     console.log(" --- ", slug);
     currentWizardScreen.set(slug);
   };
