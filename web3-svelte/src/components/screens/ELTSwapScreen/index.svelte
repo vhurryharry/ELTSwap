@@ -254,7 +254,7 @@
 
   const tooltips = {
     connStatus: {
-      content: "<span class='tooltip'>please (re)connect</span>",
+      content: `<span class="tooltip">please (re)connect</span>`,
       placement: "top",
     },
   };
@@ -262,7 +262,8 @@
 
 <style lang="scss">
   :global(.tooltip) {
-    font-size: 1.2rem;
+    // font-size: 1.2rem;
+    background-color: #fff;
     text-transform: uppercase;
   }
 </style>

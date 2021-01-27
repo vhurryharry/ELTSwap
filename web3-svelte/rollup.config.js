@@ -60,16 +60,6 @@ export default {
       config: {
         parser: 'sugarss',
       },
-      plugins: [
-        purgecss({
-          content: [
-            './node_modules/svelte/*.css',
-            './node_modules/svelte/*.scss',
-            './src/**/*.scss',
-            './src/**/*.svelte',
-          ],
-        }),
-      ],
       extract: path.resolve('public/build/bundle.css'),
       minimize: production,
       sourceMap: !production,
