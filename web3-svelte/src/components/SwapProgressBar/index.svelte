@@ -30,6 +30,7 @@
       <span
         id="currentSwapMark"
         style="--curr-mark-left: {$$props.getSwapProgress()}%;">{$$props.getSwapProgress() > 10 ? $$props.eltInContract + ' ELT' : ''}</span>
+      <div id="coverProgressGradient" />
     </div>
   </div>
 </div>
