@@ -1,14 +1,12 @@
 <script>
   import TickerBelt from "../TickerBelt/index.svelte";
-  // import * as service from "../../utils/services";
-  // import { getELTInContract } from "../../js/web3Helper";
 </script>
 
 <style>
 </style>
 
-<div class="columns is-flex-wrap-wrap">
-  <div class="column is-12">
+<div class="column is-10 is-flex-wrap-wrap">
+  <div class="column is-12 pb-0">
     <h3>
       <span class="">
         Eltswap Progress:
@@ -19,28 +17,20 @@
     </h3>
   </div>
 
-  <div class="column is-12">
+  <div class="column is-12 pt-0">
     <TickerBelt />
   </div>
 
   <div class="column is-12 elt-swap-progress-wrapper">
     <div id="swapProgress" class="is-flex is-12">
-      <span
-        id="swapProgressGradient"
-        style="--progress-bar-width: {$$props.getSwapProgress()}%;" />
+      <span id="swapProgressGradient" />
       <span id="minSwapMark" />
       <span
         id="currentSwapMark"
         style="--curr-mark-left: {$$props.getSwapProgress()}%;">{$$props.getSwapProgress() > 10 ? $$props.eltInContract + ' ELT' : ''}</span>
+      <div
+        id="coverProgressGradient"
+        style="--cover-progress-gradient-width: {99}%;" />
     </div>
-
-    <span class="">0 ELT</span>
-
-    <span class="is-pulled-right">40M ELT</span>
-  </div>
-
-  <div class="column is-flex">
-    <sup class="ref-asterix">*</sup>
-    <h6 class="ref-entry">of 15 million ELT softcap</h6>
   </div>
 </div>

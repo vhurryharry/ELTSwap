@@ -1,0 +1,12 @@
+/** 
+* with the "theme" prefix, we can easily theme by 
+* overwriting these in the imported theme file;
+* use $theme* vaiables directly, not the color names;
+*/
+.ticker-belt-wrapper {
+  font-size: 0.8rem;
+}
+.ticker-belt-wrapper .key-val-row {
+  padding: 0% 15px 15px 0;
+  color: #565656;
+}

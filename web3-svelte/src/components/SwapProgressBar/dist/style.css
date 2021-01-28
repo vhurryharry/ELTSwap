@@ -1,16 +1,19 @@
-@import "../../styles/variables";
-
+/** 
+* with the "theme" prefix, we can easily theme by 
+* overwriting these in the imported theme file;
+* use $theme* vaiables directly, not the color names;
+*/
 .elt-swap-progress-wrapper {
-  padding-top: 1rem !important; // overwrite .column rule
+  padding-top: 1rem !important;
   position: relative;
 }
 
-.elt-swap-progress-wrapper>span {
+.elt-swap-progress-wrapper > span {
   font-size: 0.8rem;
 }
 
 #swapProgress::before {
-  content: '';
+  content: "";
   position: absolute;
   width: 34px;
   height: 34px;
@@ -21,14 +24,14 @@
 
 #swapProgress {
   min-height: 20px;
-  background-color: $themeSurfaceLight;
+  background-color: #565656;
   padding: 0;
   border-radius: 1rem;
   position: relative;
 }
 
 #swapProgress::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 34px;
   height: 34px;
@@ -42,7 +45,7 @@
 #swapProgressGradient:before {
   height: 20px;
   width: 20px;
-  content: '';
+  content: "";
   position: absolute;
   background: #009DFF;
   border-radius: 50%;
@@ -53,7 +56,7 @@
 #swapProgressGradient {
   width: 100%;
   height: 7px;
-  background: linear-gradient(90deg, #009DFF 0%, #65FA67 28%, #FC0707 100%); // $swapProgressGradient;
+  background: linear-gradient(90deg, #009DFF 0%, #65FA67 28%, #FC0707 100%);
   margin: auto 15px auto 15px;
   border-radius: 2rem;
   z-index: 10;
@@ -63,7 +66,7 @@
 #swapProgressGradient:after {
   height: 20px;
   width: 20px;
-  content: '';
+  content: "";
   position: absolute;
   background: #FC0707;
   border-radius: 50%;
@@ -76,7 +79,7 @@
   position: absolute;
   top: 7px;
   left: 7px;
-  content: '';
+  content: "";
   width: 20px;
   height: 20px;
   background-color: #57ED7C;
@@ -96,13 +99,13 @@
 }
 
 #coverProgressGradient:before {
-  content: '';
+  content: "";
   position: absolute;
   top: 6px;
   left: 0px;
   width: 98%;
   height: 8px;
-  background-color: $themeSurfaceDark;
+  background-color: #2f2f2f;
 }
 
 #coverProgressGradient {
@@ -118,13 +121,13 @@
 }
 
 #coverProgressGradient:after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0px;
   right: 0px;
   width: 20px;
   height: 20px;
-  background-color: $themeSurfaceDark;
+  background-color: #2f2f2f;
   border-radius: 50%;
 }
 
@@ -167,7 +170,6 @@ span.eltswap-progress-danger.disabled {
   color: #aaa;
 }
 
-
 #currentSwapMark {
   top: -25px;
   left: var(--curr-mark-left, 0);
@@ -182,5 +184,4 @@ span.eltswap-progress-danger.disabled {
   margin-left: 55px;
   position: absolute;
   font-size: 0.8rem;
-  // content: '*';
 }

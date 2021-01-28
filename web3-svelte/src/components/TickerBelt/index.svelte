@@ -7,13 +7,16 @@
   let hodlBonusAtBurnRate = 0; // find this in contracts
 
   $: tickers = [
-    { label: "ELT burned", value: $isRPCEnabled ? getELTInContract($web3) : 0 },
     {
-      label: "ELT staked",
-      value: $isRPCEnabled ? getHODLInContract($web3) : 0,
+      label: "ELT burned:",
+      value: $isRPCEnabled ? getELTInContract($web3) : 0,
     },
-    { label: "HODL issued", value: $isRPCEnabled ? "TBD" : 0 },
-    { label: "ELT market cap", value: $isRPCEnabled ? "TBD" : 0 },
+    // {
+    //   label: "ELT staked",
+    //   value: $isRPCEnabled ? getHODLInContract($web3) : 0,
+    // },
+    { label: "HODL issued:", value: $isRPCEnabled ? "TBD" : 0 },
+    // { label: "ELT market cap", value: $isRPCEnabled ? "TBD" : 0 },
     // { label: "ELT price", value: $isRPCEnabled ? "TBD" : 0 },
   ];
 </script>

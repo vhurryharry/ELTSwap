@@ -110,7 +110,8 @@ var _default = {
     browser: true,
     dedupe: ['svelte']
   }), (0, _pluginBabel["default"])({
-    babelHelpers: 'bundled'
+    babelHelpers: 'bundled',
+    extensions: [".js", ".mjs", ".html", ".svelte"]
   }), (0, _pluginCommonjs["default"])(), // In dev mode, call `npm run start` once
   // the bundle has been generated
   !production && serve(), // Watch the `public` directory and refresh the
