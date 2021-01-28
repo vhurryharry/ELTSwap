@@ -12,4 +12,11 @@ $disabledTextColor: #aaa;
 
 h3 {
   @extend .is-size-5;
+  color: #fff;
+}
+
+h6 {
+  color: #aaa;
+  font-size: 0.6rem;
+  padding: 0.4rem 0.2rem;
 }

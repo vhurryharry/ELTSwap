@@ -27,8 +27,9 @@
   <input
     class={config.inputClasses || 'number-bubble input has-text-centered-mobile'}
     type="number"
-    placeholder={config.placeholder || '0'}
+    placeholder={config.placeholder}
     onwheel="this.blur()"
+    disabled={config.isDisabled}
     bind:value={config.bindTo}
     on:input={(evt) => {
       return sanitizeNumberInput(evt)(config.sanitizeClbk);

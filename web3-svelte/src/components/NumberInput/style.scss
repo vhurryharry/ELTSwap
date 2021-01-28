@@ -1,0 +1,12 @@
+@import "../../styles/variables";
+
+.number-bubble {
+  @extend .is-size-4;
+  background-color: $themeSurfaceLight;
+  border: none;
+  border-radius: 5px;
+  height: 40px;
+  color: #def;
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+}

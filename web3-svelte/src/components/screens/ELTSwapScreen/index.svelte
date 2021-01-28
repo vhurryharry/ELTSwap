@@ -147,6 +147,7 @@
     : "";
 
   function castToPrecision(floatNum, maxDecLen = 8) {
+    console.log(" ---- ", floatNum);
     let decimals = (floatNum + "").split(".")[1] || [];
     return decimals.length > maxDecLen ? floatNum.toFixed(maxDecLen) : floatNum;
   }
@@ -237,6 +238,7 @@
 
   $: contractStatusIndicator = () => {
     let statusStr = $isRPCEnabled ? "connected" : "disconnected";
+    let appPhase = "";
 
     if ($isAppPending) {
       let pendingAction = "";
@@ -330,7 +332,8 @@
           <h3 class="">ELT {$swapAmountELT}</h3>
           <NumberInput
             bindTo={$swapAmountELT}
-            placeholder="0"
+            placeholder={!$isRPCEnabled ? '' : 0}
+            isDisabled={!$isRPCEnabled}
             sanitizeClbk={(cleanVal) => {
               if (cleanVal <= global.maxELTToSwap) {
                 console.log(' sanitizeNumberInput swapAmountELT ', $swapAmountELT);
@@ -401,7 +404,8 @@
           <h3 class="">{$swapAmountHODL} HODL</h3>
           <NumberInput
             bindTo={$swapAmountHODL}
-            placeholder="0"
+            placeholder={!$isRPCEnabled ? '' : 0}
+            isDisabled={!$isRPCEnabled}
             sanitizeClbk={(cleanVal) => {
               if (cleanVal <= 50) {
                 swapAmountELT.set(hodlToElt(cleanVal));
