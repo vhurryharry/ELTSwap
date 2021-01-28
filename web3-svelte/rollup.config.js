@@ -1,14 +1,14 @@
-import svelte from 'rollup-plugin-svelte';
-import commonjs from '@rollup/plugin-commonjs';
-import resolve from '@rollup/plugin-node-resolve';
-import livereload from 'rollup-plugin-livereload';
-import { terser } from 'rollup-plugin-terser';
-import copy from 'rollup-plugin-copy'
 import autoPreprocess from 'svelte-preprocess';
-import purgecss from '@fullhuman/postcss-purgecss';
+import commonjs from '@rollup/plugin-commonjs';
+import copy from 'rollup-plugin-copy'
+import livereload from 'rollup-plugin-livereload';
+import path from 'path';
 import postcss from 'rollup-plugin-postcss';
 import replace from "rollup-plugin-replace";
-import path from 'path';
+import resolve from '@rollup/plugin-node-resolve';
+import svelte from 'rollup-plugin-svelte';
+import { terser } from 'rollup-plugin-terser';
+import typescript from "@rollup/plugin-commonjs";
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -31,10 +31,21 @@ function serve() {
       process.on('exit', toExit);
     }
   };
-}
+};
+
+function typeCheck() {
+  return {
+    writeBundle() {
+      require('child_process').spawn('svelte-check', {
+        stdio: ['ignore', 'inherit', 'inherit'],
+        shell: true
+      });
+    }
+  }
+};
 
 export default {
-  input: 'src/main.js',
+  input: 'src/main.ts',
   output: {
     sourcemap: true,
     format: 'iife',
@@ -46,7 +57,7 @@ export default {
       'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development')
     }),
     svelte({
-      emitCss: true,
+      // emitCss: true,
       preprocess: autoPreprocess({
         postcss: true,
         sourceMap: !production,
@@ -56,6 +67,7 @@ export default {
         dev: !production,
       },
     }),
+    typescript({ sourceMap: !production }),
     postcss({
       config: {
         parser: 'sugarss',
