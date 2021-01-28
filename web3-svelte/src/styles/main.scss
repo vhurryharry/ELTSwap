@@ -1,17 +1,9 @@
-
 @charset "utf-8";
-
-// Import a Google Font
-// @import url('https://fonts.googleapis.com/css?family=Nunito:400,700');
-
-@font-face {
-    font-family: Flama;
-    src: url("./static/font/Flama-Basic.otf") format("opentype");
-}
 
 @import "./variables";
 @import "./gradients";
 @import "./typography";
+@import "./components"; 
 
 // Update Bulma's global variables
 $family-sans-serif: "Flama", sans-serif;
@@ -31,9 +23,7 @@ $input-shadow: none;
 @import "bulma/bulma";
 
 @import "./fragments/range-slider";
-@import "./fragments/screens";
-
-@import "./components";
+@import "./components/screens";
 
 .elt-swap-wizard{
   width: 80%;

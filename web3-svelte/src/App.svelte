@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import ELTSwapWizard from "./components/ELTSwapWizard.svelte";
 </script>
 

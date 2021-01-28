@@ -4,7 +4,6 @@
   import { getELTInContract, getHODLInContract } from "../../js/web3Helper";
   import { isRPCEnabled } from "../../utils/stores";
 
-  console.dir(isRPCEnabled);
   let hodlBonusAtBurnRate = 0; // find this in contracts
 
   $: tickers = [
@@ -19,15 +18,9 @@
   ];
 </script>
 
-<style>
-  /**
-  * For some reason, styles defined here are not
-  * applyed.
-  * TODO: Figure out why so.
-  */
-  .ticker-belt-wrapper {
-    background-color: red;
-  }
+<style lang="scss">
+  //   .ticker-belt-wrapper {
+  //  }
 </style>
 
 <div class="ticker-belt-wrapper is-flex block is-12">

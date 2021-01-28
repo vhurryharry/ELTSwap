@@ -1,15 +1,14 @@
-import svelte from 'rollup-plugin-svelte';
-import commonjs from '@rollup/plugin-commonjs';
-import resolve from '@rollup/plugin-node-resolve';
-import livereload from 'rollup-plugin-livereload';
-import { terser } from 'rollup-plugin-terser';
-import postcss from 'rollup-plugin-postcss';
 import autoPreprocess from 'svelte-preprocess';
-import purgecss from '@fullhuman/postcss-purgecss';
-import autoprefixer from 'autoprefixer';
+import commonjs from '@rollup/plugin-commonjs';
 import copy from 'rollup-plugin-copy'
-
+import livereload from 'rollup-plugin-livereload';
 import path from 'path';
+import postcss from 'rollup-plugin-postcss';
+import replace from "rollup-plugin-replace";
+import resolve from '@rollup/plugin-node-resolve';
+import svelte from 'rollup-plugin-svelte';
+import { terser } from 'rollup-plugin-terser';
+import typescript from "@rollup/plugin-commonjs";
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -32,10 +31,21 @@ function serve() {
       process.on('exit', toExit);
     }
   };
-}
+};
+
+function typeCheck() {
+  return {
+    writeBundle() {
+      require('child_process').spawn('svelte-check', {
+        stdio: ['ignore', 'inherit', 'inherit'],
+        shell: true
+      });
+    }
+  }
+};
 
 export default {
-  input: 'src/main.js',
+  input: 'src/main.ts',
   output: {
     sourcemap: true,
     format: 'iife',
@@ -43,27 +53,25 @@ export default {
     file: 'public/build/bundle.js'
   },
   plugins: [
+    replace({
+      'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development')
+    }),
     svelte({
+      // emitCss: true,
       preprocess: autoPreprocess({
         postcss: true,
         sourceMap: !production,
+        scss: { includePaths: ['src', 'node_modules'] },
       }),
-
       compilerOptions: {
-        // enable run-time checks when not in production
         dev: !production,
       },
     }),
+    typescript({ sourceMap: !production }),
     postcss({
-      plugins: [
-        purgecss({
-          content: [
-            './src/**/*.svelte',
-            './node_modules/svelte/*.js',
-          ],
-        }),
-        autoprefixer()
-      ],
+      config: {
+        parser: 'sugarss',
+      },
       extract: path.resolve('public/build/bundle.css'),
       minimize: production,
       sourceMap: !production,
@@ -97,7 +105,7 @@ export default {
 
     // If we're building for production (npm run build
     // instead of npm run dev), minify
-    production && terser()
+    production && terser(),
   ],
   watch: {
     clearScreen: false
