@@ -1,4 +1,10 @@
-.ticker-belt-wrapper {
-  font-size: 0.8rem;
-}
+@import "../../styles/variables";
 
+.ticker-belt-wrapper {
+  @extend .is-size-7;
+
+  .key-val-row {
+    padding: 0% 15px 0px 0;
+    color: $themeSurfaceLight;
+  }
+}

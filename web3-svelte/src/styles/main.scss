@@ -1,12 +1,10 @@
 @charset "utf-8";
 
 @import "./variables";
-@import "./gradients";
-@import "./typography";
-@import "./components"; 
 
 // Update Bulma's global variables
-$family-sans-serif: "Flama", sans-serif;
+$family-sans-serif: "Flama",
+sans-serif;
 $grey-dark: $brown;
 $grey-light: $beige-light;
 $primary: $purple;
@@ -16,16 +14,20 @@ $fullhd-enabled: false;
 
 // Update some of Bulma's component variables
 $body-background-color: $black;
-$control-border-width: 2px;
-$input-border-color: $beige-light;
 $input-shadow: none;
 
 @import "bulma/bulma";
 
-@import "./fragments/range-slider";
+@import "./gradients";
+@import "./typography";
+
+// TODO: Fix the pattern here
+@import "./components";
 @import "./components/screens";
 
-.elt-swap-wizard{
+@import "./fragments/range-slider";
+
+.elt-swap-wizard {
   width: 80%;
   min-width: 320px;
   background-color: $themeSurfaceDark;
@@ -41,56 +43,61 @@ $input-shadow: none;
   margin-bottom: auto;
 }
 
-code{
+code {
   background-color: transparent;
   color: inherit;
 }
 
 button:focus,
-.button:focus{
+.button:focus {
   outline: none;
 }
 
 .close-knob,
-.close-knob:hover{
+.close-knob:hover {
   background-color: transparent;
   border: none;
 }
-.close-knob{
+
+.close-knob {
   stroke: #fff;
   fill: #fff;
   cursor: pointer;
 }
-.close-knob:hover{
+
+.close-knob:hover {
   color: #000;
   stroke: #fff;
   fill: #ceb2b2;
 }
-.close-knob:active{
+
+.close-knob:active {
   color: #000;
   stroke: #fff;
   fill: #000;
 }
 
-.input:focus{
+.input:focus {
   outline: none;
-  box-shadow: 0 2px 4px 0 rgba(0,0,0,0.50);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.50);
 }
+
 .not-connected {
-  cursor:not-allowed;
-}
-.not-connected > .screen *:not(button.connect-wallet),
-.not-connected > div:not(.screen-overlay.active) {
   cursor: not-allowed;
 }
 
-#wizardContent{
+.not-connected>.screen *:not(button.connect-wallet),
+.not-connected>div:not(.screen-overlay.active) {
+  cursor: not-allowed;
+}
+
+#wizardContent {
   border-radius: 1rem;
   background-color: $themeSurfaceMid;
   padding: 1rem;
 }
 
-.number-bubble{
+.number-bubble {
   @extend .is-size-4;
   background-color: $themeSurfaceLight;
   border: none;
@@ -102,11 +109,11 @@ button:focus,
   margin-top: 5px;
 }
 
-.card{
+.card {
   padding-bottom: 1rem;
 }
 
-pre{
+pre {
   @extend .px-2;
   @extend .py-1;
   color: #fff;
@@ -120,22 +127,24 @@ pre{
 h3 {
   color: #fff;
 }
-h6{
+
+h6 {
   color: #aaa;
   font-size: 0.6rem;
   padding: 0.4rem 0.2rem;
 }
 
-.info-pill{
+.info-pill {
   align-items: center;
   text-align: center;
 }
-.info-pill > pre {
+
+.info-pill>pre {
   border-radius: 1rem;
   background-color: $themeSurfaceLight;
 }
 
-#ethPill{
+#ethPill {
   display: flex;
   flex-grow: 1;
   min-width: 120px;
@@ -144,12 +153,14 @@ h6{
   white-space: nowrap;
   text-align: center;
 }
-#ethPill > span {
+
+#ethPill>span {
   align-self: center;
   margin-left: auto;
   padding: 0 5px;
 }
-#balancePill{
+
+#balancePill {
   background-color: $themeSurfaceMid;
   margin-right: 0;
   padding: 2px 5px;
@@ -157,59 +168,69 @@ h6{
   border-radius: 1rem;
   margin-left: auto;
 }
+
 #connectionIndicator {
   color: #DC3737;
   position: relative;
   top: -2px
 }
+
 #connectionIndicator.connected {
   color: #38A24A;
 }
+
 #hodlPill {
   @extend .info-pill;
 }
-#hodlPill > pre {
+
+#hodlPill>pre {
   background-image: linear-gradient(-189deg, #528BF8 0%, #DE4967 100%);
 }
 
-#eltPill{
+#eltPill {
   @extend .info-pill;
 }
-#eltPill > pre {
+
+#eltPill>pre {
   background-image: linear-gradient(-199deg, #000000 0%, #68396E 44%, #000000 100%);
 }
 
-.button.connect-wallet{
-  background-color: rgba(181, 72, 72,1);
-  box-shadow: 0 3px 5px 0 rgba(0,0,0,0.50);
+.button.connect-wallet {
+  background-color: rgba(181, 72, 72, 1);
+  box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.50);
   border-radius: 22px;
   border: none;
   color: #fff;
   outline: none;
 }
-.button.connect-wallet.disabled{
+
+.button.connect-wallet.disabled {
   // background-color: rgba(181, 72, 72,0.5);
   opacity: 0.5;
   cursor: not-allowed;
   box-shadow: none;
 }
-.button.connect-wallet.pending{
+
+.button.connect-wallet.pending {
   // background-color: rgba(181, 72, 72, 0.5);
   background-color: #686868;
 }
-.button.connect-wallet.connected{
+
+.button.connect-wallet.connected {
   background-image: linear-gradient(199deg, #DF6B83 0%, #6A93E1 49%, #572D64 100%);
 }
-.button.connect-wallet.connected.disabled{
+
+.button.connect-wallet.connected.disabled {
   background-image: linear-gradient(199deg, #909090 0%, #8f8f8f 49%, #3f3f3f 100%);
 }
-.button.connect-wallet.connected.pending{
+
+.button.connect-wallet.connected.pending {
   background-image: linear-gradient(199deg, #706070 0%, #8f8f8f 49%, #3f3f3f 100%);
 }
 
-#performSwapBtn{
+#performSwapBtn {
   // background-image: linear-gradient(-189deg, #528BF8 0%, #DE4967 50%, #000000 52%, #68396E 72%, #000000 100%);
-  background-image: linear-gradient(-0deg,  #528bf8 0%, #000 1%, #68396E 50%, #814d5f 52%,  #DE4967 72%, #528BF8 100%);
+  background-image: linear-gradient(-0deg, #528bf8 0%, #000 1%, #68396E 50%, #814d5f 52%, #DE4967 72%, #528BF8 100%);
   border: none;
   color: #fff;
 }
@@ -217,7 +238,7 @@ h6{
 
 
 // move these to utils
-.ref-asterix{
+.ref-asterix {
   @extend .disabled;
   // font-size: 0.8rem;
 }

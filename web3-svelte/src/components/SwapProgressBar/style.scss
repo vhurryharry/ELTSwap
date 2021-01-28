@@ -46,7 +46,7 @@
   position: absolute;
   background: #009DFF;
   border-radius: 50%;
-  top: -7px;
+  top: -6px;
   left: -8px;
 }
 
@@ -67,7 +67,7 @@
   position: absolute;
   background: #FC0707;
   border-radius: 50%;
-  top: -7px;
+  top: -6px;
   right: -8px;
   z-index: 100;
 }
@@ -98,10 +98,10 @@
 #coverProgressGradient:before {
   content: '';
   position: absolute;
-  top: 7px;
+  top: 6px;
   left: 0px;
   width: 98%;
-  height: 7px;
+  height: 8px;
   background-color: $themeSurfaceDark;
 }
 

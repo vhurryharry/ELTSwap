@@ -6,7 +6,7 @@
 </style>
 
 <div class="column is-10 is-flex-wrap-wrap">
-  <div class="column is-12">
+  <div class="column is-12 pb-0">
     <h3>
       <span class="">
         Eltswap Progress:
@@ -17,7 +17,7 @@
     </h3>
   </div>
 
-  <div class="column is-12">
+  <div class="column is-12 pt-0">
     <TickerBelt />
   </div>
 

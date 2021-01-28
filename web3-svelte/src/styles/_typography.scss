@@ -6,6 +6,10 @@ $fontFamily: Flama;
 $disabledTextColor: #aaa;
 
 @font-face {
-    font-family: $fontFamily;
-    src: url("/static/font/Flama-Basic.otf") format("opentype");
+  font-family: $fontFamily;
+  src: url("/static/font/Flama-Basic.otf") format("opentype");
+}
+
+h3 {
+  @extend .is-size-5;
 }
