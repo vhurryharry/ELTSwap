@@ -6,8 +6,8 @@ import { derived, writable } from 'svelte/store';
 export let approvedELTAmount = writable(null);
 export let burnPercentage = writable(0);
 export let currentWizardScreen = writable('elt-swap-screen');
-export let swapAmountHODL = writable(0);
-export let swapAmountELT = writable(0);
+export let swapAmountHODL = writable(null);
+export let swapAmountELT = writable(null);
 
 export let swapValues = writable({
   swapAmountELT: swapAmountELT,

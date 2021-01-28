@@ -20,12 +20,20 @@ $input-shadow: none;
 
 @import "./gradients";
 @import "./typography";
+@import "./fragments/buttons";
+@import "./fragments/input";
+@import "./fragments/range-slider";
 
 // TODO: Fix the pattern here
 @import "./components";
 @import "./components/screens";
 
-@import "./fragments/range-slider";
+
+img.logo-knob {
+  width: 25px;
+  height: 25px;
+  stroke: #fff;
+}
 
 .elt-swap-wizard {
   width: 80%;
@@ -48,39 +56,6 @@ code {
   color: inherit;
 }
 
-button:focus,
-.button:focus {
-  outline: none;
-}
-
-.close-knob,
-.close-knob:hover {
-  background-color: transparent;
-  border: none;
-}
-
-.close-knob {
-  stroke: #fff;
-  fill: #fff;
-  cursor: pointer;
-}
-
-.close-knob:hover {
-  color: #000;
-  stroke: #fff;
-  fill: #ceb2b2;
-}
-
-.close-knob:active {
-  color: #000;
-  stroke: #fff;
-  fill: #000;
-}
-
-.input:focus {
-  outline: none;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.50);
-}
 
 .not-connected {
   cursor: not-allowed;
@@ -97,18 +72,6 @@ button:focus,
   padding: 1rem;
 }
 
-.number-bubble {
-  @extend .is-size-4;
-  background-color: $themeSurfaceLight;
-  border: none;
-  border-radius: 20px;
-  height: 40px;
-  color: #def;
-  -webkit-appearance: none;
-  -moz-appearance: textfield;
-  margin-top: 5px;
-}
-
 .card {
   padding-bottom: 1rem;
 }
@@ -122,26 +85,6 @@ pre {
 
 .connected {
   color: #37a24a;
-}
-
-h3 {
-  color: #fff;
-}
-
-h6 {
-  color: #aaa;
-  font-size: 0.6rem;
-  padding: 0.4rem 0.2rem;
-}
-
-.info-pill {
-  align-items: center;
-  text-align: center;
-}
-
-.info-pill>pre {
-  border-radius: 1rem;
-  background-color: $themeSurfaceLight;
 }
 
 #ethPill {
@@ -194,48 +137,6 @@ h6 {
 #eltPill>pre {
   background-image: linear-gradient(-199deg, #000000 0%, #68396E 44%, #000000 100%);
 }
-
-.button.connect-wallet {
-  background-color: rgba(181, 72, 72, 1);
-  box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.50);
-  border-radius: 22px;
-  border: none;
-  color: #fff;
-  outline: none;
-}
-
-.button.connect-wallet.disabled {
-  // background-color: rgba(181, 72, 72,0.5);
-  opacity: 0.5;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-.button.connect-wallet.pending {
-  // background-color: rgba(181, 72, 72, 0.5);
-  background-color: #686868;
-}
-
-.button.connect-wallet.connected {
-  background-image: linear-gradient(199deg, #DF6B83 0%, #6A93E1 49%, #572D64 100%);
-}
-
-.button.connect-wallet.connected.disabled {
-  background-image: linear-gradient(199deg, #909090 0%, #8f8f8f 49%, #3f3f3f 100%);
-}
-
-.button.connect-wallet.connected.pending {
-  background-image: linear-gradient(199deg, #706070 0%, #8f8f8f 49%, #3f3f3f 100%);
-}
-
-#performSwapBtn {
-  // background-image: linear-gradient(-189deg, #528BF8 0%, #DE4967 50%, #000000 52%, #68396E 72%, #000000 100%);
-  background-image: linear-gradient(-0deg, #528bf8 0%, #000 1%, #68396E 50%, #814d5f 52%, #DE4967 72%, #528BF8 100%);
-  border: none;
-  color: #fff;
-}
-
-
 
 // move these to utils
 .ref-asterix {

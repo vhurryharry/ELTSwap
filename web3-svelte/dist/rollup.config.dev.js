@@ -98,8 +98,8 @@ var _default = {
     sourceMap: !production
   }), (0, _rollupPluginCopy["default"])({
     targets: [{
-      src: ['./src/static/font/Flama-Basic.otf'],
-      dest: 'public/static/font'
+      src: ['./src/static/'],
+      dest: 'public/'
     }]
   }), // If you have external dependencies installed from
   // npm, you'll most likely need these plugins. In

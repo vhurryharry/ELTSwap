@@ -2,6 +2,7 @@
   import { web3, selectedAccount, ethStore } from "svelte-web3";
   import tippy from "sveltejs-tippy";
   import * as global from "../../../utils/globals";
+  import Icon from "svelte-awesome";
 
   /** TODO: figure out how to properly import these */
   // import * as store from "../utils/stores";
@@ -147,6 +148,7 @@
     : "";
 
   function castToPrecision(floatNum, maxDecLen = 8) {
+    console.log(" ---- ", floatNum);
     let decimals = (floatNum + "").split(".")[1] || [];
     return decimals.length > maxDecLen ? floatNum.toFixed(maxDecLen) : floatNum;
   }
@@ -237,6 +239,7 @@
 
   $: contractStatusIndicator = () => {
     let statusStr = $isRPCEnabled ? "connected" : "disconnected";
+    let appPhase = "";
 
     if ($isAppPending) {
       let pendingAction = "";
@@ -315,7 +318,9 @@
     </div>
   </div>
 
-  <p use:tippy={tooltips.connStatus}>
+  <p
+    class="is-12 has-text-right is-size-7 disabled"
+    use:tippy={tooltips.connStatus}>
     contract status:
     {contractStatusIndicator()}
   </p>
@@ -330,7 +335,8 @@
           <h3 class="">ELT {$swapAmountELT}</h3>
           <NumberInput
             bindTo={$swapAmountELT}
-            placeholder="0"
+            placeholder={!$isRPCEnabled ? '' : 0}
+            isDisabled={!$isRPCEnabled}
             sanitizeClbk={(cleanVal) => {
               if (cleanVal <= global.maxELTToSwap) {
                 console.log(' sanitizeNumberInput swapAmountELT ', $swapAmountELT);
@@ -398,10 +404,17 @@
 
         <div
           class="column is-hidden-mobile is-4-tablet is-4-desktop has-text-centered-mobile has-text-right">
-          <h3 class="">{$swapAmountHODL} HODL</h3>
+          <h3 class="">
+            <img
+              src="/static/images/HODL_DAO_Logo_outlines.svg"
+              alt="HODL-DAO"
+              class="logo-knob" />
+            HODL
+          </h3>
           <NumberInput
             bindTo={$swapAmountHODL}
-            placeholder="0"
+            placeholder={!$isRPCEnabled ? '' : 0}
+            isDisabled={!$isRPCEnabled}
             sanitizeClbk={(cleanVal) => {
               if (cleanVal <= 50) {
                 swapAmountELT.set(hodlToElt(cleanVal));
