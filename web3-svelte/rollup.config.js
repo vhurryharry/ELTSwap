@@ -95,7 +95,10 @@ export default {
       dedupe: ['svelte']
     }),
 
-    babel({ babelHelpers: 'bundled' }),
+    babel({ 
+      babelHelpers: 'bundled', 
+      extensions: [ ".js", ".mjs", ".html", ".svelte" ] 
+    }),
 
     commonjs(),
 

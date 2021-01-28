@@ -479,7 +479,8 @@
     </div>
   </div>
 
-  <div class="screen-footer">
+  <div
+    class="is-flex is-12 pb-5 is-justify-content-center is-flex-flow-row screen-footer">
     <SwapProgressBar {getELTInContract} {getSwapProgress} {eltInContract} />
   </div>
 </div>
