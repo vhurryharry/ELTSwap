@@ -5,6 +5,10 @@ $lineHeight: 1.5;
 $fontFamily: Flama;
 $disabledTextColor: #aaa;
 
+*.disabled {
+  color: $disabledTextColor;
+}
+
 @font-face {
   font-family: $fontFamily;
   src: url("/static/font/Flama-Basic.otf") format("opentype");

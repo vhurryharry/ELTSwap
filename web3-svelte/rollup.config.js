@@ -80,8 +80,8 @@ export default {
     copy({
       targets: [
         {
-          src: ['./src/static/font/Flama-Basic.otf'],
-          dest: 'public/static/font'
+          src: ['./src/static/'],
+          dest: 'public/'
         }
       ]
     }),

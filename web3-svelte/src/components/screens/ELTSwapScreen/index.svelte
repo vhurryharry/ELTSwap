@@ -2,6 +2,7 @@
   import { web3, selectedAccount, ethStore } from "svelte-web3";
   import tippy from "sveltejs-tippy";
   import * as global from "../../../utils/globals";
+  import Icon from "svelte-awesome";
 
   /** TODO: figure out how to properly import these */
   // import * as store from "../utils/stores";
@@ -317,7 +318,9 @@
     </div>
   </div>
 
-  <p use:tippy={tooltips.connStatus}>
+  <p
+    class="is-12 has-text-right is-size-7 disabled"
+    use:tippy={tooltips.connStatus}>
     contract status:
     {contractStatusIndicator()}
   </p>
@@ -401,7 +404,13 @@
 
         <div
           class="column is-hidden-mobile is-4-tablet is-4-desktop has-text-centered-mobile has-text-right">
-          <h3 class="">{$swapAmountHODL} HODL</h3>
+          <h3 class="">
+            <img
+              src="/static/images/HODL_DAO_Logo_outlines.svg"
+              alt="HODL-DAO"
+              class="logo-knob" />
+            HODL
+          </h3>
           <NumberInput
             bindTo={$swapAmountHODL}
             placeholder={!$isRPCEnabled ? '' : 0}

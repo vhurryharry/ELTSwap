@@ -29,6 +29,12 @@ $input-shadow: none;
 @import "./components/screens";
 
 
+img.logo-knob {
+  width: 25px;
+  height: 25px;
+  stroke: #fff;
+}
+
 .elt-swap-wizard {
   width: 80%;
   min-width: 320px;
