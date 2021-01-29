@@ -39,33 +39,12 @@
     window.location.reload();
   });
 
-  window.onbeforeunload = () => {
-    // cleanup before leaving
-    isRPCEnabled.set(false);
-    isAppPending.set(false);
-    latestAccount.set(null);
-    isAppBroken.set(false); // just in case...
-  };
-
   afterUpdate(() => {
-    console.log(" ----- ");
-    console.log(web3.eth);
     let accounts = window.ethereum["_state"]["accounts"];
-    console.dir(" accounts ", accounts);
     if (accounts && accounts[0] !== $latestAccount) {
       isRPCEnabled.set(accounts.length ? true : false);
       latestAccount.set(accounts[0]);
     }
-  });
-
-  window.ethereum.on("accountsChanged", (accounts) => {
-    console.dir(" accounts ", accounts);
-    // if (accounts[0] !== $latestAccount) {
-    //   isRPCEnabled.set(accounts.length ? true : false);
-    //   isAppPending.set(false);
-    //   latestAccount.set(accounts[0]);
-    //   isAppBroken.set(false); // just in case...
-    // }
   });
 
   // Creates a connection to own infura node.
@@ -76,7 +55,7 @@
       )
       .then(() => {
         ethStore.setBrowserProvider().then(
-          () => {
+          (res) => {
             isAppPending.set(false);
           },
           (error) => {

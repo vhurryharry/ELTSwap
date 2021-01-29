@@ -8,9 +8,9 @@ const hodlDecimals = 8;
 const eltDecimals = 8;
 
 export let getTokenBalance = async (web3, address, tokenContract, decimals = 8) => {
-   if (!web3 || !web3.eth ) return; 
+  if (!web3 || !web3.eth ) return 0; 
 
- let amount = 0;
+  let amount = 0;
 
   let tokenAddr = (address).substring(2);
   let contractData = "0x70a08231000000000000000000000000" + tokenAddr;
