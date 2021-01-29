@@ -228,8 +228,8 @@
 
   const tooltips = {
     connStatus: {
-      content: `<span class="tooltip">please (re)connect</span>`,
-      placement: "top",
+      content: "please (re)connect",
+      placement: "left",
     },
   };
 </script>
@@ -247,12 +247,10 @@
   class:active={$$props.currScreen == 'elt-swap-screen'}>
   <ScreenHeader />
 
-  <p
-    class="is-12 has-text-right is-size-7"
-    class:disabled={$isRPCEnabled}
-    use:tippy={tooltips.connStatus}>
+  <p class="is-12 has-text-right is-size-7" class:disabled={$isRPCEnabled}>
     contract status:
-    {contractStatusIndicator()}
+
+    <span use:tippy={tooltips.connStatus}> {contractStatusIndicator()} </span>
   </p>
 
   <div
