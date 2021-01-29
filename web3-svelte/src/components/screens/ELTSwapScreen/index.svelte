@@ -2,7 +2,6 @@
   import { web3, selectedAccount, ethStore } from "svelte-web3";
   import tippy from "sveltejs-tippy";
   import * as global from "../../../utils/globals";
-  import Icon from "svelte-awesome";
 
   /** TODO: figure out how to properly import these */
   // import * as store from "../utils/stores";
@@ -21,14 +20,10 @@
   isAppBroken.useLocalStorage();
   transactionHistory.useLocalStorage();
 
-  import { formatAddr } from "../../../utils/services.js";
-
   import {
     approveELT,
     getAllowance,
     getELTInContract,
-    getETHBalance,
-    getTokenBalance,
     getTotalHodlReward,
   } from "../../../js/web3Helper";
 
@@ -37,37 +32,14 @@
   import LiveReceipt from "../../LiveReceipt/index.svelte";
   import BurnSlider from "../../BurnSlider/index.svelte";
   import NumberInput from "../../NumberInput/index.svelte";
+  import ScreenHeader from "../ScreenHeader/index.svelte";
 
+  console.dir(ScreenHeader);
   // TODO: move to utils
   // $: approveAddr = "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e";
   $: checkAccount = $selectedAccount || global.nilAccount;
 
   $: eltInContract = $isRPCEnabled ? getELTInContract($web3) : 0;
-
-  $: ethBalance = $isRPCEnabled
-    ? getETHBalance($web3, $selectedAccount)
-    : Number(0.0);
-
-  $: fixedDecimals = (number, precision) => {
-    if (typeof number !== "number") return;
-    return number.toFixed(typeof precision == "number" ? precision : 4);
-  };
-
-  $: eltBalance = $isRPCEnabled
-    ? getTokenBalance(
-        $web3,
-        checkAccount,
-        "0xa84a0b15d7c62684b71fecb5ea8efe0e5af1d11b"
-      )
-    : "";
-
-  $: hodlBalance = $isRPCEnabled
-    ? getTokenBalance(
-        $web3,
-        checkAccount,
-        "0x5c85a93991671dc5886203e0048777a4fd219983"
-      )
-    : "";
 
   window.ethereum.on("chainChanged", (_chainId) => {
     // We recommend reloading the page, unless you must do otherwise
@@ -136,7 +108,6 @@
 
   /** */
   $: getSwapProgress = () => {
-    return 0;
     parseInt(
       ($isRPCEnabled ? getELTInContract($web3) : 0 * 100) / global.absMaxELT
     ) || 0;
@@ -274,52 +245,11 @@
 <div
   class="screen elt-swap-screen"
   class:active={$$props.currScreen == 'elt-swap-screen'}>
-  <div
-    class="screen-header columns is-flex is-2 level is-multiline is-flex-wrap-wrap
-        is-justify-content-end">
-    <div
-      class="column is-flex-wrap-nowrap is-12-mobile is-6-tablet is-6-desktop">
-      <div class="columns is-2 is-flex is-12-mobile">
-        <div id="hodlPill" class="column is-6-mobile">
-          {#await hodlBalance}
-            <pre class="px-1"> ? HODL </pre>
-          {:then value}
-            <pre class="px-1">{value.toLocaleString('en-US')} HODL</pre>
-          {/await}
-        </div>
-
-        <div id="eltPill" class="column is-6-mobile">
-          {#await eltBalance}
-            <pre class="px-1"> ? ELT </pre>
-          {:then value}
-            <pre class="px-1">{value.toLocaleString('en-US')} ELT</pre>
-          {/await}
-        </div>
-      </div>
-    </div>
-
-    <div
-      class="column is-12-mobile is-6-tablet is-6-desktop is-justify-content-center">
-      <div id="ethPill" class=" is-justify-content-center">
-        {#await ethBalance}
-          <span class="px-1"> ETH </span>
-        {:then value}
-          <span class="px-1">{fixedDecimals(value)} ETH </span>
-        {/await}
-        <div id="balancePill" class="">
-          {#if !$latestAccount}
-            <span class="px-1">Disconnected</span>
-          {:else}<span class="px-1">{formatAddr($latestAccount)}</span>{/if}
-          <span
-            id="connectionIndicator"
-            class:connected={$isRPCEnabled}>&#11044;</span>
-        </div>
-      </div>
-    </div>
-  </div>
+  <ScreenHeader />
 
   <p
-    class="is-12 has-text-right is-size-7 disabled"
+    class="is-12 has-text-right is-size-7"
+    class:disabled={$isRPCEnabled}
     use:tippy={tooltips.connStatus}>
     contract status:
     {contractStatusIndicator()}
@@ -328,10 +258,10 @@
   <div
     id="wizardContent"
     class="screen-body columns my-5 is-flex-direction-column">
-    <div class="column ">
+    <div class="">
       <div class="columns is-flex-wrap-wrap ">
         <div
-          class="column is-12-mobile is-4-tablet is-4-desktop has-text-centered-mobile">
+          class="column is-flex is-position-relative is-12-mobile is-4-tablet is-4-desktop has-text-centered-mobile is-flex-direction-column is-justify-content-end">
           <h3 class="">ELT {$swapAmountELT}</h3>
           <NumberInput
             bindTo={$swapAmountELT}
@@ -347,6 +277,15 @@
               swapAmountHODL.set(eltToHodl($swapAmountELT));
             }}
             inputClasses="number-bubble input has-text-centered-mobile" />
+
+          {#if $isRPCEnabled}
+            <button
+              id="setMaxELT"
+              disabled={$isAppPending}
+              class="button is-info px-1 py-0">
+              max
+            </button>
+          {/if}
         </div>
 
         <div
@@ -403,10 +342,10 @@
         </div>
 
         <div
-          class="column is-hidden-mobile is-4-tablet is-4-desktop has-text-centered-mobile has-text-right">
+          class="column is-hidden-mobile is-4-tablet is-4-desktop has-text-centered-mobile has-text-right is-justify-content-end">
           <h3 class="">
             <img
-              src="/static/images/HODL_DAO_Logo_outlines.svg"
+              src="/static/images/HODL_DAO_Logo_icon.svg"
               alt="HODL-DAO"
               class="logo-knob" />
             HODL
