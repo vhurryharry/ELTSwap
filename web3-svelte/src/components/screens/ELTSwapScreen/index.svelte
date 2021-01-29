@@ -23,7 +23,6 @@
   import {
     approveELT,
     getAllowance,
-    getELTInContract,
     getTotalHodlReward,
   } from "../../../js/web3Helper";
 
@@ -38,8 +37,6 @@
   // TODO: move to utils
   // $: approveAddr = "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e";
   $: checkAccount = $selectedAccount || global.nilAccount;
-
-  $: eltInContract = $isRPCEnabled ? getELTInContract($web3) : 0;
 
   window.ethereum.on("chainChanged", (_chainId) => {
     // We recommend reloading the page, unless you must do otherwise
@@ -105,18 +102,6 @@
     isAppPending.set(true);
     await enable();
   };
-
-  /** */
-  $: getSwapProgress = () => {
-    parseInt(
-      ($isRPCEnabled ? getELTInContract($web3) : 0 * 100) / global.absMaxELT
-    ) || 0;
-  };
-
-  /** */
-  $: totalHodlReward = $isRPCEnabled
-    ? getTotalHodlReward($web3, $swapAmountELT, 25)
-    : "";
 
   function castToPrecision(floatNum, maxDecLen = 8) {
     console.log(" ---- ", floatNum);
@@ -431,6 +416,6 @@
 
   <div
     class="is-flex is-12 pb-5 is-justify-content-center is-flex-flow-row screen-footer">
-    <SwapProgressBar {getELTInContract} {getSwapProgress} {eltInContract} />
+    <SwapProgressBar />
   </div>
 </div>

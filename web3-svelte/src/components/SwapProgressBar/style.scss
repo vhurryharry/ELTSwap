@@ -40,9 +40,9 @@
 }
 
 #swapProgressGradient:before {
+  content: '';
   height: 20px;
   width: 20px;
-  content: '';
   position: absolute;
   background: #009DFF;
   border-radius: 50%;
@@ -61,9 +61,9 @@
 }
 
 #swapProgressGradient:after {
+  content: '';
   height: 20px;
   width: 20px;
-  content: '';
   position: absolute;
   background: #FC0707;
   border-radius: 50%;
@@ -96,7 +96,7 @@
 }
 
 #coverProgressGradient:before {
-  content: '';
+  // content: '';
   position: absolute;
   top: 6px;
   left: 0px;
@@ -114,11 +114,11 @@
   width: var(--cover-progress-gradient-width, 0);
   height: 20px;
   margin: auto 5px;
-  max-width: 97%;
+  max-width: 98%;
 }
 
 #coverProgressGradient:after {
-  content: '';
+  // content: '';
   position: absolute;
   top: 0px;
   right: 0px;
@@ -166,7 +166,6 @@ span.eltswap-progress-success.disabled,
 span.eltswap-progress-danger.disabled {
   color: #aaa;
 }
-
 
 #currentSwapMark {
   top: -25px;

@@ -1,5 +1,23 @@
 <script>
+  import { web3 } from "svelte-web3";
+  import * as global from "../../utils/globals";
+
+  import { getELTInContract } from "../../js/web3Helper";
+
+  import { isRPCEnabled } from "../../utils/stores";
+
   import TickerBelt from "../TickerBelt/index.svelte";
+
+  /** */
+  $: getSwapProgress = () => {
+    return (
+      parseInt(
+        ($isRPCEnabled ? getELTInContract($web3) : 0 * 100) / global.absMaxELT
+      ) || 0
+    );
+  };
+
+  $: eltInContract = $isRPCEnabled ? getELTInContract($web3) : 0;
 </script>
 
 <style>
@@ -10,8 +28,7 @@
     <h3>
       <span class="">
         Eltswap Progress:
-        <span
-          class="eltswap-progress-success">{$$props.getSwapProgress()}%</span><sup
+        <span class="eltswap-progress-success">{getSwapProgress()}%</span><sup
           class="ref-asterix">*</sup>
       </span>
     </h3>
@@ -27,7 +44,7 @@
       <span id="minSwapMark" />
       <span
         id="currentSwapMark"
-        style="--curr-mark-left: {$$props.getSwapProgress()}%;">{$$props.getSwapProgress() > 10 ? $$props.eltInContract + ' ELT' : ''}</span>
+        style="--curr-mark-left: {getSwapProgress()}%;">{getSwapProgress() > 10 ? eltInContract + ' ELT' : ''}</span>
       <div
         id="coverProgressGradient"
         style="--cover-progress-gradient-width: {99}%;" />
