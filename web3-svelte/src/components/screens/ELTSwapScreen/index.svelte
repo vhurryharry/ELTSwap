@@ -265,7 +265,7 @@
             <button
               id="setMaxELT"
               disabled={$isAppPending}
-              class="button is-info px-1 py-0">
+              class="button is-info is-size-7 mt-1 px-1 py-0">
               max
             </button>
           {/if}

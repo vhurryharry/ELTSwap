@@ -23,7 +23,7 @@
 <style>
 </style>
 
-<div class="numper-input-wrapper is-flex block is-12">
+<div class="numper-input-wrapper is-flex is-12">
   <input
     class={config.inputClasses || 'number-bubble input has-text-centered-mobile'}
     type="number"
