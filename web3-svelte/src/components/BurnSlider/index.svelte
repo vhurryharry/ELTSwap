@@ -1,7 +1,7 @@
 <script>
   import { circOut } from "svelte/easing";
   import * as global from "../../utils/globals";
-  import { fly } from "svelte/transition";
+
   import {
     swapAmountHODL,
     swapAmountELT,
@@ -9,8 +9,6 @@
   } from "../../utils/stores";
 
   function slideDown(node, { duration = 500 }) {
-    console.log(" .... ", node.firstChild);
-
     let height = +getComputedStyle(node.firstChild)["height"].match(
       /(\d+)px/
     )[1];
@@ -19,8 +17,6 @@
       delay: 0,
       duration,
       css: (t) => {
-        // console.log(" -------- ", t * height);
-
         return `min-height: ${circOut(t) * height}px;`;
       },
     };

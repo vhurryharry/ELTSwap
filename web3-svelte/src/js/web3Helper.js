@@ -8,7 +8,9 @@ const hodlDecimals = 8;
 const eltDecimals = 8;
 
 export let getTokenBalance = async (web3, address, tokenContract, decimals = 8) => {
-  let amount = 0;
+   if (!web3 || !web3.eth ) return; 
+
+ let amount = 0;
 
   let tokenAddr = (address).substring(2);
   let contractData = "0x70a08231000000000000000000000000" + tokenAddr;
@@ -36,7 +38,9 @@ export let getETHBalance = async (web3, address) => {
 }
 
 export let getTotalHodlReward = async (web3, amount, burnPercent, decimals = 8) => {
-  let atomicAmount = decimalToAtomic(amount, decimals);
+    if (!web3 || !web3.eth ) return; 
+
+let atomicAmount = decimalToAtomic(amount, decimals);
   let contract = new web3.eth.Contract(swapABI, swapContract);
   let result = contract.methods.getTotalHODLReward(atomicAmount, burnPercent).call().then(function (res) {
     return atomicToDecimal(res, decimals);
@@ -45,6 +49,8 @@ export let getTotalHodlReward = async (web3, amount, burnPercent, decimals = 8) 
 }
 
 export let getHODLInContract = async (web3) => {
+  if (!web3 || !web3.eth ) return; 
+
   let contract = new web3.eth.Contract(swapABI, swapContract);
   let result = contract.methods.getHODLInContract().call().then(function (res) {
     return atomicToDecimal(res, hodlDecimals);
@@ -53,7 +59,9 @@ export let getHODLInContract = async (web3) => {
 }
 
 export let getELTInContract = async (web3) => {
-  let contract = new web3.eth.Contract(swapABI, swapContract);
+    if (!web3 || !web3.eth ) return; 
+
+let contract = new web3.eth.Contract(swapABI, swapContract);
   let result = contract.methods.getELTInContract().call().then(function (res) {
     return atomicToDecimal(res, eltDecimals);
   });
@@ -61,6 +69,9 @@ export let getELTInContract = async (web3) => {
 }
 
 export let getELTBurned = async (web3) => {
+    if (!web3 || !web3.eth ) return; 
+
+
   let contract = new web3.eth.Contract(swapABI, swapContract);
   let result = contract.methods.getELTBurned().call().then(function (res) {
     return atomicToDecimal(res, eltDecimals);
@@ -69,6 +80,8 @@ export let getELTBurned = async (web3) => {
 }
 
 export let getAllowance = async (web3, ownerAddress, spenderAddress) => {
+    if (!web3 || !web3.eth ) return; 
+
   let contract = new web3.eth.Contract(eltABI, eltContract);
   let result = contract.methods.allowance(ownerAddress, spenderAddress).call().then(function (res) {
     return atomicToDecimal(res, eltDecimals);

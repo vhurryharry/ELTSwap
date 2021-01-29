@@ -20,11 +20,7 @@
   isAppBroken.useLocalStorage();
   transactionHistory.useLocalStorage();
 
-  import {
-    approveELT,
-    getAllowance,
-    getTotalHodlReward,
-  } from "../../../js/web3Helper";
+  import { approveELT, getAllowance } from "../../../js/web3Helper";
 
   // TODO: fix imports to omit `/index.svelte`
   import SwapProgressBar from "../../SwapProgressBar/index.svelte";
@@ -32,11 +28,11 @@
   import BurnSlider from "../../BurnSlider/index.svelte";
   import NumberInput from "../../NumberInput/index.svelte";
   import ScreenHeader from "../ScreenHeader/index.svelte";
+  import { afterUpdate } from "svelte";
 
   console.dir(ScreenHeader);
   // TODO: move to utils
   // $: approveAddr = "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e";
-  $: checkAccount = $selectedAccount || global.nilAccount;
 
   window.ethereum.on("chainChanged", (_chainId) => {
     // We recommend reloading the page, unless you must do otherwise
@@ -51,14 +47,25 @@
     isAppBroken.set(false); // just in case...
   };
 
+  afterUpdate(() => {
+    console.log(" ----- ");
+    console.log(web3.eth);
+    let accounts = window.ethereum["_state"]["accounts"];
+    console.dir(" accounts ", accounts);
+    if (accounts && accounts[0] !== $latestAccount) {
+      isRPCEnabled.set(accounts.length ? true : false);
+      latestAccount.set(accounts[0]);
+    }
+  });
+
   window.ethereum.on("accountsChanged", (accounts) => {
     console.dir(" accounts ", accounts);
-    if (accounts[0] !== $latestAccount) {
-      isRPCEnabled.set(accounts.length ? true : false);
-      isAppPending.set(false);
-      latestAccount.set(accounts[0]);
-      isAppBroken.set(false); // just in case...
-    }
+    // if (accounts[0] !== $latestAccount) {
+    //   isRPCEnabled.set(accounts.length ? true : false);
+    //   isAppPending.set(false);
+    //   latestAccount.set(accounts[0]);
+    //   isAppBroken.set(false); // just in case...
+    // }
   });
 
   // Creates a connection to own infura node.
@@ -75,7 +82,7 @@
           (error) => {
             console.dir(error);
             // set state to "pending"
-            isAppPending.set(true);
+            // isAppPending.set(true);
 
             // handle codes
             switch (error.code) {
@@ -265,7 +272,7 @@
             <button
               id="setMaxELT"
               disabled={$isAppPending}
-              class="button is-info is-size-7 mt-1 px-1 py-0">
+              class="button is-info is-size-7 px-1 py-0">
               max
             </button>
           {/if}

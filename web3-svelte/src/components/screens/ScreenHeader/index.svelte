@@ -1,5 +1,6 @@
 <script>
   import { web3, selectedAccount } from "svelte-web3";
+  import * as global from "../../../utils/globals";
 
   import Icon from "svelte-awesome";
   import { clockO, questionCircle } from "svelte-awesome/icons";
@@ -14,6 +15,8 @@
   } from "../../../utils/stores";
 
   import { formatAddr, fixedDecimals } from "../../../utils/services.js";
+
+  $: checkAccount = $selectedAccount || global.nilAccount;
 
   $: hodlBalance = $isRPCEnabled
     ? getTokenBalance(
