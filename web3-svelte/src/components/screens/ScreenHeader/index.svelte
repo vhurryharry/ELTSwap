@@ -11,7 +11,7 @@
     isRPCEnabled,
     latestAccount,
     isOverlayScreenActive,
-    // currentWizardScreen,
+    currentWizardScreen,
   } from "../../../utils/stores";
 
   import { formatAddr, fixedDecimals } from "../../../utils/services.js";
@@ -19,19 +19,11 @@
   $: checkAccount = $selectedAccount || global.nilAccount;
 
   $: hodlBalance = $isRPCEnabled
-    ? getTokenBalance(
-        $web3,
-        checkAccount,
-        "0x5c85a93991671dc5886203e0048777a4fd219983"
-      )
+    ? getTokenBalance($web3, checkAccount, global.HODLTokenContractAddr)
     : "";
 
   $: eltBalance = $isRPCEnabled
-    ? getTokenBalance(
-        $web3,
-        checkAccount,
-        "0xa84a0b15d7c62684b71fecb5ea8efe0e5af1d11b"
-      )
+    ? getTokenBalance($web3, checkAccount, global.ELTTokenContractAddr)
     : "";
 
   $: ethBalance = $isRPCEnabled
@@ -49,7 +41,7 @@
     <span
       class="px-2 py-0"
       on:click={(evt) => {
-        // currentWizardScreen.set('prologue-screen');
+        currentWizardScreen.set('prologue-screen');
       }}>
       <Icon data={questionCircle} class="close-knob" />
     </span>

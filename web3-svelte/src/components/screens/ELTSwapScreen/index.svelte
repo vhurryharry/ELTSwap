@@ -19,6 +19,7 @@
   // initialize from localStorage
   isAppBroken.useLocalStorage();
   transactionHistory.useLocalStorage();
+  import { getTokenBalance } from "../../../js/web3Helper";
 
   import { approveELT, getAllowance } from "../../../js/web3Helper";
 
@@ -39,33 +40,12 @@
     window.location.reload();
   });
 
-  window.onbeforeunload = () => {
-    // cleanup before leaving
-    isRPCEnabled.set(false);
-    isAppPending.set(false);
-    latestAccount.set(null);
-    isAppBroken.set(false); // just in case...
-  };
-
   afterUpdate(() => {
-    console.log(" ----- ");
-    console.log(web3.eth);
     let accounts = window.ethereum["_state"]["accounts"];
-    console.dir(" accounts ", accounts);
     if (accounts && accounts[0] !== $latestAccount) {
       isRPCEnabled.set(accounts.length ? true : false);
       latestAccount.set(accounts[0]);
     }
-  });
-
-  window.ethereum.on("accountsChanged", (accounts) => {
-    console.dir(" accounts ", accounts);
-    // if (accounts[0] !== $latestAccount) {
-    //   isRPCEnabled.set(accounts.length ? true : false);
-    //   isAppPending.set(false);
-    //   latestAccount.set(accounts[0]);
-    //   isAppBroken.set(false); // just in case...
-    // }
   });
 
   // Creates a connection to own infura node.
@@ -76,7 +56,7 @@
       )
       .then(() => {
         ethStore.setBrowserProvider().then(
-          () => {
+          (res) => {
             isAppPending.set(false);
           },
           (error) => {
@@ -104,6 +84,8 @@
         );
       });
   };
+
+  $: checkAccount = $selectedAccount || global.nilAccount;
 
   $: enableBrowser = async () => {
     isAppPending.set(true);
@@ -218,6 +200,10 @@
     return statusStr;
   };
 
+  $: eltBalance = $isRPCEnabled
+    ? getTokenBalance($web3, checkAccount, global.ELTTokenContractAddr)
+    : "";
+
   const tooltips = {
     connStatus: {
       content: "please (re)connect",
@@ -268,14 +254,21 @@
             }}
             inputClasses="number-bubble input has-text-centered-mobile" />
 
-          {#if $isRPCEnabled}
-            <button
-              id="setMaxELT"
-              disabled={$isAppPending}
-              class="button is-info is-size-7 px-1 py-0">
-              max
-            </button>
-          {/if}
+          {#await eltBalance}
+            <span />
+          {:then}
+            {#if eltBalance > 0}
+              <button
+                id="setMaxELT"
+                disabled={$isAppPending}
+                on:click={() => {
+                  swapAmountELT.set(eltBalance);
+                }}
+                class="button is-info is-size-7 px-1 py-0">
+                max
+              </button>
+            {/if}
+          {/await}
         </div>
 
         <div

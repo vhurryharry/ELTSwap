@@ -426,7 +426,7 @@ var getTokenBalance = function getTokenBalance(web3, address, tokenContract) {
             break;
           }
 
-          return _context.abrupt("return");
+          return _context.abrupt("return", 0);
 
         case 3:
           amount = 0;
