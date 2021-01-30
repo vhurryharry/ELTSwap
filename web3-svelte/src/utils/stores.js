@@ -9,6 +9,8 @@ export let currentWizardScreen = writable('elt-swap-screen');
 export let swapAmountHODL = writable(null);
 export let swapAmountELT = writable(null);
 
+export let currentSwapToken = writable(null);
+
 export let swapValues = writable({
   swapAmountELT: swapAmountELT,
 });

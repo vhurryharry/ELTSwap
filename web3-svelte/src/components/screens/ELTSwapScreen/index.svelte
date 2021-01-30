@@ -1,6 +1,8 @@
 <script>
   import { web3, selectedAccount, ethStore } from "svelte-web3";
+  import { afterUpdate } from "svelte";
   import tippy from "sveltejs-tippy";
+
   import * as global from "../../../utils/globals";
 
   /** TODO: figure out how to properly import these */
@@ -28,8 +30,9 @@
   import LiveReceipt from "../../LiveReceipt/index.svelte";
   import BurnSlider from "../../BurnSlider/index.svelte";
   import NumberInput from "../../NumberInput/index.svelte";
+  import DropDown from "../../DropDown/index.svelte";
+
   import ScreenHeader from "../ScreenHeader/index.svelte";
-  import { afterUpdate } from "svelte";
 
   console.dir(ScreenHeader);
   // TODO: move to utils
@@ -241,7 +244,9 @@
       <div class="columns is-flex-wrap-wrap ">
         <div
           class="column is-flex is-position-relative is-12-mobile is-4-tablet is-4-desktop has-text-centered-mobile is-flex-direction-column is-justify-content-end">
-          <h3 class="">ELT {$swapAmountELT}</h3>
+          <h3 class="">
+            <DropDown />
+          </h3>
           <NumberInput
             bindTo={$swapAmountELT}
             placeholder={!$isRPCEnabled ? '' : 0}
