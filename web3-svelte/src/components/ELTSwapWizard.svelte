@@ -14,7 +14,7 @@
   import PrologueScreen from "./screens/PrologueScreen/index.svelte";
 
   const btnHandler = (slug: string) => {
-    console.log(" --- ", slug);
+    // console.log(" --- ", slug);
     currentWizardScreen.set(slug);
   };
 

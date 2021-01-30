@@ -635,6 +635,9 @@ var getAllowance = function getAllowance(web3, ownerAddress, spenderAddress) {
           contract = new web3.eth.Contract(eltABI, eltContract);
           result = contract.methods.allowance(ownerAddress, spenderAddress).call().then(function (res) {
             return atomicToDecimal(res, eltDecimals);
+          }, function (err) {
+            console.log(' !!!! ', err);
+            return err;
           });
           return _context7.abrupt("return", result);
 

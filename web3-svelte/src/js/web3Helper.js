@@ -85,6 +85,10 @@ export let getAllowance = async (web3, ownerAddress, spenderAddress) => {
   let contract = new web3.eth.Contract(eltABI, eltContract);
   let result = contract.methods.allowance(ownerAddress, spenderAddress).call().then(function (res) {
     return atomicToDecimal(res, eltDecimals);
+  },
+  (err)=>{
+    console.log(' !!!! ', err);
+    return err;
   });
 
   return result;
