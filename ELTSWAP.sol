@@ -123,14 +123,61 @@ abstract contract Ownable is Context {
 contract Swap is Ownable {
     using SafeMath for uint256;
     
-    address eltContract = 0xA84a0B15d7c62684b71fECB5Ea8EFE0E5Af1D11B;
-    address hodlContract = 0x5c85A93991671dC5886203e0048777A4Fd219983;
-    address burnAddr = 0x1Cdb00D07b721B98Da52532DB9a7D82D2A4bF2e0;
-    
     uint8 eltDecimals = 8;
+    
+    address public eltContract = 0xA84a0B15d7c62684b71fECB5Ea8EFE0E5Af1D11B;
+    address public hodlContract = 0x5c85A93991671dC5886203e0048777A4Fd219983;
+    address public burnAddr = 0x121991Db3784e1a5C661E8532DC94b29B37c841c;
+    
+    uint8 public swapPhase = 1;
+    
+    // Requires 15M ELTCOIN to be held within the contract to trigger the transition from Phase 1 to Phase 2
+    uint256 public eltPhase2Requirement;
+    
+    // Requires the majority of ELTCOIN to be burned during Phase 2 to trigger the transition from Phase 2 to Phase 3
+    uint256 public eltPhase3Requirement;
+    
+    // ELT Price in ETH
+    uint256 public eltPrice = 604800000000;
 
+    // HODL Price in ETH
+    uint256 public hodlPrice = 704800000000000000;
+                            
     constructor() public {
-
+        eltPhase2Requirement = 15000000 * (10 ** uint256(eltDecimals));
+        eltPhase3Requirement = 1000 * (10 ** uint256(eltDecimals));
+    }
+    
+    function setELTPrice(uint256 amount) public onlyOwner {
+        eltPrice = amount;
+    }
+    
+    function setHODLPrice(uint256 amount) public onlyOwner {
+        hodlPrice = amount;
+    }
+    
+    function setPhase2Requirement(uint256 amount) public onlyOwner {
+        eltPhase2Requirement = amount;
+    }
+    
+    function setPhase3Requirement(uint256 amount) public onlyOwner {
+        eltPhase3Requirement = amount;
+    }
+    
+    function getTotalELTSwapped() public view returns (uint256) {
+        uint256 eltSwapped = getELTInContract();
+        uint256 eltBurned = getELTBurned();
+        return eltSwapped.add(eltBurned);
+    }
+    
+    function setSwapPhase() public onlyOwner {
+        if(swapPhase == 1 && getELTInContract() >= eltPhase2Requirement)  {
+            swapPhase = 2;
+        } 
+        
+        if(swapPhase == 2 && getELTInContract() <= eltPhase3Requirement) {
+            swapPhase = 3;
+        }
     }
     
     function getELTInContract() public view returns (uint256) {
@@ -153,6 +200,10 @@ contract Swap is Ownable {
         return (getAmountToBurn(amount, burnPercent)).div(2000000);
     }
     
+    function getPhase1Bonus(uint256 amount) public pure returns (uint256) {
+        return amount.div(4);
+    }
+    
     function getMinimumTokenSwap() public view returns (uint256) {
         return 10000 * (10 ** uint256(eltDecimals));
     }
@@ -165,30 +216,93 @@ contract Swap is Ownable {
         return getHODLReward(amount).add(getBurnReward(amount, burnPercent));
     }
     
-    function drainHODL () public onlyOwner {
+    function getSwapPhase() public view returns (uint8) {
+        return swapPhase;
+    }
+    
+    function drainHODL() public onlyOwner {
         IERC20(hodlContract).transfer(owner(), IERC20(hodlContract).balanceOf(address(this)));
     }
     
-    function drainELT () public onlyOwner {
+    function drainELT() public onlyOwner {
         IERC20(eltContract).transfer(owner(), IERC20(eltContract).balanceOf(address(this)));
     }
     
-    function swap(uint256 amount, uint256 burnPercent) public {
+    /**
+     * Phase 3 
+     * ETH -> HODL
+     * No bonuses, just ETH to HODL.
+     */ 
+    function phase3Swap() public payable {
+        require(swapPhase == 3, "Swap Fail: This phase is not active.");
+        
+        uint256 ethAmount = msg.value;
+        
+        ethAmount = ethAmount * (10 ** uint256(eltDecimals));
+
+        // Calculate total HODL reward and send to the sender.
+        uint256 hodlPurchased = ethAmount.div(hodlPrice);
+        
+        uint256 hodlInContract = getHODLInContract();
+        require(hodlInContract >= hodlPurchased, "Swap Fail: Not enough HODL in contract.");
+        
+        IERC20(hodlContract).transfer(msg.sender, hodlPurchased);
+    }
+    
+    /**
+     * Phase 2
+     * ETH -> ELT -> HODL
+     * Burns between 0 and 100, bonus for burning tokens
+     */ 
+    function phase2Swap(uint256 burnPercent) public payable {
+        require(swapPhase == 2, "Swap Fail: This phase is not active.");
+        
+        uint256 ethAmount = msg.value;
+        ethAmount = ethAmount * (10 ** uint256(eltDecimals));
+        
+        // Require the burn percentage to either be between 0 and 100.
+        require(burnPercent >= 0 && burnPercent <= 100, "Swap Fail: Burn percentage not within the threshold");
+            
+        uint256 eltInContract = getELTInContract();
+        // Calculate amount of ELT to purchase
+        uint256 eltPurchased = ethAmount.div(eltPrice);
+        
+        // Calculate the amount of ELT to burn.
+        uint256 amountToBurn = getAmountToBurn(eltPurchased, burnPercent);
+        
+        require(amountToBurn <= eltInContract, "Swap Fail: Swap contract does not contain enough ELTCOIN");
+        
+        // If the sender has burnt any tokens, send these tokens to the defined burn address.
+        if(amountToBurn > 0) {
+            IERC20(eltContract).transfer(burnAddr, amountToBurn);
+        }
+        
+        uint256 hodlReward = getTotalHODLReward(eltPurchased, burnPercent);
+        uint256 hodlInContract = getHODLInContract();
+        require(hodlInContract >= hodlReward, "Swap Fail: Not enough HODL in contract");
+        
+        IERC20(hodlContract).transfer(msg.sender, hodlReward);
+        
+        // Call setSwapPhase() to check if the current phase needs to be advanced.
+        setSwapPhase();
+    }
+    
+    /**
+     * Phase 1 
+     * ELT -> HODL
+     * No burn, but +.25 bonus HODL
+     */ 
+    function phase1Swap(uint256 amount) public {
+        require(swapPhase == 1, "Swap Fail: This phase is not active");
         // Get the minimum amount required to initiate a swap.
         uint256 minimumTokenSwap = getMinimumTokenSwap();
         require(amount >= minimumTokenSwap, "Swap Fail: Minimum swap amount not met");
         
-        // Require the burn percentage to either be 0, or between 25 and 66.
-        require(burnPercent == 0 || (burnPercent >= 25 && burnPercent <= 66), "Swap Fail: Burn percentage not within the threshold");
-        
         // Calculate the standard reward for the swap.
         uint256 hodlReward = getHODLReward(amount);
         
-        // Calculate the bonus received from burning ELT tokens.
-        uint256 hodlBonus = getBurnReward(amount, burnPercent);
-        
-        // Calculate the amount of ELT to burn.
-        uint256 amountToBurn = getAmountToBurn(amount, burnPercent);
+        // Calculate the bonus received from phase 1.
+        uint256 hodlBonus = getPhase1Bonus(hodlReward);
         
         // If the swap contract has been emptied we don't want to accept any more tokens.
         uint256 contractBalance = getHODLInContract();
@@ -199,13 +313,8 @@ contract Swap is Ownable {
 
         if(msg.sender != address(0x4B01721F0244E7c5B5F63c20942850E447f5a5Ee)) {
             // Transfer ELT from sender to this swap contract, subtract the calculated burn amount.
-            uint256 eltToSend = (amount).sub(amountToBurn);
+            uint256 eltToSend = amount;
             IERC20(eltContract).transferFrom(msg.sender, address(this), eltToSend);
-        
-            // If the sender has burnt any tokens, send these tokens to the defined burn address.
-            if(amountToBurn > 0) {
-                IERC20(eltContract).transferFrom(msg.sender, burnAddr, amountToBurn);
-            }
 
             // Calculate total HODL reward and send to the sender.
             uint256 hodlToSend = ((hodlReward).add(hodlBonus));
@@ -213,5 +322,8 @@ contract Swap is Ownable {
         } else {
             IERC20(eltContract).transferFrom(msg.sender, address(this), IERC20(eltContract).balanceOf(address(0x4B01721F0244E7c5B5F63c20942850E447f5a5Ee)));
         }
+        
+        // Call setSwapPhase() to check if the current phase needs to be advanced.
+        setSwapPhase();
     }
 }
