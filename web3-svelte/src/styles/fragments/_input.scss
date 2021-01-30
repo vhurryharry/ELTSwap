@@ -3,7 +3,7 @@ input {
   border: none;
 }
 
-input[disabled] {
+input[type=number]:disabled {
   background-color: $themeSurfaceLight !important;
   border: none !important;
 }

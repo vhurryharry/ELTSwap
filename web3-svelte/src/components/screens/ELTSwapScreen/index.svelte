@@ -93,7 +93,7 @@
   };
 
   function castToPrecision(floatNum, maxDecLen = 8) {
-    console.log(" ---- ", floatNum);
+    // console.log(" ---- ", floatNum);
     let decimals = (floatNum + "").split(".")[1] || [];
     return decimals.length > maxDecLen ? floatNum.toFixed(maxDecLen) : floatNum;
   }
@@ -145,9 +145,10 @@
   }
 
   async function approveELTTransfer() {
-    isAppPending.set(true);
+    console.log("approveELTTransfer: ELT: " + $swapAmountELT);
+    if ($isRPCEnabled && !$isAppPending) {
+      isAppPending.set(true);
 
-    if ($isRPCEnabled) {
       approveELT(
         $web3,
         $swapAmountELT,
@@ -155,13 +156,13 @@
         global.swapContractAddress
       ).then(async function (resolve, reject) {
         if (resolve) {
-          let eltAllowance = await getApprovedAmount();
-          console.log("Approval transaction confirmed!", eltAllowance);
-          approvedELTAmount.set(eltAllowance);
-
-          console.log("Allowance: " + eltAllowance);
-
-          isAppPending.set(false);
+          try {
+            let eltAllowance = await getApprovedAmount();
+            console.log("Approval transaction confirmed!", eltAllowance);
+          } catch (err) {
+            console.log("Err: approveELT failed.", err);
+            return reject(err);
+          }
         }
       });
     }
@@ -173,6 +174,8 @@
       return getAllowance($web3, checkAccount, global.swapContractAddress).then(
         (result) => {
           console.log(" approvedAmount ", result);
+          approvedELTAmount.set(Number(result));
+
           isAppPending.set(false);
         },
         (error) => {
@@ -242,7 +245,6 @@
           <NumberInput
             bindTo={$swapAmountELT}
             placeholder={!$isRPCEnabled ? '' : 0}
-            isDisabled={!$isRPCEnabled}
             sanitizeClbk={(cleanVal) => {
               if (cleanVal <= global.maxELTToSwap) {
                 console.log(' sanitizeNumberInput swapAmountELT ', $swapAmountELT);
@@ -295,13 +297,7 @@
             </button>
           {:else}
             {#await $approvedELTAmount}
-              <button
-                class="button connect-wallet connected is-rounded"
-                class:pending={$isAppPending}
-                class:disabled={$isAppPending}
-                on:click={approveELTTransfer}>
-                Approve
-              </button>
+              <span />
             {:then value}
               {#if value >= global.minELTToSwap}
                 <button
@@ -315,7 +311,7 @@
                 <button
                   class="button connect-wallet connected is-rounded"
                   class:pending={$isAppPending}
-                  class:disabled={$isAppPending}
+                  class:disabled={!$swapAmountELT || $swapAmountELT < global.minELTToSwap}
                   on:click={approveELTTransfer}>
                   Approve
                 </button>
@@ -361,12 +357,41 @@
     {/await}
 
     <div
-      class="column is-flex is-hidden-tablet is-hidden-desktop is-flex-direction-column is-12-mobile is-justify-content-end ">
+      class="column px-0 is-flex is-hidden-tablet is-hidden-desktop is-flex-direction-column is-12-mobile is-justify-content-end ">
+      <div
+        class="column px-0 is-12-mobile is-hidden-tablet is-hidden-desktop has-text-centered-mobile has-text-center is-justify-content-end">
+        <h3 class="">
+          <img
+            src="/static/images/HODL_DAO_Logo_icon.svg"
+            alt="HODL-DAO"
+            class="logo-knob" />
+          HODL
+        </h3>
+        <NumberInput
+          bindTo={$swapAmountHODL}
+          placeholder={!$isRPCEnabled ? '' : 0}
+          isDisabled={!$isRPCEnabled}
+          sanitizeClbk={(cleanVal) => {
+            if (cleanVal <= 50) {
+              swapAmountELT.set(hodlToElt(cleanVal));
+              swapAmountHODL.set(cleanVal);
+
+              console.log(' sanitizeNumberInput swapAmountHodl ', cleanVal);
+              // return cleanVal > 0 ? cleanVal : null;
+            } else {
+              swapAmountHODL.set(50);
+              swapAmountELT.set(hodlToElt(global.maxELTToSwap));
+            }
+          }}
+          inputClasses="number-bubble input has-text-right" />
+      </div>
+
       {#await $approvedELTAmount}
         <h6>Loading approved</h6>
       {:then value}
         <h6>Approved: {value}</h6>
       {/await}
+
       {#if $isRPCEnabled === false}
         <button
           class="button connect-wallet is-rounded"
@@ -380,8 +405,8 @@
           <button
             class="button connect-wallet connected is-rounded"
             class:pending={$isAppPending}
-            class:disabled={$isAppPending}
-            on:click={approveELTTransfer.set}>
+            class:disabled={$swapAmountELT >= global.minELTToSwap || $isAppPending}
+            on:click={approveELTTransfer}>
             Approve
           </button>
         {:then value}
@@ -389,7 +414,7 @@
             <button
               class="button connect-wallet connected is-rounded"
               class:pending={$isAppPending}
-              class:disabled={$isAppPending}
+              class:disabled={!$swapAmountELT || $swapAmountELT < global.minELTToSwap}
               on:click={sendSwap}>
               Swap
             </button>
@@ -397,8 +422,8 @@
             <button
               class="button connect-wallet connected is-rounded"
               class:pending={$isAppPending}
-              class:disabled={$isAppPending}
-              on:click={approveELTTransfer.set}>
+              class:disabled={!$swapAmountELT || $swapAmountELT < global.minELTToSwap}
+              on:click={approveELTTransfer}>
               Approve
             </button>
           {/if}

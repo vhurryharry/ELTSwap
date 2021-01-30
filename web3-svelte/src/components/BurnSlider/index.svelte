@@ -79,20 +79,6 @@
           </span>
         </div>
       </div>
-
-      <div
-        class="column is-hidden-tablet is-hidden-desktop if-full-mobile is-5-dektop has-text-centered">
-        <h3 class="">HODL</h3>
-
-        <!-- <NumberInput
-        bindTo={$swapAmountHODL}
-        placeholder="0"
-        sanitizeClbk={(cleanVal) => {
-          console.log(' sanitizeNumberInput cleanVal ', cleanVal);
-          return cleanVal > 0 ? $swapAmountELT.update(cleanVal / 0.0000005) : $swapAmountELT.update(null);
-        }}
-        inputClasses="number-bubble input has-text-centered-mobile" /> -->
-      </div>
     </div>
   </div>
 {/if}
