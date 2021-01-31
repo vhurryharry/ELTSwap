@@ -1,6 +1,8 @@
 <script>
   import { web3, selectedAccount, ethStore } from "svelte-web3";
+  import { afterUpdate } from "svelte";
   import tippy from "sveltejs-tippy";
+
   import * as global from "../../../utils/globals";
 
   /** TODO: figure out how to properly import these */
@@ -28,8 +30,10 @@
   import LiveReceipt from "../../LiveReceipt/index.svelte";
   import BurnSlider from "../../BurnSlider/index.svelte";
   import NumberInput from "../../NumberInput/index.svelte";
+  import DropDown from "../../DropDown/index.svelte";
+
   import ScreenHeader from "../ScreenHeader/index.svelte";
-  import { afterUpdate } from "svelte";
+  import { minELTToSwap } from "../../../utils/dist/globals.dev";
 
   console.dir(ScreenHeader);
   // TODO: move to utils
@@ -146,7 +150,11 @@
 
   async function approveELTTransfer() {
     console.log("approveELTTransfer: ELT: " + $swapAmountELT);
-    if ($isRPCEnabled && !$isAppPending) {
+    if (
+      $isRPCEnabled &&
+      !$isAppPending &&
+      $swapAmountELT >= global.minELTToSwap
+    ) {
       isAppPending.set(true);
 
       approveELT(
@@ -241,7 +249,9 @@
       <div class="columns is-flex-wrap-wrap ">
         <div
           class="column is-flex is-position-relative is-12-mobile is-4-tablet is-4-desktop has-text-centered-mobile is-flex-direction-column is-justify-content-end">
-          <h3 class="">ELT {$swapAmountELT}</h3>
+          <div class="">
+            <DropDown />
+          </div>
           <NumberInput
             bindTo={$swapAmountELT}
             placeholder={!$isRPCEnabled ? '' : 0}
@@ -321,8 +331,8 @@
         </div>
 
         <div
-          class="column is-hidden-mobile is-4-tablet is-4-desktop has-text-centered-mobile has-text-right is-justify-content-end">
-          <h3 class="">
+          class="column is-flex is-flex-direction-column is-hidden-mobile is-4-tablet is-4-desktop has-text-centered-mobile has-text-right is-justify-content-end">
+          <h3 class="" style="padding-bottom:5px;">
             <img
               src="/static/images/HODL_DAO_Logo_icon.svg"
               alt="HODL-DAO"
@@ -350,9 +360,7 @@
       </div>
     </div>
 
-    {#await $isRPCEnabled}
-      <div />
-    {:then value}
+    {#await $isRPCEnabled then value}
       <BurnSlider isVisible={value} />
     {/await}
 

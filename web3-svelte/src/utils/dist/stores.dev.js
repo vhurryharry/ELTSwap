@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.transactionHistory = exports.isAppBroken = exports.isAppPending = exports.latestAccount = exports.isRPCEnabled = exports.isOverlayScreenActive = exports.swapValues = exports.swapAmountELT = exports.swapAmountHODL = exports.currentWizardScreen = exports.burnPercentage = exports.approvedELTAmount = void 0;
+exports.transactionHistory = exports.isAppBroken = exports.isAppPending = exports.latestAccount = exports.isRPCEnabled = exports.isOverlayScreenActive = exports.swapValues = exports.isSwapTokenDropDownActive = exports.currentSwapToken = exports.isBurnSliderVisible = exports.swapAmountELT = exports.swapAmountHODL = exports.currentWizardScreen = exports.burnPercentage = exports.approvedELTAmount = void 0;
 
 var _store = require("svelte/store");
 
@@ -18,6 +18,12 @@ var swapAmountHODL = (0, _store.writable)(null);
 exports.swapAmountHODL = swapAmountHODL;
 var swapAmountELT = (0, _store.writable)(null);
 exports.swapAmountELT = swapAmountELT;
+var isBurnSliderVisible = (0, _store.writable)(null);
+exports.isBurnSliderVisible = isBurnSliderVisible;
+var currentSwapToken = (0, _store.writable)('ELT');
+exports.currentSwapToken = currentSwapToken;
+var isSwapTokenDropDownActive = (0, _store.writable)();
+exports.isSwapTokenDropDownActive = isSwapTokenDropDownActive;
 var swapValues = (0, _store.writable)({
   swapAmountELT: swapAmountELT
 });

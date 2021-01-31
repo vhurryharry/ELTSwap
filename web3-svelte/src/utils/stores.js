@@ -9,6 +9,11 @@ export let currentWizardScreen = writable('elt-swap-screen');
 export let swapAmountHODL = writable(null);
 export let swapAmountELT = writable(null);
 
+export let isBurnSliderVisible = writable(null);
+
+export let currentSwapToken = writable('ELT');
+export let isSwapTokenDropDownActive = writable();
+
 export let swapValues = writable({
   swapAmountELT: swapAmountELT,
 });

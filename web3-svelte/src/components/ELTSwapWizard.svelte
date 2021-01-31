@@ -1,7 +1,4 @@
 <script type="ts">
-  /** TODO: figure out how to properly import these */
-  // import * as store from "../utils/stores";
-
   import { currentWizardScreen } from "../utils/stores";
 
   import ScreenOverlay from "./ScreenOverlay/index.svelte";
