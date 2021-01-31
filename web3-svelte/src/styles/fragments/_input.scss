@@ -1,5 +1,9 @@
 // TODO: Investigate how to not use !important
-input[disabled] {
+input {
+  border: none;
+}
+
+input[type=number]:disabled {
   background-color: $themeSurfaceLight !important;
   border: none !important;
 }

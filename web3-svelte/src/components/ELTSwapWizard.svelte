@@ -1,23 +1,20 @@
 <script type="ts">
-  import Icon from "svelte-awesome";
-
   /** TODO: figure out how to properly import these */
   // import * as store from "../utils/stores";
 
   import { currentWizardScreen } from "../utils/stores";
 
   import ScreenOverlay from "./ScreenOverlay/index.svelte";
-  import { isOverlayScreenActive, isAppBroken } from "../utils/stores";
+  import { isAppBroken } from "../utils/stores";
 
   import DAOScreenOfDoom from "./screens/DAOScreenOfDoom/index.svelte";
   import ELTSwapScreen from "./screens/ELTSwapScreen/index.svelte";
   import EpilogueScreen from "./screens/EpilogueScreen/index.svelte";
   import ETHPurchaseScreen from "./screens/ETHPurchaseScreen/index.svelte";
   import PrologueScreen from "./screens/PrologueScreen/index.svelte";
-  import { clockO, questionCircle } from "svelte-awesome/icons";
 
   const btnHandler = (slug: string) => {
-    console.log(" --- ", slug);
+    // console.log(" --- ", slug);
     currentWizardScreen.set(slug);
   };
 
@@ -67,25 +64,6 @@
 {/await}
 
 <div class="elt-swap-wizard mt-5 mb-5 p-5">
-  <div class="columns">
-    <div class="col-left is-6">
-      <span
-        class="px-2 py-0"
-        on:click={(evt) => {
-          btnHandler('prologue-screen');
-        }}>
-        <Icon data={questionCircle} class="close-knob" />
-      </span>
-      <span
-        on:click={(evt) => {
-          isOverlayScreenActive.set(true);
-        }}>
-        <Icon data={clockO} class="close-knob" />
-      </span>
-    </div>
-    <div class="col-right is-6" />
-  </div>
-
   {#await $currentWizardScreen then currScreen}
     <DAOScreenOfDoom {currScreen} />
     <ELTSwapScreen {currScreen} />

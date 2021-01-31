@@ -28,10 +28,12 @@ $input-shadow: none;
 @import "./components";
 @import "./components/screens";
 
+*.is-position-relative {
+  position: relative;
+}
 
 img.logo-knob {
-  width: 25px;
-  height: 25px;
+  width: 1.5rem;
   stroke: #fff;
 }
 
