@@ -7,12 +7,14 @@
   import Icon from "svelte-awesome";
   import { angleDown, angleUp } from "svelte-awesome/icons";
 
-  $: isActive = (setTo) => {
+  $: isActive = (event, setTo) => {
+    console.log(" .... ", $isSwapTokenDropDownActive);
+
     if (setTo) {
       isSwapTokenDropDownActive.set(setTo);
       return;
     }
-    isSwapTokenDropDownActive.set(!isSwapTokenDropDownActive);
+    isSwapTokenDropDownActive.set(!$isSwapTokenDropDownActive);
     return $isSwapTokenDropDownActive;
   };
 
@@ -25,17 +27,21 @@
 </style>
 
 <div
-  class="dropdown is-active"
-  class:isActive={$isSwapTokenDropDownActive}
+  class={'dropdown ' + ($isSwapTokenDropDownActive ? 'is-active' : '')}
   class:disabled={$isRPCEnabled}>
   <div class="dropdown-trigger">
-    <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
-      <span>Dropdown button</span>
+    <button
+      class="button"
+      aria-haspopup="true"
+      aria-controls="dropdown-menu"
+      on:click={isActive}>
       <span class="icon is-small">
         <Icon
-          data={$isSwapTokenDropDownActive ? angleUp : angleDown}
-          class="close-knob" />
+          data={angleUp}
+          style={`transform:rotate(${$isSwapTokenDropDownActive ? 0 : -180}deg)`} />
       </span>
+
+      <span>Dropdown button</span>
     </button>
   </div>
   <div class="dropdown-menu" id="dropdown-menu" role="menu">
