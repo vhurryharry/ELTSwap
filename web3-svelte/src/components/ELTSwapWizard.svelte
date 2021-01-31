@@ -55,20 +55,20 @@
     latestAccount.set($selectedAccount);
 
     switch ($currentSwapPhase) {
-      case 0:
+      case 1:
         currentSwapToken.set("ELT");
         setCurrentWizardScreen("elt-swap-screen");
         break;
-      case 1:
+      case 2:
         currentSwapToken.set("ETH");
         setCurrentWizardScreen("eth-purchase-screen");
         break;
-      case 2:
+      case 3:
         currentSwapToken.set("ETH");
         setCurrentWizardScreen("epilogue-screen");
         break;
       default:
-        console.log(" switch(getSwapPhase(web3) ", getSwapPhase(web3));
+      // console.log(" switch(getSwapPhase(web3) ", getSwapPhase(web3));
     }
   });
 </script>

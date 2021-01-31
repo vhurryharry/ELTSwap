@@ -1,6 +1,6 @@
 <script>
   import { web3, ethStore } from "svelte-web3";
-  import { afterUpdate, onMount } from "svelte";
+  import { afterUpdate } from "svelte";
   import tippy from "sveltejs-tippy";
 
   import { RPCErrorHandler } from "../../../utils/services";
@@ -20,6 +20,7 @@
     currentSwapPhase,
     transactionHistory,
     selectedAccount,
+    currentWizardScreen,
   } from "../../../utils/stores";
   // initialize from localStorage
   isAppBroken.useLocalStorage();
@@ -28,6 +29,9 @@
     getTokenBalance,
     getConnectedAccounts,
     hasConnectedAccounts,
+    phase1Swap,
+    phase2Swap,
+    phase3Swap,
   } from "../../../js/web3Helper";
 
   import { approveELT, getAllowance } from "../../../js/web3Helper";
@@ -114,22 +118,71 @@
   function sendSwap() {
     if ($isRPCEnabled) {
       isAppPending.set(true);
-
       try {
-        swap($web3, $swapAmountELT, $burnPercentage, $selectedAccount).then(
-          async function (resolve, reject) {
-            if (resolve) {
-              console.log("Swap transaction confirmed!");
+        switch ($currentSwapPhase) {
+          case 1:
+            phase1Swap($web3, $approvedELTAmount, $selectedAccount).then(
+              async function (resolve, reject) {
+                if (resolve) {
+                  console.log("Swap transaction confirmed!");
 
-              // Check the allowance again to change the button back to Approve
-              let eltAllowance = await getApprovedAmount();
-              approvedELTAmount.set(eltAllowance);
-              console.log("Allowance: " + eltAllowance);
-              isAppPending.set(false);
-            }
-          },
-          RPCErrorHandler
-        );
+                  // Check the allowance again to change the button back to Approve
+                  let eltAllowance = await getApprovedAmount();
+                  approvedELTAmount.set(eltAllowance);
+                  console.log("Allowance: " + eltAllowance);
+
+                  // go to "thanks" screen
+                  currentWizardScreen.set("epilogue-screen");
+
+                  isAppPending.set(false);
+                }
+              },
+              RPCErrorHandler
+            );
+            break;
+          case 2:
+            phase2Swap(
+              $web3,
+              $approvedELTAmount,
+              $burnPercentage,
+              $selectedAccount
+            ).then(async function (resolve, reject) {
+              if (resolve) {
+                console.log("Swap transaction confirmed!");
+
+                // Check the allowance again to change the button back to Approve
+                let eltAllowance = await getApprovedAmount();
+                approvedELTAmount.set(eltAllowance);
+                console.log("Allowance: " + eltAllowance);
+
+                // go to "thanks" screen
+                currentWizardScreen.set("epilogue-screen");
+
+                isAppPending.set(false);
+              }
+            }, RPCErrorHandler);
+            break;
+          case 3:
+            phase3Swap($web3, $approvedELTAmount, $selectedAccount).then(
+              async function (resolve, reject) {
+                if (resolve) {
+                  console.log("Swap transaction confirmed!");
+
+                  // Check the allowance again to change the button back to Approve
+                  let eltAllowance = await getApprovedAmount();
+                  approvedELTAmount.set(eltAllowance);
+                  console.log("Allowance: " + eltAllowance);
+
+                  // go to "thanks" screen
+                  currentWizardScreen.set("epilogue-screen");
+
+                  isAppPending.set(false);
+                }
+              },
+              RPCErrorHandler
+            );
+            break;
+        }
       } catch (err) {
         console.log(" sendSwap err ");
         RPCErrorHandler(err);
@@ -155,9 +208,9 @@
         ).then(async function (resolve, reject) {
           if (resolve) {
             try {
-              let eltAllowance = await getApprovedAmount();
+              await getApprovedAmount();
               isAppPending.set(false);
-              console.log("Approval transaction confirmed!", eltAllowance);
+              console.log("Approve transaction confirmed!", $approvedELTAmount);
             } catch (err) {
               console.log("Err: approveELT failed.", err);
               return reject(err);
