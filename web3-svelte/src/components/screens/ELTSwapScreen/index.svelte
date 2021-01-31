@@ -1,8 +1,9 @@
 <script>
   import { web3, selectedAccount, ethStore } from "svelte-web3";
+  import { afterUpdate } from "svelte";
   import tippy from "sveltejs-tippy";
+
   import * as global from "../../../utils/globals";
-  import Icon from "svelte-awesome";
 
   /** TODO: figure out how to properly import these */
   // import * as store from "../utils/stores";
@@ -20,75 +21,35 @@
   // initialize from localStorage
   isAppBroken.useLocalStorage();
   transactionHistory.useLocalStorage();
+  import { getTokenBalance } from "../../../js/web3Helper";
 
-  import { formatAddr } from "../../../utils/services.js";
-
-  import {
-    approveELT,
-    getAllowance,
-    getELTInContract,
-    getETHBalance,
-    getTokenBalance,
-    getTotalHodlReward,
-  } from "../../../js/web3Helper";
+  import { approveELT, getAllowance } from "../../../js/web3Helper";
 
   // TODO: fix imports to omit `/index.svelte`
   import SwapProgressBar from "../../SwapProgressBar/index.svelte";
   import LiveReceipt from "../../LiveReceipt/index.svelte";
   import BurnSlider from "../../BurnSlider/index.svelte";
   import NumberInput from "../../NumberInput/index.svelte";
+  import DropDown from "../../DropDown/index.svelte";
+  import SwapTransactionPath from "../../SwapTransactionPath/index.svelte";
 
+  import ScreenHeader from "../ScreenHeader/index.svelte";
+  import { minELTToSwap } from "../../../utils/dist/globals.dev";
+
+  console.dir(ScreenHeader);
   // TODO: move to utils
   // $: approveAddr = "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e";
-  $: checkAccount = $selectedAccount || global.nilAccount;
-
-  $: eltInContract = $isRPCEnabled ? getELTInContract($web3) : 0;
-
-  $: ethBalance = $isRPCEnabled
-    ? getETHBalance($web3, $selectedAccount)
-    : Number(0.0);
-
-  $: fixedDecimals = (number, precision) => {
-    if (typeof number !== "number") return;
-    return number.toFixed(typeof precision == "number" ? precision : 4);
-  };
-
-  $: eltBalance = $isRPCEnabled
-    ? getTokenBalance(
-        $web3,
-        checkAccount,
-        "0xa84a0b15d7c62684b71fecb5ea8efe0e5af1d11b"
-      )
-    : "";
-
-  $: hodlBalance = $isRPCEnabled
-    ? getTokenBalance(
-        $web3,
-        checkAccount,
-        "0x5c85a93991671dc5886203e0048777a4fd219983"
-      )
-    : "";
 
   window.ethereum.on("chainChanged", (_chainId) => {
     // We recommend reloading the page, unless you must do otherwise
     window.location.reload();
   });
 
-  window.onbeforeunload = () => {
-    // cleanup before leaving
-    isRPCEnabled.set(false);
-    isAppPending.set(false);
-    latestAccount.set(null);
-    isAppBroken.set(false); // just in case...
-  };
-
-  window.ethereum.on("accountsChanged", (accounts) => {
-    console.dir(" accounts ", accounts);
-    if (accounts[0] !== $latestAccount) {
+  afterUpdate(() => {
+    let accounts = window.ethereum["_state"]["accounts"];
+    if (accounts && accounts[0] !== $latestAccount) {
       isRPCEnabled.set(accounts.length ? true : false);
-      isAppPending.set(false);
       latestAccount.set(accounts[0]);
-      isAppBroken.set(false); // just in case...
     }
   });
 
@@ -100,13 +61,13 @@
       )
       .then(() => {
         ethStore.setBrowserProvider().then(
-          () => {
+          (res) => {
             isAppPending.set(false);
           },
           (error) => {
             console.dir(error);
             // set state to "pending"
-            isAppPending.set(true);
+            // isAppPending.set(true);
 
             // handle codes
             switch (error.code) {
@@ -129,26 +90,15 @@
       });
   };
 
+  $: checkAccount = $selectedAccount || global.nilAccount;
+
   $: enableBrowser = async () => {
     isAppPending.set(true);
     await enable();
   };
 
-  /** */
-  $: getSwapProgress = () => {
-    return 0;
-    parseInt(
-      ($isRPCEnabled ? getELTInContract($web3) : 0 * 100) / global.absMaxELT
-    ) || 0;
-  };
-
-  /** */
-  $: totalHodlReward = $isRPCEnabled
-    ? getTotalHodlReward($web3, $swapAmountELT, 25)
-    : "";
-
   function castToPrecision(floatNum, maxDecLen = 8) {
-    console.log(" ---- ", floatNum);
+    // console.log(" ---- ", floatNum);
     let decimals = (floatNum + "").split(".")[1] || [];
     return decimals.length > maxDecLen ? floatNum.toFixed(maxDecLen) : floatNum;
   }
@@ -200,9 +150,14 @@
   }
 
   async function approveELTTransfer() {
-    isAppPending.set(true);
+    console.log("approveELTTransfer: ELT: " + $swapAmountELT);
+    if (
+      $isRPCEnabled &&
+      !$isAppPending &&
+      $swapAmountELT >= global.minELTToSwap
+    ) {
+      isAppPending.set(true);
 
-    if ($isRPCEnabled) {
       approveELT(
         $web3,
         $swapAmountELT,
@@ -210,13 +165,13 @@
         global.swapContractAddress
       ).then(async function (resolve, reject) {
         if (resolve) {
-          let eltAllowance = await getApprovedAmount();
-          console.log("Approval transaction confirmed!", eltAllowance);
-          approvedELTAmount.set(eltAllowance);
-
-          console.log("Allowance: " + eltAllowance);
-
-          isAppPending.set(false);
+          try {
+            let eltAllowance = await getApprovedAmount();
+            console.log("Approval transaction confirmed!", eltAllowance);
+          } catch (err) {
+            console.log("Err: approveELT failed.", err);
+            return reject(err);
+          }
         }
       });
     }
@@ -228,6 +183,8 @@
       return getAllowance($web3, checkAccount, global.swapContractAddress).then(
         (result) => {
           console.log(" approvedAmount ", result);
+          approvedELTAmount.set(Number(result));
+
           isAppPending.set(false);
         },
         (error) => {
@@ -255,108 +212,88 @@
     return statusStr;
   };
 
+  $: eltBalance = $isRPCEnabled
+    ? getTokenBalance($web3, checkAccount, global.ELTTokenContractAddr)
+    : "";
+
   const tooltips = {
     connStatus: {
-      content: `<span class="tooltip">please (re)connect</span>`,
-      placement: "top",
+      content: "please (re)connect",
+      placement: "left",
     },
   };
 </script>
 
-<style lang="scss">
-  :global(.tooltip) {
-    // font-size: 1.2rem;
-    background-color: #fff;
-    text-transform: uppercase;
-  }
-</style>
-
 <div
   class="screen elt-swap-screen"
-  class:active={$$props.currScreen == 'elt-swap-screen'}>
-  <div
-    class="screen-header columns is-flex is-2 level is-multiline is-flex-wrap-wrap
-        is-justify-content-end">
-    <div
-      class="column is-flex-wrap-nowrap is-12-mobile is-6-tablet is-6-desktop">
-      <div class="columns is-2 is-flex is-12-mobile">
-        <div id="hodlPill" class="column is-6-mobile">
-          {#await hodlBalance}
-            <pre class="px-1"> ? HODL </pre>
-          {:then value}
-            <pre class="px-1">{value.toLocaleString('en-US')} HODL</pre>
-          {/await}
-        </div>
+  class:active={$$props.currScreen == "elt-swap-screen"}
+>
+  <ScreenHeader />
 
-        <div id="eltPill" class="column is-6-mobile">
-          {#await eltBalance}
-            <pre class="px-1"> ? ELT </pre>
-          {:then value}
-            <pre class="px-1">{value.toLocaleString('en-US')} ELT</pre>
-          {/await}
-        </div>
-      </div>
-    </div>
-
-    <div
-      class="column is-12-mobile is-6-tablet is-6-desktop is-justify-content-center">
-      <div id="ethPill" class=" is-justify-content-center">
-        {#await ethBalance}
-          <span class="px-1"> ETH </span>
-        {:then value}
-          <span class="px-1">{fixedDecimals(value)} ETH </span>
-        {/await}
-        <div id="balancePill" class="">
-          {#if !$latestAccount}
-            <span class="px-1">Disconnected</span>
-          {:else}<span class="px-1">{formatAddr($latestAccount)}</span>{/if}
-          <span
-            id="connectionIndicator"
-            class:connected={$isRPCEnabled}>&#11044;</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <p
-    class="is-12 has-text-right is-size-7 disabled"
-    use:tippy={tooltips.connStatus}>
+  <p class="is-12 has-text-right is-size-7" class:disabled={$isRPCEnabled}>
     contract status:
-    {contractStatusIndicator()}
+
+    <span use:tippy={tooltips.connStatus}> {contractStatusIndicator()} </span>
   </p>
 
   <div
     id="wizardContent"
-    class="screen-body columns my-5 is-flex-direction-column">
-    <div class="column ">
+    class="screen-body columns mt-5 mb-0 is-flex-direction-column"
+  >
+    <div class="">
       <div class="columns is-flex-wrap-wrap ">
         <div
-          class="column is-12-mobile is-4-tablet is-4-desktop has-text-centered-mobile">
-          <h3 class="">ELT {$swapAmountELT}</h3>
+          class="column is-flex is-position-relative is-12-mobile is-4-tablet is-4-desktop has-text-centered-mobile is-flex-direction-column is-justify-content-end"
+        >
+          <div class="">
+            <DropDown />
+          </div>
           <NumberInput
             bindTo={$swapAmountELT}
-            placeholder={!$isRPCEnabled ? '' : 0}
-            isDisabled={!$isRPCEnabled}
+            placeholder={!$isRPCEnabled ? "" : 0}
             sanitizeClbk={(cleanVal) => {
               if (cleanVal <= global.maxELTToSwap) {
-                console.log(' sanitizeNumberInput swapAmountELT ', $swapAmountELT);
+                console.log(
+                  " sanitizeNumberInput swapAmountELT ",
+                  $swapAmountELT
+                );
                 swapAmountELT.set(cleanVal);
               } else {
                 swapAmountELT.set(global.maxELTToSwap);
               }
               swapAmountHODL.set(eltToHodl($swapAmountELT));
             }}
-            inputClasses="number-bubble input has-text-centered-mobile" />
+            inputClasses="number-bubble input has-text-centered-mobile"
+          />
+
+          {#await eltBalance}
+            <span />
+          {:then}
+            {#if eltBalance > 0}
+              <button
+                id="setMaxELT"
+                disabled={$isAppPending}
+                on:click={() => {
+                  swapAmountELT.set(eltBalance);
+                }}
+                class="button is-info is-size-7 px-1 py-0"
+              >
+                max
+              </button>
+            {/if}
+          {/await}
         </div>
 
         <div
-          class="column is-flex is-hidden-mobile is-flex-direction-column is-4-tablet is-4-desktop is-justify-content-end ">
+          class="column is-flex is-hidden-mobile is-flex-direction-column is-4-tablet is-4-desktop is-justify-content-end "
+        >
           {#await $approvedELTAmount}
             <h6>Pending...</h6>
           {:then value}
             <h6
               class="has-tooltip-arrow"
-              data-tooltip="type valid amount of ELT">
+              data-tooltip="type valid amount of ELT"
+            >
               Approved:
               {value || 0}
             </h6>
@@ -368,33 +305,31 @@
               class:pending={$isAppPending}
               class:disabled={$isAppPending}
               on:click={enableBrowser}
-              data-tooltip="type valid amount of ELT">
+              data-tooltip="type valid amount of ELT"
+            >
               Connect Wallet
             </button>
           {:else}
             {#await $approvedELTAmount}
-              <button
-                class="button connect-wallet connected is-rounded"
-                class:pending={$isAppPending}
-                class:disabled={$isAppPending}
-                on:click={approveELTTransfer}>
-                Approve
-              </button>
+              <span />
             {:then value}
               {#if value >= global.minELTToSwap}
                 <button
                   class="button connect-wallet connected is-rounded"
                   class:pending={$isAppPending}
                   class:disabled={$isAppPending}
-                  on:click={sendSwap}>
+                  on:click={sendSwap}
+                >
                   Swap
                 </button>
               {:else}
                 <button
                   class="button connect-wallet connected is-rounded"
                   class:pending={$isAppPending}
-                  class:disabled={$isAppPending}
-                  on:click={approveELTTransfer}>
+                  class:disabled={!$swapAmountELT ||
+                    $swapAmountELT < global.minELTToSwap}
+                  on:click={approveELTTransfer}
+                >
                   Approve
                 </button>
               {/if}
@@ -403,54 +338,89 @@
         </div>
 
         <div
-          class="column is-hidden-mobile is-4-tablet is-4-desktop has-text-centered-mobile has-text-right">
-          <h3 class="">
+          class="column is-flex is-flex-direction-column is-hidden-mobile is-4-tablet is-4-desktop has-text-centered-mobile has-text-right is-justify-content-end"
+        >
+          <h3 class="" style="padding-bottom:5px;">
             <img
-              src="/static/images/HODL_DAO_Logo_outlines.svg"
+              src="/static/images/HODL_DAO_Logo_icon.svg"
               alt="HODL-DAO"
-              class="logo-knob" />
+              class="logo-knob"
+            />
             HODL
           </h3>
           <NumberInput
             bindTo={$swapAmountHODL}
-            placeholder={!$isRPCEnabled ? '' : 0}
+            placeholder={!$isRPCEnabled ? "" : 0}
             isDisabled={!$isRPCEnabled}
             sanitizeClbk={(cleanVal) => {
               if (cleanVal <= 50) {
                 swapAmountELT.set(hodlToElt(cleanVal));
                 swapAmountHODL.set(cleanVal);
 
-                console.log(' sanitizeNumberInput swapAmountHodl ', cleanVal);
+                console.log(" sanitizeNumberInput swapAmountHodl ", cleanVal);
                 // return cleanVal > 0 ? cleanVal : null;
               } else {
                 swapAmountHODL.set(50);
                 swapAmountELT.set(hodlToElt(global.maxELTToSwap));
               }
             }}
-            inputClasses="number-bubble input has-text-right" />
+            inputClasses="number-bubble input has-text-right"
+          />
         </div>
       </div>
     </div>
 
-    {#await $isRPCEnabled}
-      <div />
-    {:then value}
+    {#await $isRPCEnabled then value}
       <BurnSlider isVisible={value} />
     {/await}
 
     <div
-      class="column is-flex is-hidden-tablet is-hidden-desktop is-flex-direction-column is-12-mobile is-justify-content-end ">
+      class="column px-0 is-flex is-hidden-tablet is-hidden-desktop is-flex-direction-column is-12-mobile is-justify-content-end "
+    >
+      <div
+        class="column px-0 is-12-mobile is-hidden-tablet is-hidden-desktop has-text-centered-mobile has-text-center is-justify-content-end"
+      >
+        <h3 class="">
+          <img
+            src="/static/images/HODL_DAO_Logo_icon.svg"
+            alt="HODL-DAO"
+            class="logo-knob"
+          />
+          HODL
+        </h3>
+        <NumberInput
+          bindTo={$swapAmountHODL}
+          placeholder={!$isRPCEnabled ? "" : 0}
+          isDisabled={!$isRPCEnabled}
+          sanitizeClbk={(cleanVal) => {
+            if (cleanVal <= 50) {
+              swapAmountELT.set(hodlToElt(cleanVal));
+              swapAmountHODL.set(cleanVal);
+
+              console.log(" sanitizeNumberInput swapAmountHodl ", cleanVal);
+              // return cleanVal > 0 ? cleanVal : null;
+            } else {
+              swapAmountHODL.set(50);
+              swapAmountELT.set(hodlToElt(global.maxELTToSwap));
+            }
+          }}
+          inputClasses="number-bubble input has-text-right"
+        />
+      </div>
+
       {#await $approvedELTAmount}
         <h6>Loading approved</h6>
       {:then value}
         <h6>Approved: {value}</h6>
       {/await}
+
       {#if $isRPCEnabled === false}
         <button
           class="button connect-wallet is-rounded"
           class:pending={$isAppPending}
           class:disabled={$isAppPending}
-          on:click={enableBrowser}>
+          on:click={enableBrowser}
+        >
           Connect Wallet
         </button>
       {:else}
@@ -458,8 +428,10 @@
           <button
             class="button connect-wallet connected is-rounded"
             class:pending={$isAppPending}
-            class:disabled={$isAppPending}
-            on:click={approveELTTransfer.set}>
+            class:disabled={$swapAmountELT >= global.minELTToSwap ||
+              $isAppPending}
+            on:click={approveELTTransfer}
+          >
             Approve
           </button>
         {:then value}
@@ -467,16 +439,20 @@
             <button
               class="button connect-wallet connected is-rounded"
               class:pending={$isAppPending}
-              class:disabled={$isAppPending}
-              on:click={sendSwap}>
+              class:disabled={!$swapAmountELT ||
+                $swapAmountELT < global.minELTToSwap}
+              on:click={sendSwap}
+            >
               Swap
             </button>
           {:else}
             <button
               class="button connect-wallet connected is-rounded"
               class:pending={$isAppPending}
-              class:disabled={$isAppPending}
-              on:click={approveELTTransfer.set}>
+              class:disabled={!$swapAmountELT ||
+                $swapAmountELT < global.minELTToSwap}
+              on:click={approveELTTransfer}
+            >
               Approve
             </button>
           {/if}
@@ -485,15 +461,26 @@
     </div>
   </div>
 
-  <div class="columns is-flex is-12">
+  <SwapTransactionPath />
+
+  <div class="column is-flex is-12">
     <div class="column is-6 col-left" />
-    <div class="column is-6 col-right">
+    <div class="column is-6 col-right px-0">
       <LiveReceipt />
     </div>
   </div>
 
   <div
-    class="is-flex is-12 pb-5 is-justify-content-center is-flex-flow-row screen-footer">
-    <SwapProgressBar {getELTInContract} {getSwapProgress} {eltInContract} />
+    class="is-flex is-12 pb-5 is-justify-content-center is-flex-flow-row screen-footer"
+  >
+    <SwapProgressBar />
   </div>
 </div>
+
+<style lang="scss">
+  :global(.tooltip) {
+    // font-size: 1.2rem;
+    background-color: #fff;
+    text-transform: uppercase;
+  }
+</style>

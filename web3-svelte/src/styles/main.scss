@@ -5,12 +5,19 @@
 // Update Bulma's global variables
 $family-sans-serif: "Flama",
 sans-serif;
-$grey-dark: $brown;
-$grey-light: $beige-light;
-$primary: $purple;
-$link: $pink;
-$widescreen-enabled: false;
-$fullhd-enabled: false;
+// $grey-dark: $brown;
+// $grey-light: $beige-light;
+// $primary: $purple;
+// $link: $pink;
+// $widescreen-enabled: false;
+// $fullhd-enabled: false;
+
+/** 
+* buttons: https: //bulma.io/documentation/elements/button/#variables
+* TODO: set values for all relevant vars
+*/
+// $button-color: #fff;
+// $button-background-color: transparent;
 
 // Update some of Bulma's component variables
 $body-background-color: $black;
@@ -28,11 +35,14 @@ $input-shadow: none;
 @import "./components";
 @import "./components/screens";
 
+*.is-position-relative {
+  position: relative;
+}
 
 img.logo-knob {
-  width: 25px;
-  height: 25px;
+  width: 1.5rem;
   stroke: #fff;
+  vertical-align: text-bottom;
 }
 
 .elt-swap-wizard {

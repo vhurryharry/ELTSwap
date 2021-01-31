@@ -1,6 +1,7 @@
-button:focus,
-.button:focus {
-  outline: none;
+button,
+button:active,
+button:focus {
+  outline: none !important;
 }
 
 .close-knob,
@@ -44,6 +45,7 @@ button:focus,
   border: none;
   color: #fff;
   outline: none;
+  height: 3rem;
 }
 
 .button.connect-wallet.disabled {

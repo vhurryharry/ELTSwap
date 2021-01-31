@@ -1,3 +1,5 @@
+// TODO: sitch to ec-61 and fix the colors
+
 // Set HODL-DAO default brand colors
 $purple: #8A4D76;
 $pink: #FA7C91;
@@ -5,7 +7,7 @@ $brown: #757763;
 $beige-light: #D0D1CD;
 $beige-lighter: #EFF0EB;
 $black: #000000;
-
+$blue: blue;
 /** 
 * with the "theme" prefix, we can easily theme by 
 * overwriting these in the imported theme file;
@@ -15,12 +17,13 @@ $black: #000000;
 $themeSurfaceLight: #565656;
 $themeSurfaceMid: #383838;
 $themeSurfaceDark: #2f2f2f;
+$themeSurfaceDarkest: #262626;
 // surely, there's some tint to your darkness
 $themeBlack: $black;
 
 // colors
 $themeRed: red;
 
-
 // typography
 $disabledTextColor: $themeSurfaceLight;
+// $linkColor: $blue;
