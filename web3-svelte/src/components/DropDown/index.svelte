@@ -1,4 +1,5 @@
 <script>
+  import { nilAccount } from "./../../utils/globals.js";
   import {
     isRPCEnabled,
     currentSwapToken,
@@ -21,51 +22,75 @@
   function setCurrentSwapToken(label) {
     currentSwapToken.set(label);
   }
+
+  let tokens = [
+    {
+      name: "Ethereum",
+      label: "ETH",
+      iconName: "ether",
+      tooltip: "ETH --> ELT --> HODL",
+    },
+    {
+      name: "EltCoin",
+      label: "ELT",
+      iconName: "eltcoin",
+      tooltip: "ELT --> HODL",
+    },
+  ];
 </script>
 
-<style>
+<style lang="scss">
+  .dropdown {
+    background-color: none;
+
+    .icon {
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+  }
+
+  #dropdown-menu {
+    background-color: red;
+  }
 </style>
 
 <div
   class={'dropdown ' + ($isSwapTokenDropDownActive ? 'is-active' : '')}
   class:disabled={$isRPCEnabled}>
+  <span class="icon is-medium p-3">
+    <Icon
+      data={angleUp}
+      style={`transform:rotate(${$isSwapTokenDropDownActive ? 0 : -180}deg)`} />
+  </span>
+
   <div class="dropdown-trigger">
     <button
-      class="button"
+      class="button "
       aria-haspopup="true"
       aria-controls="dropdown-menu"
       on:click={isActive}>
-      <span class="icon is-small">
-        <Icon
-          data={angleUp}
-          style={`transform:rotate(${$isSwapTokenDropDownActive ? 0 : -180}deg)`} />
-      </span>
-
-      <span>Dropdown button</span>
+      <Icon
+        data={angleUp}
+        style={`transform:rotate(${$isSwapTokenDropDownActive ? 0 : -180}deg)`} />
+      <span>{$currentSwapToken}</span>
     </button>
   </div>
+
   <div class="dropdown-menu" id="dropdown-menu" role="menu">
     <div class="dropdown-content">
-      <button
-        class="dropdown-item button is-active is-link"
-        on:click={(evt) => {
-          setCurrentSwapToken('ELT');
-          console.dir(evt);
-          isActive(false);
-        }}
-        class:isActive={true}>
-        ELT
-      </button>
-
-      <button
-        class="dropdown-item is-active"
-        on:click={(evt) => {
-          setCurrentSwapToken('ETH');
-          isActive(false);
-        }}
-        class:isActive={true}>
-        ETH
-      </button>
+      {#each tokens as token}
+        {#if token.label !== $currentSwapToken}
+          <button
+            class="dropdown-item button"
+            on:click={(evt) => {
+              setCurrentSwapToken(token.label);
+              isActive(false);
+            }}
+            class:isActive={true}>
+            {token.label}
+          </button>
+        {/if}
+      {/each}
     </div>
   </div>
 </div>
