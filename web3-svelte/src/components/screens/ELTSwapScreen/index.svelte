@@ -249,7 +249,7 @@
       <div class="columns is-flex-wrap-wrap ">
         <div
           class="column is-flex is-position-relative is-12-mobile is-4-tablet is-4-desktop has-text-centered-mobile is-flex-direction-column is-justify-content-end">
-          <h3 class="">
+          <h3 class="pb-1">
             <DropDown />
           </h3>
           <NumberInput
@@ -331,7 +331,7 @@
         </div>
 
         <div
-          class="column is-hidden-mobile is-4-tablet is-4-desktop has-text-centered-mobile has-text-right is-justify-content-end">
+          class="column is-flex is-flex-direction-column is-hidden-mobile is-4-tablet is-4-desktop has-text-centered-mobile has-text-right is-justify-content-end">
           <h3 class="">
             <img
               src="/static/images/HODL_DAO_Logo_icon.svg"

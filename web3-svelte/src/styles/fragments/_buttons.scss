@@ -1,6 +1,7 @@
-button:focus,
-.button:focus {
-  outline: none;
+button,
+button:active,
+button:focus {
+  outline: none !important;
 }
 
 .close-knob,

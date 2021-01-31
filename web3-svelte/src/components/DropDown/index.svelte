@@ -40,17 +40,61 @@
 </script>
 
 <style lang="scss">
+  @import "../../styles/variables";
+
   .dropdown {
-    background-color: none;
+    background-color: $themeSurfaceMid;
+    position: relative;
 
     .icon {
       margin-top: auto;
       margin-bottom: auto;
+      width: 33%;
     }
   }
 
+  // TODO: Fix !important
   #dropdown-menu {
-    background-color: red;
+    background-color: $themeSurfaceDark;
+    min-width: auto;
+    right: 4px;
+    left: 33%;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    font-size: 1rem;
+  }
+
+  .dropdown-trigger button,
+  button.dropdown-button {
+    color: #fff;
+    width: 100%;
+    text-align: center;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+      background-color: $themeSurfaceMid;
+    }
+
+    &:active {
+      box-shadow: 0 0 3px $themeSurfaceLight inset;
+    }
+  }
+
+  .dropdown-trigger button.button {
+    &.is-active {
+      border-bottom-left-radius: none;
+      border-bottom-right-radius: none;
+    }
+    &.is-active,
+    &:hover {
+      background-color: $themeSurfaceDark;
+    }
+
+    &:active {
+      box-shadow: 0 0 3px $themeSurfaceLight inset;
+    }
   }
 </style>
 
@@ -65,23 +109,21 @@
 
   <div class="dropdown-trigger">
     <button
-      class="button "
+      class={'button ' + ($isSwapTokenDropDownActive ? 'is-active' : '')}
       aria-haspopup="true"
       aria-controls="dropdown-menu"
       on:click={isActive}>
-      <Icon
-        data={angleUp}
-        style={`transform:rotate(${$isSwapTokenDropDownActive ? 0 : -180}deg)`} />
+      <!-- TODO: Add token icon here -->
       <span>{$currentSwapToken}</span>
     </button>
   </div>
 
-  <div class="dropdown-menu" id="dropdown-menu" role="menu">
-    <div class="dropdown-content">
+  <div class="dropdown-menu py-1" id="dropdown-menu" role="menu">
+    <div class="is-flex is-flex-direction-row is-justify-content-flex-end">
       {#each tokens as token}
         {#if token.label !== $currentSwapToken}
           <button
-            class="dropdown-item button"
+            class=" mx-1 dropdown-button"
             on:click={(evt) => {
               setCurrentSwapToken(token.label);
               isActive(false);
