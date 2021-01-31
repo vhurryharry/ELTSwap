@@ -33,6 +33,7 @@
   import DropDown from "../../DropDown/index.svelte";
 
   import ScreenHeader from "../ScreenHeader/index.svelte";
+  import { minELTToSwap } from "../../../utils/dist/globals.dev";
 
   console.dir(ScreenHeader);
   // TODO: move to utils
@@ -149,7 +150,11 @@
 
   async function approveELTTransfer() {
     console.log("approveELTTransfer: ELT: " + $swapAmountELT);
-    if ($isRPCEnabled && !$isAppPending) {
+    if (
+      $isRPCEnabled &&
+      !$isAppPending &&
+      $swapAmountELT >= global.minELTToSwap
+    ) {
       isAppPending.set(true);
 
       approveELT(
@@ -355,9 +360,7 @@
       </div>
     </div>
 
-    {#await $isRPCEnabled}
-      <div />
-    {:then value}
+    {#await $isRPCEnabled then value}
       <BurnSlider isVisible={value} />
     {/await}
 
