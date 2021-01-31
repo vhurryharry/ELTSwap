@@ -57,11 +57,12 @@
   #dropdown-menu {
     background-color: $themeSurfaceDark;
     min-width: auto;
-    right: 4px;
+    right: 0px;
     left: 33%;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
     font-size: 1rem;
+    margin-top: -3px;
   }
 
   .dropdown-trigger button,
@@ -82,6 +83,9 @@
     }
   }
 
+  .dropdown-trigger {
+    width: 66%;
+  }
   .dropdown-trigger button.button {
     &.is-active {
       border-bottom-left-radius: none;
@@ -114,7 +118,7 @@
       aria-controls="dropdown-menu"
       on:click={isActive}>
       <!-- TODO: Add token icon here -->
-      <span>{$currentSwapToken}</span>
+      <h3>{$currentSwapToken}</h3>
     </button>
   </div>
 
@@ -129,7 +133,7 @@
               isActive(false);
             }}
             class:isActive={true}>
-            {token.label}
+            <h3>{token.label}</h3>
           </button>
         {/if}
       {/each}
