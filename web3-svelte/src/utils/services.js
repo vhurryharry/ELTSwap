@@ -18,6 +18,8 @@
  * TODO: find a way of exporting methods based on web3
  */
 
+import { isAppPending } from "./stores";
+
 export const formatAddr = (str) => {
   if (!str) return;
   return str.substr(0, 5) + "..." + str.substr(str.length - 5, str.length);
@@ -45,6 +47,7 @@ export const RPCErrorHandler = (error) => {
     case -32602:
       // there's a pending request for permissions
       console.log("Please check Metamask for pending requests.");
+      isAppPending.set(false);
       // tooltip
       break;
     default:

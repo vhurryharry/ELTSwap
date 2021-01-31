@@ -3,7 +3,7 @@
   import { afterUpdate, onMount } from "svelte";
   import tippy from "sveltejs-tippy";
 
-  import { RPCErrorHandler } from "../../../utils/service";
+  import { RPCErrorHandler } from "../../../utils/services";
   import * as global from "../../../utils/globals";
 
   /** TODO: figure out how to properly import these */
@@ -146,23 +146,27 @@
     ) {
       isAppPending.set(true);
 
-      approveELT(
-        $web3,
-        $swapAmountELT,
-        $selectedAccount,
-        global.swapContractAddress
-      ).then(async function (resolve, reject) {
-        if (resolve) {
-          try {
-            let eltAllowance = await getApprovedAmount();
-            isAppPending.set(false);
-            console.log("Approval transaction confirmed!", eltAllowance);
-          } catch (err) {
-            console.log("Err: approveELT failed.", err);
-            return reject(err);
+      try {
+        approveELT(
+          $web3,
+          $swapAmountELT,
+          $selectedAccount,
+          global.swapContractAddress
+        ).then(async function (resolve, reject) {
+          if (resolve) {
+            try {
+              let eltAllowance = await getApprovedAmount();
+              isAppPending.set(false);
+              console.log("Approval transaction confirmed!", eltAllowance);
+            } catch (err) {
+              console.log("Err: approveELT failed.", err);
+              return reject(err);
+            }
           }
-        }
-      }, RPCErrorHandler);
+        }, RPCErrorHandler);
+      } catch (err) {
+        RPCErrorHandler(err);
+      }
     }
   }
 
