@@ -20,16 +20,12 @@
   $: eltInContract = $isRPCEnabled ? getELTInContract($web3) : 0;
 </script>
 
-<style>
-</style>
-
 <div class="column is-10 is-flex-wrap-wrap">
   <div class="column is-12 pb-0">
     <h3>
       <span class="">
         Eltswap Progress:
-        <span class="eltswap-progress-success">{getSwapProgress()}%</span><sup
-          class="ref-asterix">*</sup>
+        <span class="eltswap-progress-success">{getSwapProgress()}%</span>
       </span>
     </h3>
   </div>
@@ -42,12 +38,16 @@
     <div id="swapProgress" class="is-flex is-12">
       <span id="swapProgressGradient" />
       <span id="minSwapMark" />
-      <span
-        id="currentSwapMark"
-        style="--curr-mark-left: {getSwapProgress()}%;">{getSwapProgress() > 10 ? eltInContract + ' ELT' : ''}</span>
+      <span id="currentSwapMark" style="--curr-mark-left: {getSwapProgress()}%;"
+        >{getSwapProgress() > 10 ? eltInContract + " ELT" : ""}</span
+      >
       <div
         id="coverProgressGradient"
-        style="--cover-progress-gradient-width: {99}%;" />
+        style="--cover-progress-gradient-width: {99}%;"
+      />
     </div>
   </div>
 </div>
+
+<style>
+</style>

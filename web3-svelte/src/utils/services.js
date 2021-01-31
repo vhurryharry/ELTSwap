@@ -24,6 +24,31 @@ export const formatAddr = (str) => {
 };
 
 export const fixedDecimals = (number, precision) => {
-    if (typeof number !== "number") return;
-    return number.toFixed(typeof precision == "number" ? precision : 4);
-  };
+  if (typeof number !== "number") return;
+  return number.toFixed(typeof precision == "number" ? precision : 4);
+};
+
+export const RPCErrorHandler = (error) => {
+  console.dir(error);
+  // set state to "pending"
+  isAppPending.set(true);
+
+  // handle codes
+  switch (error.code) {
+    case 4001:
+      // EIP-1193 userRejectedRequest error
+      console.log("Permissions needed to continue.");
+      isAppPending.set(false);
+      // tooltip
+      break;
+    case -32002:
+    case -32602:
+      // there's a pending request for permissions
+      console.log("Please check Metamask for pending requests.");
+      // tooltip
+      break;
+    default:
+      // impossible to recover;
+      isAppBroken.set(true);
+  }
+};

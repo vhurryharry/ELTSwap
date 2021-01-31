@@ -7,7 +7,11 @@ const eltContract = "0xa84a0b15d7c62684b71fecb5ea8efe0e5af1d11b";
 const hodlDecimals = 8;
 const eltDecimals = 8;
 
+/** TODO: Add try{}catch{} */
+
 export let getTokenBalance = async (web3, address, tokenContract, decimals = 8) => {
+  if (!web3 || !web3.eth) return 0;
+
   let amount = 0;
 
   let tokenAddr = (address).substring(2);
@@ -29,6 +33,8 @@ export let getTokenBalance = async (web3, address, tokenContract, decimals = 8) 
 }
 
 export let getETHBalance = async (web3, address) => {
+  if (!web3 || !web3.eth) return 0;
+
   let amount = 0;
   if (address === null) return;
   amount = await web3.eth.getBalance(address);
@@ -36,6 +42,8 @@ export let getETHBalance = async (web3, address) => {
 }
 
 export let getTotalHodlReward = async (web3, amount, burnPercent, decimals = 8) => {
+  if (!web3 || !web3.eth) return 0;
+
   let atomicAmount = decimalToAtomic(amount, decimals);
   let contract = new web3.eth.Contract(swapABI, swapContract);
   let result = contract.methods.getTotalHODLReward(atomicAmount, burnPercent).call().then(function (res) {
@@ -45,6 +53,8 @@ export let getTotalHodlReward = async (web3, amount, burnPercent, decimals = 8) 
 }
 
 export let getHODLInContract = async (web3) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(swapABI, swapContract);
   let result = contract.methods.getHODLInContract().call().then(function (res) {
     return atomicToDecimal(res, hodlDecimals);
@@ -53,6 +63,8 @@ export let getHODLInContract = async (web3) => {
 }
 
 export let getELTInContract = async (web3) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(swapABI, swapContract);
   let result = contract.methods.getELTInContract().call().then(function (res) {
     return atomicToDecimal(res, eltDecimals);
@@ -69,6 +81,8 @@ export let getSwapPhase = async (web3) => {
 }
 
 export let getTotalELTSwapped = async (web3) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(swapABI, swapContract);
   let result = contract.methods.getTotalELTSwapped().call().then(function (res) {
     return atomicToDecimal(res, eltDecimals);
@@ -77,6 +91,8 @@ export let getTotalELTSwapped = async (web3) => {
 }
 
 export let getPhase1Bonus = async (web3, amount) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(swapABI, swapContract);
   let result = contract.methods.getPhase1Bonus(amount).call().then(function (res) {
     return atomicToDecimal(res, eltDecimals);
@@ -85,6 +101,8 @@ export let getPhase1Bonus = async (web3, amount) => {
 }
 
 export let getELTBurned = async (web3) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(swapABI, swapContract);
   let result = contract.methods.getELTBurned().call().then(function (res) {
     return atomicToDecimal(res, eltDecimals);
@@ -93,6 +111,8 @@ export let getELTBurned = async (web3) => {
 }
 
 export let getAllowance = async (web3, ownerAddress, spenderAddress) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(eltABI, eltContract);
   let result = contract.methods.allowance(ownerAddress, spenderAddress).call().then(function (res) {
     return atomicToDecimal(res, eltDecimals);
@@ -102,6 +122,8 @@ export let getAllowance = async (web3, ownerAddress, spenderAddress) => {
 }
 
 export let approveELT = async (web3, amount, fromAddress, toAddress) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(eltABI, eltContract, { from: fromAddress });
 
   let gasEstimate = await contract.methods.approve(toAddress, decimalToAtomic(amount)).estimateGas().then(function (res) {
@@ -130,6 +152,8 @@ export let approveELT = async (web3, amount, fromAddress, toAddress) => {
 }
 
 export let phase1Swap = async (web3, amount, fromAddress) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(swapABI, swapContract, { from: fromAddress });
 
   let gasEstimate = await contract.methods.phase1Swap(decimalToAtomic(amount)).estimateGas().then(function (res) {
@@ -157,6 +181,8 @@ export let phase1Swap = async (web3, amount, fromAddress) => {
 }
 
 export let phase2Swap = async (web3, amount, burnPercent = 0, fromAddress) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(swapABI, swapContract, { from: fromAddress });
 
   let gasEstimate = await contract.methods.phase2Swap(burnPercent).estimateGas().then(function (res) {
@@ -184,6 +210,8 @@ export let phase2Swap = async (web3, amount, burnPercent = 0, fromAddress) => {
 }
 
 export let phase3Swap = async (web3, amount, fromAddress) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(swapABI, swapContract, { from: fromAddress });
 
   let gasEstimate = await contract.methods.phase3Swap().estimateGas().then(function (res) {

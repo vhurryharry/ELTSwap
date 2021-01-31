@@ -9,7 +9,7 @@
   $: tickers = [
     {
       label: "ELT burned:",
-      value: $isRPCEnabled ? getELTInContract($web3) : 0,
+      value: web3.eth && $isRPCEnabled ? getELTInContract($web3) : 0,
     },
     // {
     //   label: "ELT staked",
@@ -20,11 +20,6 @@
     // { label: "ELT price", value: $isRPCEnabled ? "TBD" : 0 },
   ];
 </script>
-
-<style lang="scss">
-  //   .ticker-belt-wrapper {
-  //  }
-</style>
 
 <div class="ticker-belt-wrapper is-flex block is-12">
   {#each tickers as ticker}
@@ -38,3 +33,8 @@
     </div>
   {/each}
 </div>
+
+<style lang="scss">
+  //   .ticker-belt-wrapper {
+  //  }
+</style>
