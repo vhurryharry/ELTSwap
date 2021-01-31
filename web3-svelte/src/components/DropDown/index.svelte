@@ -1,16 +1,13 @@
 <script>
-  import { nilAccount } from "./../../utils/globals.js";
   import {
     isRPCEnabled,
     currentSwapToken,
     isSwapTokenDropDownActive,
   } from "../../utils/stores";
   import Icon from "svelte-awesome";
-  import { angleDown, angleUp } from "svelte-awesome/icons";
+  import { angleUp } from "svelte-awesome/icons";
 
-  $: isActive = (event, setTo) => {
-    console.log(" .... ", $isSwapTokenDropDownActive);
-
+  $: isActive = (setTo) => {
     if (setTo) {
       isSwapTokenDropDownActive.set(setTo);
       return;
@@ -57,7 +54,7 @@
   #dropdown-menu {
     background-color: $themeSurfaceDark;
     min-width: auto;
-    right: 0px;
+    right: 1px;
     left: 33%;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
@@ -116,7 +113,9 @@
       class={'button ' + ($isSwapTokenDropDownActive ? 'is-active' : '')}
       aria-haspopup="true"
       aria-controls="dropdown-menu"
-      on:click={isActive}>
+      on:click={(evt) => {
+        isActive(false);
+      }}>
       <!-- TODO: Add token icon here -->
       <h3>{$currentSwapToken}</h3>
     </button>

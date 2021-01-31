@@ -31,6 +31,7 @@
   import BurnSlider from "../../BurnSlider/index.svelte";
   import NumberInput from "../../NumberInput/index.svelte";
   import DropDown from "../../DropDown/index.svelte";
+  import SwapTransactionPath from "../../SwapTransactionPath/index.svelte";
 
   import ScreenHeader from "../ScreenHeader/index.svelte";
   import { minELTToSwap } from "../../../utils/dist/globals.dev";
@@ -223,17 +224,10 @@
   };
 </script>
 
-<style lang="scss">
-  :global(.tooltip) {
-    // font-size: 1.2rem;
-    background-color: #fff;
-    text-transform: uppercase;
-  }
-</style>
-
 <div
   class="screen elt-swap-screen"
-  class:active={$$props.currScreen == 'elt-swap-screen'}>
+  class:active={$$props.currScreen == "elt-swap-screen"}
+>
   <ScreenHeader />
 
   <p class="is-12 has-text-right is-size-7" class:disabled={$isRPCEnabled}>
@@ -244,27 +238,33 @@
 
   <div
     id="wizardContent"
-    class="screen-body columns my-5 is-flex-direction-column">
+    class="screen-body columns mt-5 mb-0 is-flex-direction-column"
+  >
     <div class="">
       <div class="columns is-flex-wrap-wrap ">
         <div
-          class="column is-flex is-position-relative is-12-mobile is-4-tablet is-4-desktop has-text-centered-mobile is-flex-direction-column is-justify-content-end">
+          class="column is-flex is-position-relative is-12-mobile is-4-tablet is-4-desktop has-text-centered-mobile is-flex-direction-column is-justify-content-end"
+        >
           <div class="">
             <DropDown />
           </div>
           <NumberInput
             bindTo={$swapAmountELT}
-            placeholder={!$isRPCEnabled ? '' : 0}
+            placeholder={!$isRPCEnabled ? "" : 0}
             sanitizeClbk={(cleanVal) => {
               if (cleanVal <= global.maxELTToSwap) {
-                console.log(' sanitizeNumberInput swapAmountELT ', $swapAmountELT);
+                console.log(
+                  " sanitizeNumberInput swapAmountELT ",
+                  $swapAmountELT
+                );
                 swapAmountELT.set(cleanVal);
               } else {
                 swapAmountELT.set(global.maxELTToSwap);
               }
               swapAmountHODL.set(eltToHodl($swapAmountELT));
             }}
-            inputClasses="number-bubble input has-text-centered-mobile" />
+            inputClasses="number-bubble input has-text-centered-mobile"
+          />
 
           {#await eltBalance}
             <span />
@@ -276,7 +276,8 @@
                 on:click={() => {
                   swapAmountELT.set(eltBalance);
                 }}
-                class="button is-info is-size-7 px-1 py-0">
+                class="button is-info is-size-7 px-1 py-0"
+              >
                 max
               </button>
             {/if}
@@ -284,13 +285,15 @@
         </div>
 
         <div
-          class="column is-flex is-hidden-mobile is-flex-direction-column is-4-tablet is-4-desktop is-justify-content-end ">
+          class="column is-flex is-hidden-mobile is-flex-direction-column is-4-tablet is-4-desktop is-justify-content-end "
+        >
           {#await $approvedELTAmount}
             <h6>Pending...</h6>
           {:then value}
             <h6
               class="has-tooltip-arrow"
-              data-tooltip="type valid amount of ELT">
+              data-tooltip="type valid amount of ELT"
+            >
               Approved:
               {value || 0}
             </h6>
@@ -302,7 +305,8 @@
               class:pending={$isAppPending}
               class:disabled={$isAppPending}
               on:click={enableBrowser}
-              data-tooltip="type valid amount of ELT">
+              data-tooltip="type valid amount of ELT"
+            >
               Connect Wallet
             </button>
           {:else}
@@ -314,15 +318,18 @@
                   class="button connect-wallet connected is-rounded"
                   class:pending={$isAppPending}
                   class:disabled={$isAppPending}
-                  on:click={sendSwap}>
+                  on:click={sendSwap}
+                >
                   Swap
                 </button>
               {:else}
                 <button
                   class="button connect-wallet connected is-rounded"
                   class:pending={$isAppPending}
-                  class:disabled={!$swapAmountELT || $swapAmountELT < global.minELTToSwap}
-                  on:click={approveELTTransfer}>
+                  class:disabled={!$swapAmountELT ||
+                    $swapAmountELT < global.minELTToSwap}
+                  on:click={approveELTTransfer}
+                >
                   Approve
                 </button>
               {/if}
@@ -331,31 +338,34 @@
         </div>
 
         <div
-          class="column is-flex is-flex-direction-column is-hidden-mobile is-4-tablet is-4-desktop has-text-centered-mobile has-text-right is-justify-content-end">
+          class="column is-flex is-flex-direction-column is-hidden-mobile is-4-tablet is-4-desktop has-text-centered-mobile has-text-right is-justify-content-end"
+        >
           <h3 class="" style="padding-bottom:5px;">
             <img
               src="/static/images/HODL_DAO_Logo_icon.svg"
               alt="HODL-DAO"
-              class="logo-knob" />
+              class="logo-knob"
+            />
             HODL
           </h3>
           <NumberInput
             bindTo={$swapAmountHODL}
-            placeholder={!$isRPCEnabled ? '' : 0}
+            placeholder={!$isRPCEnabled ? "" : 0}
             isDisabled={!$isRPCEnabled}
             sanitizeClbk={(cleanVal) => {
               if (cleanVal <= 50) {
                 swapAmountELT.set(hodlToElt(cleanVal));
                 swapAmountHODL.set(cleanVal);
 
-                console.log(' sanitizeNumberInput swapAmountHodl ', cleanVal);
+                console.log(" sanitizeNumberInput swapAmountHodl ", cleanVal);
                 // return cleanVal > 0 ? cleanVal : null;
               } else {
                 swapAmountHODL.set(50);
                 swapAmountELT.set(hodlToElt(global.maxELTToSwap));
               }
             }}
-            inputClasses="number-bubble input has-text-right" />
+            inputClasses="number-bubble input has-text-right"
+          />
         </div>
       </div>
     </div>
@@ -365,33 +375,37 @@
     {/await}
 
     <div
-      class="column px-0 is-flex is-hidden-tablet is-hidden-desktop is-flex-direction-column is-12-mobile is-justify-content-end ">
+      class="column px-0 is-flex is-hidden-tablet is-hidden-desktop is-flex-direction-column is-12-mobile is-justify-content-end "
+    >
       <div
-        class="column px-0 is-12-mobile is-hidden-tablet is-hidden-desktop has-text-centered-mobile has-text-center is-justify-content-end">
+        class="column px-0 is-12-mobile is-hidden-tablet is-hidden-desktop has-text-centered-mobile has-text-center is-justify-content-end"
+      >
         <h3 class="">
           <img
             src="/static/images/HODL_DAO_Logo_icon.svg"
             alt="HODL-DAO"
-            class="logo-knob" />
+            class="logo-knob"
+          />
           HODL
         </h3>
         <NumberInput
           bindTo={$swapAmountHODL}
-          placeholder={!$isRPCEnabled ? '' : 0}
+          placeholder={!$isRPCEnabled ? "" : 0}
           isDisabled={!$isRPCEnabled}
           sanitizeClbk={(cleanVal) => {
             if (cleanVal <= 50) {
               swapAmountELT.set(hodlToElt(cleanVal));
               swapAmountHODL.set(cleanVal);
 
-              console.log(' sanitizeNumberInput swapAmountHodl ', cleanVal);
+              console.log(" sanitizeNumberInput swapAmountHodl ", cleanVal);
               // return cleanVal > 0 ? cleanVal : null;
             } else {
               swapAmountHODL.set(50);
               swapAmountELT.set(hodlToElt(global.maxELTToSwap));
             }
           }}
-          inputClasses="number-bubble input has-text-right" />
+          inputClasses="number-bubble input has-text-right"
+        />
       </div>
 
       {#await $approvedELTAmount}
@@ -405,7 +419,8 @@
           class="button connect-wallet is-rounded"
           class:pending={$isAppPending}
           class:disabled={$isAppPending}
-          on:click={enableBrowser}>
+          on:click={enableBrowser}
+        >
           Connect Wallet
         </button>
       {:else}
@@ -413,8 +428,10 @@
           <button
             class="button connect-wallet connected is-rounded"
             class:pending={$isAppPending}
-            class:disabled={$swapAmountELT >= global.minELTToSwap || $isAppPending}
-            on:click={approveELTTransfer}>
+            class:disabled={$swapAmountELT >= global.minELTToSwap ||
+              $isAppPending}
+            on:click={approveELTTransfer}
+          >
             Approve
           </button>
         {:then value}
@@ -422,16 +439,20 @@
             <button
               class="button connect-wallet connected is-rounded"
               class:pending={$isAppPending}
-              class:disabled={!$swapAmountELT || $swapAmountELT < global.minELTToSwap}
-              on:click={sendSwap}>
+              class:disabled={!$swapAmountELT ||
+                $swapAmountELT < global.minELTToSwap}
+              on:click={sendSwap}
+            >
               Swap
             </button>
           {:else}
             <button
               class="button connect-wallet connected is-rounded"
               class:pending={$isAppPending}
-              class:disabled={!$swapAmountELT || $swapAmountELT < global.minELTToSwap}
-              on:click={approveELTTransfer}>
+              class:disabled={!$swapAmountELT ||
+                $swapAmountELT < global.minELTToSwap}
+              on:click={approveELTTransfer}
+            >
               Approve
             </button>
           {/if}
@@ -440,15 +461,26 @@
     </div>
   </div>
 
-  <div class="columns is-flex is-12">
+  <SwapTransactionPath />
+
+  <div class="column is-flex is-12">
     <div class="column is-6 col-left" />
-    <div class="column is-6 col-right">
+    <div class="column is-6 col-right px-0">
       <LiveReceipt />
     </div>
   </div>
 
   <div
-    class="is-flex is-12 pb-5 is-justify-content-center is-flex-flow-row screen-footer">
+    class="is-flex is-12 pb-5 is-justify-content-center is-flex-flow-row screen-footer"
+  >
     <SwapProgressBar />
   </div>
 </div>
+
+<style lang="scss">
+  :global(.tooltip) {
+    // font-size: 1.2rem;
+    background-color: #fff;
+    text-transform: uppercase;
+  }
+</style>

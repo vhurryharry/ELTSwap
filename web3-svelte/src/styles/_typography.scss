@@ -15,8 +15,8 @@ $disabledTextColor: #aaa;
 }
 
 h3 {
-  @extend .is-size-5;
   color: #fff;
+  font-size: 1.25rem; // is-size-5
 }
 
 h6 {

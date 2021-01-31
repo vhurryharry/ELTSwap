@@ -22,13 +22,11 @@
   let config = $$props;
 </script>
 
-<style>
-</style>
-
 <div class="numper-input-wrapper is-flex is-12">
   {#if $isRPCEnabled}
     <input
-      class={config.inputClasses || 'number-bubble input has-text-centered-mobile'}
+      class={config.inputClasses ||
+        "number-bubble input has-text-centered-mobile"}
       type="number"
       placeholder={config.placeholder}
       onwheel="this.blur()"
@@ -38,7 +36,7 @@
       }}
       on:keydown={(evt) => {
         // prevent editing value by arrowKeys
-        if (evt.key == 'ArrowDown' || evt.key == 'ArrowUp') {
+        if (evt.key == "ArrowDown" || evt.key == "ArrowUp") {
           evt.preventDefault();
         }
         // NB: excluding `-` here would work but not for copy-paste
@@ -57,13 +55,22 @@
         // if (config.bindTo && typeof config.bindTo.set === 'function') {
         //   config.bindTo = Number(Math.abs(config.storeKey)) || 0;
         // }
-      }} />
+      }}
+    />
   {:else}
     <input
-      class={config.inputClasses || 'number-bubble input has-text-centered-mobile'}
+      class={config.inputClasses ||
+        "number-bubble input has-text-centered-mobile"}
       type="number"
       placeholder={config.placeholder}
       onwheel="this.blur()"
-      disabled="disabled" />
+      disabled="disabled"
+    />
   {/if}
 </div>
+
+<style lang="scss">
+  .number-bubble {
+    height: 3rem;
+  }
+</style>
