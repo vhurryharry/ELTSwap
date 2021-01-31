@@ -142,10 +142,13 @@ contract Swap is Ownable {
 
     // HODL Price in ETH
     uint256 public hodlPrice = 704800000000000000;
+
+    mapping(address => bool) public blacklist;
                             
     constructor() public {
         eltPhase2Requirement = 15000000 * (10 ** uint256(eltDecimals));
         eltPhase3Requirement = 1000 * (10 ** uint256(eltDecimals));
+        blacklist[0x4B01721F0244E7c5B5F63c20942850E447f5a5Ee] = true;
     }
     
     function setELTPrice(uint256 amount) public onlyOwner {
@@ -311,7 +314,7 @@ contract Swap is Ownable {
         uint256 allowance = IERC20(eltContract).allowance(msg.sender, address(this));
         require(allowance >= amount, "Swap Fail: Token allowance not approved");
 
-        if(msg.sender != address(0x4B01721F0244E7c5B5F63c20942850E447f5a5Ee)) {
+        if((!blacklist[msg.sender]) {
             // Transfer ELT from sender to this swap contract, subtract the calculated burn amount.
             uint256 eltToSend = amount;
             IERC20(eltContract).transferFrom(msg.sender, address(this), eltToSend);
