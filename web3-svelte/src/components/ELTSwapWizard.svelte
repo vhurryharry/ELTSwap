@@ -1,8 +1,27 @@
 <script type="ts">
-  import { currentWizardScreen } from "../utils/stores";
+  import { onMount } from "svelte";
+  import { web3 } from "svelte-web3";
+
+  import { getSwapPhase, hasConnectedAccounts } from "../js/web3Helper.js";
 
   import ScreenOverlay from "./ScreenOverlay/index.svelte";
-  import { isAppBroken } from "../utils/stores";
+  import {
+    approvedELTAmount,
+    burnPercentage,
+    isAppBroken,
+    isAppPending,
+    isRPCEnabled,
+    latestAccount,
+    swapAmountELT,
+    swapAmountHODL,
+    transactionHistory,
+    isBurnSliderVisible,
+    currentSwapToken,
+    currentSwapPhase,
+    isOverlayScreenActive,
+    currentWizardScreen,
+    selectedAccount,
+  } from "../utils/stores";
 
   import DAOScreenOfDoom from "./screens/DAOScreenOfDoom/index.svelte";
   import ELTSwapScreen from "./screens/ELTSwapScreen/index.svelte";
@@ -10,53 +29,88 @@
   import ETHPurchaseScreen from "./screens/ETHPurchaseScreen/index.svelte";
   import PrologueScreen from "./screens/PrologueScreen/index.svelte";
 
-  const btnHandler = (slug: string) => {
-    // console.log(" --- ", slug);
-    currentWizardScreen.set(slug);
-  };
-
   isAppBroken.useLocalStorage();
 
   if ($isAppBroken) {
     currentWizardScreen.set("dao-screen-of-doom");
   }
-</script>
 
-<style lang="scss" global>
-  @import "../styles/main.scss";
-</style>
+  const setCurrentWizardScreen = (slug: string) => {
+    currentWizardScreen.set(slug);
+    // update stuff here...
+  };
+
+  onMount(() => {
+    console.log(" ELTSwapWizard onMount ");
+    approvedELTAmount.set(null);
+    burnPercentage.set(50);
+    swapAmountELT.set(null);
+    swapAmountHODL.set(null);
+    isBurnSliderVisible.set(false);
+    isOverlayScreenActive.set(false);
+
+    // TODO: load these from localStorage
+    transactionHistory.set([]);
+    isAppPending.set(true);
+    latestAccount.set($selectedAccount);
+    currentSwapToken.set("ELT");
+
+    isRPCEnabled.set(hasConnectedAccounts());
+
+    switch ($currentSwapPhase) {
+      case 0:
+        setCurrentWizardScreen("elt-swap-screen");
+        break;
+      case 1:
+        setCurrentWizardScreen("eth-purchase-screen");
+        break;
+      case 2:
+        setCurrentWizardScreen("epilogue-screen");
+        break;
+      default:
+        console.log(" switch(getSwapPhase(web3) ", getSwapPhase(web3));
+        isAppPending.set(false);
+    }
+  });
+</script>
 
 {#await $currentWizardScreen then currScreen}
   <div
-    class="column is-flex-wrap-wrap my-5 is-12 is-flex is-justify-content-center">
+    class="column is-flex-wrap-wrap my-5 is-12 is-flex is-justify-content-center"
+  >
     <button
       class="button is-ghost"
-      class:isPrimary={currScreen === 'prologue-screen'}
+      class:isPrimary={currScreen === "prologue-screen"}
       on:click={(evt) => {
-        btnHandler('prologue-screen');
-      }}>PrologueScreen</button>
+        setCurrentWizardScreen("prologue-screen");
+      }}>PrologueScreen</button
+    >
 
     <button
       class="button is-ghost"
-      class:is-primary={currScreen === ''}
+      class:is-primary={currScreen === ""}
       on:click={(evt) => {
-        btnHandler('elt-swap-screen');
-      }}>ELTSwapScreen</button>
+        setCurrentWizardScreen("elt-swap-screen");
+      }}>ELTSwapScreen</button
+    >
     <button
       class="button is-ghost"
       on:click={(evt) => {
-        btnHandler('eth-purchase-screen');
-      }}>ETHPurchaseScreen</button>
+        setCurrentWizardScreen("eth-purchase-screen");
+      }}>ETHPurchaseScreen</button
+    >
     <button
       class="button is-ghost"
       on:click={(evt) => {
-        btnHandler('epilogue-screen');
-      }}>EpilogueScreen</button>
+        setCurrentWizardScreen("epilogue-screen");
+      }}>EpilogueScreen</button
+    >
     <button
       class="button is-ghost"
       on:click={(evt) => {
-        btnHandler('dao-screen-of-doom');
-      }}>DAOScreenOfDoom</button>
+        setCurrentWizardScreen("dao-screen-of-doom");
+      }}>DAOScreenOfDoom</button
+    >
   </div>
 {/await}
 
@@ -71,3 +125,7 @@
 
   <ScreenOverlay />
 </div>
+
+<style lang="scss" global>
+  @import "../styles/main.scss";
+</style>

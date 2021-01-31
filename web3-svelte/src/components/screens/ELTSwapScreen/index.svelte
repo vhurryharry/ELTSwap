@@ -1,5 +1,5 @@
 <script>
-  import { web3, selectedAccount, ethStore } from "svelte-web3";
+  import { web3, ethStore } from "svelte-web3";
   import { afterUpdate } from "svelte";
   import tippy from "sveltejs-tippy";
 
@@ -17,11 +17,16 @@
     swapAmountELT,
     swapAmountHODL,
     transactionHistory,
+    selectedAccount,
   } from "../../../utils/stores";
   // initialize from localStorage
   isAppBroken.useLocalStorage();
   transactionHistory.useLocalStorage();
-  import { getTokenBalance } from "../../../js/web3Helper";
+  import {
+    getTokenBalance,
+    getConnectedAccounts,
+    hasConnectedAccounts,
+  } from "../../../js/web3Helper";
 
   import { approveELT, getAllowance } from "../../../js/web3Helper";
 
@@ -34,11 +39,6 @@
   import SwapTransactionPath from "../../SwapTransactionPath/index.svelte";
 
   import ScreenHeader from "../ScreenHeader/index.svelte";
-  import { minELTToSwap } from "../../../utils/dist/globals.dev";
-
-  console.dir(ScreenHeader);
-  // TODO: move to utils
-  // $: approveAddr = "0x77189634909a4ad77b7e60c89b5ed5af5ce37d5e";
 
   window.ethereum.on("chainChanged", (_chainId) => {
     // We recommend reloading the page, unless you must do otherwise
@@ -46,10 +46,13 @@
   });
 
   afterUpdate(() => {
-    let accounts = window.ethereum["_state"]["accounts"];
-    if (accounts && accounts[0] !== $latestAccount) {
-      isRPCEnabled.set(accounts.length ? true : false);
-      latestAccount.set(accounts[0]);
+    if (
+      hasConnectedAccounts() &&
+      getConnectedAccounts()[0] !== $latestAccount
+    ) {
+      isRPCEnabled.set(hasConnectedAccounts());
+      latestAccount.set(getConnectedAccounts()[0]);
+      $selectedAccount.set($latestAccount);
     }
   });
 

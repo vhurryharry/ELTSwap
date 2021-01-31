@@ -8,8 +8,9 @@ export let burnPercentage = writable(0);
 export let currentWizardScreen = writable('elt-swap-screen');
 export let swapAmountHODL = writable(null);
 export let swapAmountELT = writable(null);
+export let selectedAccount = writable(null);
 
-export let isBurnSliderVisible = writable(null);
+export let isBurnSliderVisible = writable(false);
 
 export let currentSwapToken = writable('ELT');
 export let isSwapTokenDropDownActive = writable();
@@ -26,6 +27,9 @@ export const isRPCEnabled = writable(false);
 export const latestAccount = writable(null);
 // set to true while async; if reload, can help guide the user
 export const isAppPending = writable(false);
+
+export const currentSwapPhase = writable(0);
+
 
 const createWritableStore = (key, startValue) => {
   const { subscribe, set } = writable(startValue);
