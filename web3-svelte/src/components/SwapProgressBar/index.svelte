@@ -113,14 +113,9 @@
     <div id="swapProgress" class="is-flex is-12">
       <span id="swapProgressGradient" />
       <span id="minSwapMark" />
-      <span
-        id="currentSwapMark"
-        style="--curr-mark-left: {$currentSwapProgress}%;"
-        >{$currentSwapProgress > 10 ? eltInContract + " ELT" : ""}</span
-      >
       <div
         id="coverProgressGradient"
-        style="--cover-progress-gradient-width: {99}%;"
+        style="--cover-progress-gradient-width: {100 - $currentSwapProgress}%;"
       />
     </div>
   </div>
