@@ -1,6 +1,4 @@
 <script>
-  import { web3 } from "svelte-web3";
-
   import {
     swapAmountELT,
     swapAmountHODL,
@@ -21,28 +19,26 @@
     <div
       class="live-receipt-wrapper columns is-flex-direction-column is-12 p-4 col-right"
     >
-      {#await $currentSwapPhase then value}
-        {#if value === 1}
-          <div class="column key-val-row receipt-content">
-            <div class="is-flex is-12 key-val-row">
-              <div class="column col-left py-0">ELTCOIN</div>
-              {#await $swapAmountELT}
+      {#if $currentSwapPhase == 1}
+        <div class="column key-val-row receipt-content">
+          <div class="is-flex is-12 key-val-row">
+            <div class="column col-left py-0">ELTCOIN</div>
+            {#await $swapAmountELT}
+              <div class="column col-right has-text-right py-0">0</div>
+            {:then value}
+              {#if value}
+                <div class="column col-right has-text-right py-0">
+                  {value} ELT
+                </div>
+              {:else}
                 <div class="column col-right has-text-right py-0">0</div>
-              {:then value}
-                {#if value}
-                  <div class="column col-right has-text-right py-0">
-                    {value} ELT
-                  </div>
-                {:else}
-                  <div class="column col-right has-text-right py-0">0</div>
-                {/if}
-              {/await}
-            </div>
+              {/if}
+            {/await}
           </div>
-        {/if}
-      {/await}
+        </div>
+      {/if}
 
-      {#if $currentSwapPhase === 1}
+      {#if $currentSwapPhase == 1}
         <div class="column key-val-row receipt-content">
           <div class="is-flex is-12 key-val-row">
             <div class="column col-left py-0">HODL</div>
@@ -61,7 +57,7 @@
         </div>
       {/if}
 
-      {#if $currentSwapPhase === 1 || $currentSwapPhase === 2}
+      {#if $currentSwapPhase == 1 || $currentSwapPhase == 2}
         <div class="column key-val-row receipt-content">
           <div class="is-flex is-12 key-val-row">
             <div class="column col-left py-0">HODL BONUS</div>
@@ -80,7 +76,7 @@
         </div>
       {/if}
 
-      {#if $currentSwapPhase === 3 || ($currentSwapPhase === 2 && $currentSwapToken === "ETH")}
+      {#if $currentSwapPhase == 3 || ($currentSwapPhase == 2 && $currentSwapToken === "ETH")}
         <div class="column key-val-row receipt-content">
           <div class="is-flex is-12 key-val-row">
             <div class="column col-left py-0">GAS ESTIMATE</div>

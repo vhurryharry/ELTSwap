@@ -8,7 +8,7 @@
   import { angleRight } from "svelte-awesome/icons";
 </script>
 
-{#if currentSwapPhase === 1 && $isRPCEnabled}
+{#if $currentSwapPhase === 1 && $isRPCEnabled}
   <div
     id="swapTransactionPath"
     class="column is-flex is-flex-flow-row is-justify-content-center is-12 mb-5 py-0"

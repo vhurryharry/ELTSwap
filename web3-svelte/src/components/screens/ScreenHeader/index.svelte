@@ -16,6 +16,7 @@
     getTotalHodlReward,
     getPhase1Bonus,
     getGasPriceEstimate,
+    getSwapPhase,
   } from "../../../js/web3Helper";
 
   import {
@@ -159,8 +160,27 @@
     }
   };
 
+  $: updateSwapPhase = () => {
+    let swapPhase = getSwapPhase($web3);
+
+    if (typeof swapPhase.then !== "function") {
+      currentSwapPhase.set(null);
+    } else {
+      swapPhase.then(
+        (result) => {
+          currentSwapPhase.set(result);
+        },
+        (err) => {
+          currentSwapPhase.set(null);
+          console.dir(err);
+        }
+      );
+    }
+  };
+
   afterUpdate(() => {
     if ($isRPCEnabled) {
+      updateSwapPhase();
       updateELTInContract();
       updateELTBurned();
       updateHODLInContract();

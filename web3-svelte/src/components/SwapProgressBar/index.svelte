@@ -53,7 +53,6 @@
   afterUpdate(() => {
     if ($web3 && $isRPCEnabled) {
       let perc = getSwapProgressPercentile();
-      console.log(" ?!?!?!?!?!? ", perc);
 
       if (typeof perc.then === "function") {
         perc.then((res) => {
@@ -71,7 +70,6 @@
 
   $: getSwapProgressPercentile = () => {
     let swapProg = getSwapProgress("callee: getCurrentSwapProgress");
-    console.log(" &&&&&swapProg&&&&&& ", swapProg);
 
     if (swapProg === 0) {
       currentSwapProgress.set(0);
@@ -80,13 +78,6 @@
 
     if (typeof swapProg.then === "function") {
       return swapProg.then((result) => {
-        console.log(" &&&&&&&&&&& ", result);
-        console.log(" result --- ", result);
-        console.log(
-          " getTotalELTSwapped => %",
-          ((castToPrecision(result, 0) * 100) / global.absMaxELT) * 100
-        );
-
         return ((castToPrecision(result, 0) * 100) / global.absMaxELT) * 100;
       });
     }

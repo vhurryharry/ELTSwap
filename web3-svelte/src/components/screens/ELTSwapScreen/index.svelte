@@ -239,12 +239,16 @@
   $: contractStatusIndicator = () => {
     let statusStr = getStatusIndicatorText();
 
-    // TODO revise this
-    if ($currentSwapPhase === 0) {
-      statusStr = $isAppPending ? " pending... " : getStatusIndicatorText();
-    }
-    if ($currentSwapPhase === 1) {
-      statusStr = `${$swapAmountELT}ELT deposited`;
+    switch ($currentSwapPhase) {
+      case 1:
+        statusStr = $isAppPending ? " pending... " : getStatusIndicatorText();
+        break;
+      case 2:
+        statusStr = `${$swapAmountELT}ELT deposited`;
+        break;
+      case 3:
+        statusStr = `phase 3 status`;
+        break;
     }
 
     return statusStr;
@@ -498,7 +502,7 @@
 
   <SwapTransactionPath />
 
-  <div class="column is-flex is-12">
+  <div class="columns px-3 py-5">
     <div class="column is-6 col-left" />
     <div class="column is-6 col-right px-0">
       <LiveReceipt />

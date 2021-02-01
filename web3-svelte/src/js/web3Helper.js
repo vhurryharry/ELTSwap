@@ -71,6 +71,8 @@ export let getELTInContract = async (web3) => {
 }
 
 export let getSwapPhase = async (web3) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(swapABI, swapContract);
   let result = contract.methods.getSwapPhase().call().then(function (res) {
     return res;
@@ -85,7 +87,6 @@ export let getTotalELTSwapped = async (web3) => {
   let result = contract.methods.getTotalELTSwapped().call().then(function (res) {
     return atomicToDecimal(res, eltDecimals);
   });
-  console.log(" ???????????? ", result);
 
   return result;
 }
