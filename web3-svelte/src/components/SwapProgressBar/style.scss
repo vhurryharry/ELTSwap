@@ -46,7 +46,7 @@
   position: absolute;
   background: #009DFF;
   border-radius: 50%;
-  top: -6px;
+  top: -7px;
   left: -8px;
 }
 
@@ -67,7 +67,7 @@
   position: absolute;
   background: #FC0707;
   border-radius: 50%;
-  top: -6px;
+  top: -7px;
   right: -8px;
   z-index: 100;
 }
@@ -109,11 +109,10 @@
   position: absolute;
   z-index: 1001;
   top: 0;
-  right: 2px;
+  right: 1%;
   background-color: #565656;
   width: var(--cover-progress-gradient-width, 0);
   height: 20px;
-  margin: auto 5px;
   max-width: 98%;
 }
 
