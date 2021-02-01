@@ -1,4 +1,6 @@
-// TODO: find a better place for "services"
+// TODO: Fix: Cannot import .svelte stuff into .js file. 
+// How can we write services that use web3Helper? 
+// Is it valid to just have a .svelte with no markup?
 
 // import {
 //   ethStore,
@@ -18,7 +20,7 @@
  * TODO: find a way of exporting methods based on web3
  */
 
-import { isAppPending } from "./stores";
+import { isAppPending, isAppBroken } from "./stores";
 
 export const formatAddr = (str) => {
   if (!str) return;
@@ -29,6 +31,12 @@ export const fixedDecimals = (number, precision) => {
   if (typeof number !== "number") return;
   return number.toFixed(typeof precision == "number" ? precision : 4);
 };
+
+export const castToPrecision = (floatNum, maxDecLen = 8) => {
+  // console.log(" ---- ", floatNum);
+  let decimals = (floatNum + "").split(".")[1] || [];
+  return decimals.length > maxDecLen ? floatNum.toFixed(maxDecLen) : floatNum;
+}
 
 export const RPCErrorHandler = (error) => {
   console.dir(error);
@@ -52,6 +60,7 @@ export const RPCErrorHandler = (error) => {
       break;
     default:
       // impossible to recover;
+      console.dir(error)
       isAppBroken.set(true);
   }
 };

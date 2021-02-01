@@ -3,7 +3,7 @@
   import { afterUpdate } from "svelte";
   import tippy from "sveltejs-tippy";
 
-  import { RPCErrorHandler } from "../../../utils/services";
+  import { RPCErrorHandler, castToPrecision } from "../../../utils/services";
   import * as global from "../../../utils/globals";
 
   /** TODO: figure out how to properly import these */
@@ -82,12 +82,6 @@
     isAppPending.set(true);
     await enable();
   };
-
-  function castToPrecision(floatNum, maxDecLen = 8) {
-    // console.log(" ---- ", floatNum);
-    let decimals = (floatNum + "").split(".")[1] || [];
-    return decimals.length > maxDecLen ? floatNum.toFixed(maxDecLen) : floatNum;
-  }
 
   function castValidAmountOfELT(elt) {
     if (elt >= global.minELTToSwap) {
@@ -338,7 +332,6 @@
             >
               Approved:
               {value || 0}
-              {$isAppPending}
             </h6>
           {/await}
 

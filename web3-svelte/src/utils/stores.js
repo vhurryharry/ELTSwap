@@ -12,8 +12,10 @@ export let selectedAccount = writable(null);
 export let isBurnSliderVisible = writable(false);
 
 export let currentSwapToken = writable('ELT');
-export let isSwapTokenDropDownActive = writable();
+export let isSwapTokenDropDownActive = writable(false);
+export let currentSwapProgress = writable(0);
 
+/** TODO: Refactor to properly use nested states */
 export let swapValues = writable({
   swapAmountELT: swapAmountELT,
 });

@@ -87,6 +87,8 @@ export let getTotalELTSwapped = async (web3) => {
   let result = contract.methods.getTotalELTSwapped().call().then(function (res) {
     return atomicToDecimal(res, eltDecimals);
   });
+  console.log(" ???????????? ", result);
+
   return result;
 }
 
@@ -253,6 +255,7 @@ let decimalToAtomic = (value, decimals = 8) => {
 }
 
 export const getConnectedAccounts = () => {
+  if (!window.ethereum) return;
   return window.ethereum["_state"]["accounts"] || [];
 };
 

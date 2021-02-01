@@ -29,8 +29,10 @@
   import ETHPurchaseScreen from "./screens/ETHPurchaseScreen/index.svelte";
   import PrologueScreen from "./screens/PrologueScreen/index.svelte";
 
-  isAppBroken.useLocalStorage();
-
+  /**
+   * TODO: Handle this and then maybe persist it.
+   * isAppBroken.useLocalStorage();
+   */
   if ($isAppBroken) {
     currentWizardScreen.set("dao-screen-of-doom");
   }
