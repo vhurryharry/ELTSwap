@@ -10,10 +10,13 @@ export let swapAmountELT = writable(null);
 export let selectedAccount = writable(null);
 
 export let isBurnSliderVisible = writable(false);
+export let isSwapTokenDropDownActive = writable(false);
 
 export let currentSwapToken = writable('ELT');
-export let isSwapTokenDropDownActive = writable(false);
 export let currentSwapProgress = writable(0);
+export let currentHODLInContract = writable(0);
+export let currentELTInContract = writable(0);
+export let currentELTBurned = writable(0);
 
 /** TODO: Refactor to properly use nested states */
 export let swapValues = writable({
@@ -30,7 +33,6 @@ export const latestAccount = writable(null);
 export const isAppPending = writable(false);
 
 export const currentSwapPhase = writable(0);
-
 
 const createWritableStore = (key, startValue) => {
   const { subscribe, set } = writable(startValue);
