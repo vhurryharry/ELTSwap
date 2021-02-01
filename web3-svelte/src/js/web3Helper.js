@@ -148,7 +148,6 @@ export let approveELT = async (web3, amount, fromAddress, toAddress) => {
       })
     }
   });
-
 }
 
 export let phase1Swap = async (web3, amount, fromAddress) => {
@@ -156,9 +155,7 @@ export let phase1Swap = async (web3, amount, fromAddress) => {
 
   let contract = new web3.eth.Contract(swapABI, swapContract, { from: fromAddress });
 
-  let gasEstimate = await contract.methods.phase1Swap(decimalToAtomic(amount)).estimateGas().then(function (res) {
-    return res;
-  });
+  let gasEstimate = getGasPriceEstimate(web3, 'phase1Swap', contract, burnPercent);
 
   try {
     return new Promise((resolve, reject) => {
@@ -185,9 +182,7 @@ export let phase2Swap = async (web3, amount, burnPercent = 0, fromAddress) => {
 
   let contract = new web3.eth.Contract(swapABI, swapContract, { from: fromAddress });
 
-  let gasEstimate = await contract.methods.phase2Swap(burnPercent).estimateGas().then(function (res) {
-    return res;
-  });
+  let gasEstimate = getGasPriceEstimate(web3, 'phase2Swap', contract, burnPercent);
 
   try {
     return new Promise((resolve, reject) => {
@@ -214,9 +209,7 @@ export let phase3Swap = async (web3, amount, fromAddress) => {
 
   let contract = new web3.eth.Contract(swapABI, swapContract, { from: fromAddress });
 
-  let gasEstimate = await contract.methods.phase3Swap().estimateGas().then(function (res) {
-    return res;
-  });
+  let gasEstimate = getGasPriceEstimate(web3, 'phase3Swap', burnPercent);
 
   try {
     return new Promise((resolve, reject) => {
@@ -262,4 +255,27 @@ export const hasConnectedAccounts = () => {
     return true;
   }
   return false;
+};
+
+export let getGasPriceEstimate = async (web3, methodName, contract, amount = 0) => {
+  if (!web3 || !web3.eth) return;
+  let abiEndPoint = null;
+
+  if (!contract) {
+    contract = new web3.eth.Contract(swapABI, swapContract);
+  }
+
+  if (typeof methodName === 'string') {
+    abiEndPoint = contract[methodName]
+  }
+
+  if (!abiEndPoint) {
+    console.log('ERROR: Undefined abiEndPoint in getGasPriceEstimate()');
+    return;
+  }
+
+  return abiEndPoint(amount).estimateGas().then(function (res) {
+    console.log(' ???? getGasPriceEstimate ?? ', res)
+    return res;
+  });
 };

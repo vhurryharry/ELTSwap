@@ -13,9 +13,14 @@
     getELTInContract,
     getHODLInContract,
     getELTBurned,
+    getTotalHodlReward,
+    getPhase1Bonus,
+    getGasPriceEstimate,
   } from "../../../js/web3Helper";
 
   import {
+    currentHODLBonus,
+    currentSwapPhase,
     isRPCEnabled,
     latestAccount,
     isOverlayScreenActive,
@@ -24,6 +29,8 @@
     currentHODLInContract,
     currentELTBurned,
     currentELTInContract,
+    currentTotalHODLReward,
+    currentGasPriceEstimate,
   } from "../../../utils/stores";
 
   import { formatAddr, fixedDecimals } from "../../../utils/services.js";
@@ -96,12 +103,70 @@
     }
   };
 
+  $: updateTotalHODLReward = () => {
+    let hodlReward = getTotalHodlReward(web3);
+
+    if (typeof hodlReward.then !== "function") {
+      currentTotalHODLReward.set(0);
+    } else {
+      hodlReward.then(
+        (result) => {
+          currentTotalHODLReward.set(result);
+        },
+        (err) => {
+          currentTotalHODLReward.set(null);
+          console.dir(err);
+        }
+      );
+    }
+  };
+
+  $: updatePhase1Bonus = () => {
+    if ($currentSwapPhase !== 1) return 0;
+
+    let hodlBonus = getPhase1Bonus($web3);
+
+    if (typeof hodlBonus.then !== "function") {
+      currentHODLBonus.set(0);
+    } else {
+      hodlBonus.then(
+        (result) => {
+          currentHODLBonus.set(result);
+        },
+        (err) => {
+          currentHODLBonus.set(null);
+          console.dir(err);
+        }
+      );
+    }
+  };
+
+  $: updateGasPriceEstimate = () => {
+    let gasEst = getGasPriceEstimate(`phase${$currentSwapPhase}Swap`);
+
+    if (typeof gasEst.then !== "function") {
+      currentGasPriceEstimate.set(0);
+    } else {
+      gasEst.then(
+        (result) => {
+          currentGasPriceEstimate.set(result);
+        },
+        (err) => {
+          currentGasPriceEstimate.set(null);
+          console.dir(err);
+        }
+      );
+    }
+  };
+
   afterUpdate(() => {
     if ($isRPCEnabled) {
       updateELTInContract();
       updateELTBurned();
       updateHODLInContract();
-
+      updateTotalHODLReward();
+      updatePhase1Bonus();
+      updateGasPriceEstimate();
       return;
     }
   });

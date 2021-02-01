@@ -9,9 +9,14 @@ $disabledTextColor: #aaa;
   color: $disabledTextColor;
 }
 
+.screen{
+  // letter-spacing: 1.5px;
+  letter-spacing: 2px; // TODO: set proper vars
+}
+
 @font-face {
   font-family: $fontFamily;
-  src: url("/static/font/Flama-Basic.otf") format("opentype");
+  src: url("/static/font/Flama-Book.otf") format("opentype");
 }
 
 h3 {
