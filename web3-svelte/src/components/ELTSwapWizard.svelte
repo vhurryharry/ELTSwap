@@ -29,8 +29,10 @@
   import ETHPurchaseScreen from "./screens/ETHPurchaseScreen/index.svelte";
   import PrologueScreen from "./screens/PrologueScreen/index.svelte";
 
-  isAppBroken.useLocalStorage();
-
+  /**
+   * TODO: Handle this and then maybe persist it.
+   * isAppBroken.useLocalStorage();
+   */
   if ($isAppBroken) {
     currentWizardScreen.set("dao-screen-of-doom");
   }
@@ -48,28 +50,27 @@
     swapAmountHODL.set(null);
     isBurnSliderVisible.set(false);
     isOverlayScreenActive.set(false);
+    isRPCEnabled.set(hasConnectedAccounts());
 
     // TODO: load these from localStorage
     transactionHistory.set([]);
-    isAppPending.set(true);
     latestAccount.set($selectedAccount);
-    currentSwapToken.set("ELT");
-
-    isRPCEnabled.set(hasConnectedAccounts());
 
     switch ($currentSwapPhase) {
-      case 0:
+      case 1:
+        currentSwapToken.set("ELT");
         setCurrentWizardScreen("elt-swap-screen");
         break;
-      case 1:
+      case 2:
+        currentSwapToken.set("ETH");
         setCurrentWizardScreen("eth-purchase-screen");
         break;
-      case 2:
+      case 3:
+        currentSwapToken.set("ETH");
         setCurrentWizardScreen("epilogue-screen");
         break;
       default:
-        console.log(" switch(getSwapPhase(web3) ", getSwapPhase(web3));
-        isAppPending.set(false);
+      // console.log(" switch(getSwapPhase(web3) ", getSwapPhase(web3));
     }
   });
 </script>
@@ -88,7 +89,7 @@
 
     <button
       class="button is-ghost"
-      class:is-primary={currScreen === ""}
+      class:isPrimary={currScreen === ""}
       on:click={(evt) => {
         setCurrentWizardScreen("elt-swap-screen");
       }}>ELTSwapScreen</button

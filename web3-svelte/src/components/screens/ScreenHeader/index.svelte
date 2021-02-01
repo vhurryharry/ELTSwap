@@ -1,18 +1,37 @@
 <script>
   import { web3 } from "svelte-web3";
+  import { afterUpdate } from "svelte";
+
   import * as global from "../../../utils/globals";
 
   import Icon from "svelte-awesome";
   import { clockO, questionCircle } from "svelte-awesome/icons";
 
-  import { getETHBalance, getTokenBalance } from "../../../js/web3Helper";
+  import {
+    getETHBalance,
+    getTokenBalance,
+    getELTInContract,
+    getHODLInContract,
+    getELTBurned,
+    getTotalHodlReward,
+    getPhase1Bonus,
+    getGasPriceEstimate,
+    getSwapPhase,
+  } from "../../../js/web3Helper";
 
   import {
+    currentHODLBonus,
+    currentSwapPhase,
     isRPCEnabled,
     latestAccount,
     isOverlayScreenActive,
     currentWizardScreen,
     selectedAccount,
+    currentHODLInContract,
+    currentELTBurned,
+    currentELTInContract,
+    currentTotalHODLReward,
+    currentGasPriceEstimate,
   } from "../../../utils/stores";
 
   import { formatAddr, fixedDecimals } from "../../../utils/services.js";
@@ -30,6 +49,147 @@
   $: ethBalance = $isRPCEnabled
     ? getETHBalance($web3, $selectedAccount)
     : Number(0.0);
+
+  $: updateHODLInContract = () => {
+    let hodlInContract = getHODLInContract($web3);
+
+    if (typeof hodlInContract.then !== "function") {
+      currentHODLInContract.set(0);
+    } else {
+      hodlInContract.then(
+        (result) => {
+          currentHODLInContract.set(result);
+        },
+        (err) => {
+          currentHODLInContract.set(null);
+          console.dir(err);
+        }
+      );
+    }
+  };
+
+  $: updateELTInContract = () => {
+    let eltInContract = getELTInContract($web3);
+
+    if (typeof eltInContract.then !== "function") {
+      currentELTInContract.set(0);
+    } else {
+      eltInContract.then(
+        (result) => {
+          currentELTInContract.set(result);
+        },
+        (err) => {
+          currentELTInContract.set(null);
+          console.dir(err);
+        }
+      );
+    }
+  };
+
+  $: updateELTBurned = () => {
+    let eltBurned = getELTBurned($web3);
+
+    if (typeof eltBurned.then !== "function") {
+      currentELTBurned.set(0);
+    } else {
+      eltBurned.then(
+        (result) => {
+          currentELTBurned.set(result);
+        },
+        (err) => {
+          currentELTBurned.set(null);
+          console.dir(err);
+        }
+      );
+    }
+  };
+
+  $: updateTotalHODLReward = () => {
+    let hodlReward = getTotalHodlReward(web3);
+
+    if (typeof hodlReward.then !== "function") {
+      currentTotalHODLReward.set(0);
+    } else {
+      hodlReward.then(
+        (result) => {
+          currentTotalHODLReward.set(result);
+        },
+        (err) => {
+          currentTotalHODLReward.set(null);
+          console.dir(err);
+        }
+      );
+    }
+  };
+
+  $: updatePhase1Bonus = () => {
+    if ($currentSwapPhase !== 1) return 0;
+
+    let hodlBonus = getPhase1Bonus($web3);
+
+    if (typeof hodlBonus.then !== "function") {
+      currentHODLBonus.set(0);
+    } else {
+      hodlBonus.then(
+        (result) => {
+          currentHODLBonus.set(result);
+        },
+        (err) => {
+          currentHODLBonus.set(null);
+          console.dir(err);
+        }
+      );
+    }
+  };
+
+  $: updateGasPriceEstimate = () => {
+    let gasEst = getGasPriceEstimate(`phase${$currentSwapPhase}Swap`);
+
+    if (typeof gasEst.then !== "function") {
+      currentGasPriceEstimate.set(0);
+    } else {
+      gasEst.then(
+        (result) => {
+          currentGasPriceEstimate.set(result);
+        },
+        (err) => {
+          currentGasPriceEstimate.set(null);
+          console.dir(err);
+        }
+      );
+    }
+  };
+
+  $: updateSwapPhase = () => {
+    let swapPhase = getSwapPhase($web3);
+
+    if (typeof swapPhase.then !== "function") {
+      currentSwapPhase.set(null);
+    } else {
+      swapPhase.then(
+        (result) => {
+          currentSwapPhase.set(result);
+        },
+        (err) => {
+          currentSwapPhase.set(null);
+          console.dir(err);
+        }
+      );
+    }
+  };
+
+  afterUpdate(() => {
+    if ($isRPCEnabled) {
+      updateSwapPhase();
+      updateELTInContract();
+      updateELTBurned();
+      updateHODLInContract();
+      updateTotalHODLReward();
+      updatePhase1Bonus();
+      updateGasPriceEstimate();
+      return;
+    }
+  });
 </script>
 
 <div
@@ -60,7 +220,7 @@
       <div class="columns is-2 is-flex is-12-mobile">
         <div id="hodlPill" class="column is-6-mobile">
           {#await hodlBalance}
-            <pre class="px-1"> ? HODL </pre>
+            <pre class="px-1"> 0 HODL </pre>
           {:then value}
             <pre class="px-1">{value.toLocaleString('en-US')} HODL</pre>
           {/await}
@@ -68,7 +228,7 @@
 
         <div id="eltPill" class="column is-6-mobile">
           {#await eltBalance}
-            <pre class="px-1"> ? ELT </pre>
+            <pre class="px-1"> 0 ELT </pre>
           {:then value}
             <pre class="px-1">{value.toLocaleString('en-US')} ELT</pre>
           {/await}
@@ -81,10 +241,11 @@
     >
       <div id="ethPill" class=" is-justify-content-center">
         {#await ethBalance}
-          <span class="px-1"> ETH </span>
+          <span class="px-1">0 ETH</span>
         {:then value}
-          <span class="px-1">{fixedDecimals(value)} ETH </span>
+          <span class="px-1">{fixedDecimals(value)} ETH</span>
         {/await}
+
         <div id="balancePill" class="">
           {#if !$latestAccount}
             <span class="px-1">Disconnected</span>

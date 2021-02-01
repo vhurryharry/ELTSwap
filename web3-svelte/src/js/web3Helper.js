@@ -4,10 +4,12 @@ const swapContract = "0xfD440Ff3Bf3158F5CAf52E45269442938E9B8DeA";
 const eltABI = [{ "constant": false, "inputs": [{ "name": "_spender", "type": "address" }, { "name": "_value", "type": "uint256" }], "name": "approve", "outputs": [{ "name": "", "type": "bool" }], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "_spender", "type": "address" }, { "name": "_subtractedValue", "type": "uint256" }], "name": "decreaseApproval", "outputs": [{ "name": "success", "type": "bool" }], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "_spender", "type": "address" }, { "name": "_addedValue", "type": "uint256" }], "name": "increaseApproval", "outputs": [{ "name": "success", "type": "bool" }], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [], "name": "makePresaleReady", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "_to", "type": "address" }, { "name": "_value", "type": "uint256" }], "name": "transfer", "outputs": [{ "name": "", "type": "bool" }], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "_from", "type": "address" }, { "name": "_to", "type": "address" }, { "name": "_value", "type": "uint256" }], "name": "transferFrom", "outputs": [{ "name": "", "type": "bool" }], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "constant": false, "inputs": [{ "name": "newOwner", "type": "address" }], "name": "transferOwnership", "outputs": [], "payable": false, "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "payable": false, "stateMutability": "nonpayable", "type": "constructor" }, { "anonymous": false, "inputs": [], "name": "PreSaleReady", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "name": "previousOwner", "type": "address" }, { "indexed": true, "name": "newOwner", "type": "address" }], "name": "OwnershipTransferred", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "name": "owner", "type": "address" }, { "indexed": true, "name": "spender", "type": "address" }, { "indexed": false, "name": "value", "type": "uint256" }], "name": "Approval", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "name": "from", "type": "address" }, { "indexed": true, "name": "to", "type": "address" }, { "indexed": false, "name": "value", "type": "uint256" }], "name": "Transfer", "type": "event" }, { "constant": true, "inputs": [{ "name": "_owner", "type": "address" }, { "name": "_spender", "type": "address" }], "name": "allowance", "outputs": [{ "name": "remaining", "type": "uint256" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [{ "name": "_owner", "type": "address" }], "name": "balanceOf", "outputs": [{ "name": "balance", "type": "uint256" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "decimals", "outputs": [{ "name": "", "type": "uint8" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "INITIAL_SUPPLY", "outputs": [{ "name": "", "type": "uint256" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "isPreSaleReady", "outputs": [{ "name": "", "type": "bool" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "name", "outputs": [{ "name": "", "type": "string" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "owner", "outputs": [{ "name": "", "type": "address" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "symbol", "outputs": [{ "name": "", "type": "string" }], "payable": false, "stateMutability": "view", "type": "function" }, { "constant": true, "inputs": [], "name": "totalSupply", "outputs": [{ "name": "", "type": "uint256" }], "payable": false, "stateMutability": "view", "type": "function" }];
 const eltContract = "0xa84a0b15d7c62684b71fecb5ea8efe0e5af1d11b";
 
-const hodlDecimals = 8;
-const eltDecimals = 8;
+import { hodlDecimals, eltDecimals } from "../utils/globals";
+/** TODO: Add try{}catch{} */
 
 export let getTokenBalance = async (web3, address, tokenContract, decimals = 8) => {
+  if (!web3 || !web3.eth) return 0;
+
   let amount = 0;
 
   let tokenAddr = (address).substring(2);
@@ -29,6 +31,8 @@ export let getTokenBalance = async (web3, address, tokenContract, decimals = 8) 
 }
 
 export let getETHBalance = async (web3, address) => {
+  if (!web3 || !web3.eth) return 0;
+
   let amount = 0;
   if (address === null) return;
   amount = await web3.eth.getBalance(address);
@@ -36,6 +40,8 @@ export let getETHBalance = async (web3, address) => {
 }
 
 export let getTotalHodlReward = async (web3, amount, burnPercent, decimals = 8) => {
+  if (!web3 || !web3.eth) return 0;
+
   let atomicAmount = decimalToAtomic(amount, decimals);
   let contract = new web3.eth.Contract(swapABI, swapContract);
   let result = contract.methods.getTotalHODLReward(atomicAmount, burnPercent).call().then(function (res) {
@@ -45,6 +51,8 @@ export let getTotalHodlReward = async (web3, amount, burnPercent, decimals = 8) 
 }
 
 export let getHODLInContract = async (web3) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(swapABI, swapContract);
   let result = contract.methods.getHODLInContract().call().then(function (res) {
     return atomicToDecimal(res, hodlDecimals);
@@ -53,6 +61,8 @@ export let getHODLInContract = async (web3) => {
 }
 
 export let getELTInContract = async (web3) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(swapABI, swapContract);
   let result = contract.methods.getELTInContract().call().then(function (res) {
     return atomicToDecimal(res, eltDecimals);
@@ -61,6 +71,8 @@ export let getELTInContract = async (web3) => {
 }
 
 export let getSwapPhase = async (web3) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(swapABI, swapContract);
   let result = contract.methods.getSwapPhase().call().then(function (res) {
     return res;
@@ -69,14 +81,19 @@ export let getSwapPhase = async (web3) => {
 }
 
 export let getTotalELTSwapped = async (web3) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(swapABI, swapContract);
   let result = contract.methods.getTotalELTSwapped().call().then(function (res) {
     return atomicToDecimal(res, eltDecimals);
   });
+
   return result;
 }
 
 export let getPhase1Bonus = async (web3, amount) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(swapABI, swapContract);
   let result = contract.methods.getPhase1Bonus(amount).call().then(function (res) {
     return atomicToDecimal(res, eltDecimals);
@@ -85,6 +102,8 @@ export let getPhase1Bonus = async (web3, amount) => {
 }
 
 export let getELTBurned = async (web3) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(swapABI, swapContract);
   let result = contract.methods.getELTBurned().call().then(function (res) {
     return atomicToDecimal(res, eltDecimals);
@@ -93,6 +112,8 @@ export let getELTBurned = async (web3) => {
 }
 
 export let getAllowance = async (web3, ownerAddress, spenderAddress) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(eltABI, eltContract);
   let result = contract.methods.allowance(ownerAddress, spenderAddress).call().then(function (res) {
     return atomicToDecimal(res, eltDecimals);
@@ -102,6 +123,8 @@ export let getAllowance = async (web3, ownerAddress, spenderAddress) => {
 }
 
 export let approveELT = async (web3, amount, fromAddress, toAddress) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(eltABI, eltContract, { from: fromAddress });
 
   let gasEstimate = await contract.methods.approve(toAddress, decimalToAtomic(amount)).estimateGas().then(function (res) {
@@ -126,15 +149,14 @@ export let approveELT = async (web3, amount, fromAddress, toAddress) => {
       })
     }
   });
-
 }
 
 export let phase1Swap = async (web3, amount, fromAddress) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(swapABI, swapContract, { from: fromAddress });
 
-  let gasEstimate = await contract.methods.phase1Swap(decimalToAtomic(amount)).estimateGas().then(function (res) {
-    return res;
-  });
+  let gasEstimate = getGasPriceEstimate(web3, 'phase1Swap', contract, burnPercent);
 
   try {
     return new Promise((resolve, reject) => {
@@ -157,11 +179,11 @@ export let phase1Swap = async (web3, amount, fromAddress) => {
 }
 
 export let phase2Swap = async (web3, amount, burnPercent = 0, fromAddress) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(swapABI, swapContract, { from: fromAddress });
 
-  let gasEstimate = await contract.methods.phase2Swap(burnPercent).estimateGas().then(function (res) {
-    return res;
-  });
+  let gasEstimate = getGasPriceEstimate(web3, 'phase2Swap', contract, burnPercent);
 
   try {
     return new Promise((resolve, reject) => {
@@ -184,11 +206,11 @@ export let phase2Swap = async (web3, amount, burnPercent = 0, fromAddress) => {
 }
 
 export let phase3Swap = async (web3, amount, fromAddress) => {
+  if (!web3 || !web3.eth) return;
+
   let contract = new web3.eth.Contract(swapABI, swapContract, { from: fromAddress });
 
-  let gasEstimate = await contract.methods.phase3Swap().estimateGas().then(function (res) {
-    return res;
-  });
+  let gasEstimate = getGasPriceEstimate(web3, 'phase3Swap', burnPercent);
 
   try {
     return new Promise((resolve, reject) => {
@@ -225,6 +247,7 @@ let decimalToAtomic = (value, decimals = 8) => {
 }
 
 export const getConnectedAccounts = () => {
+  if (!window.ethereum) return;
   return window.ethereum["_state"]["accounts"] || [];
 };
 
@@ -233,4 +256,27 @@ export const hasConnectedAccounts = () => {
     return true;
   }
   return false;
+};
+
+export let getGasPriceEstimate = async (web3, methodName, contract, amount = 0) => {
+  if (!web3 || !web3.eth) return;
+  let abiEndPoint = null;
+
+  if (!contract) {
+    contract = new web3.eth.Contract(swapABI, swapContract);
+  }
+
+  if (typeof methodName === 'string') {
+    abiEndPoint = contract[methodName]
+  }
+
+  if (!abiEndPoint) {
+    console.log('ERROR: Undefined abiEndPoint in getGasPriceEstimate()');
+    return;
+  }
+
+  return abiEndPoint(amount).estimateGas().then(function (res) {
+    console.log(' ???? getGasPriceEstimate ?? ', res)
+    return res;
+  });
 };

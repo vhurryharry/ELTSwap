@@ -1,49 +1,98 @@
 <script>
-  import { web3 } from "svelte-web3";
+  import {
+    swapAmountELT,
+    swapAmountHODL,
+    currentHODLBonus,
+    currentSwapPhase,
+    currentGasPriceEstimate,
+    currentSwapToken,
+    isRPCEnabled,
+  } from "../../utils/stores";
 
-  import { getELTInContract, getHODLInContract } from "../../js/web3Helper";
+  // TODO: Check all calculations here
 
-  import { isRPCEnabled } from "../../utils/stores";
-  let hodlBonusAtBurnRate = 0; // find this in contracts
-
-  $: receiptItems = [
-    {
-      label: "ELTCOIN",
-      value: $isRPCEnabled ? getELTInContract($web3) : 1000000,
-    },
-    { label: "HODL", value: $isRPCEnabled ? getHODLInContract($web3) : 0.5 },
-    { label: "HODL BONUS", value: $isRPCEnabled ? "TBD" : 0.033 },
-    { label: "GAS ESTIMATE", value: $isRPCEnabled ? "ETH" : 0.01 + " ETH" },
-  ];
-
-  $: getReceiptTotal = $isRPCEnabled ? getHODLInContract($web3) : 0.533; // is this so?
+  // $: getReceiptTotal = $swapAmountELT ? getHODLInContract($web3) : 0; // is this so?
 </script>
+
+{#await $isRPCEnabled then value}
+  {#if value}
+    <div
+      class="live-receipt-wrapper columns is-flex-direction-column is-12 p-4 col-right"
+    >
+      {#if $currentSwapPhase == 1}
+        <div class="column key-val-row receipt-content">
+          <div class="is-flex is-12 key-val-row">
+            <div class="column col-left py-0">ELTCOIN</div>
+            {#await $swapAmountELT}
+              <div class="column col-right has-text-right py-0">0</div>
+            {:then value}
+              {#if value}
+                <div class="column col-right has-text-right py-0">
+                  {value} ELT
+                </div>
+              {:else}
+                <div class="column col-right has-text-right py-0">0</div>
+              {/if}
+            {/await}
+          </div>
+        </div>
+      {/if}
+
+      {#if $currentSwapPhase == 1}
+        <div class="column key-val-row receipt-content">
+          <div class="is-flex is-12 key-val-row">
+            <div class="column col-left py-0">HODL</div>
+            {#await $swapAmountHODL}
+              <div class="column col-right has-text-right py-0">0</div>
+            {:then value}
+              {#if value}
+                <div class="column col-right has-text-right py-0">
+                  {value} HODL
+                </div>
+              {:else}
+                <div class="column col-right has-text-right py-0">0</div>
+              {/if}
+            {/await}
+          </div>
+        </div>
+      {/if}
+
+      {#if $currentSwapPhase == 1 || $currentSwapPhase == 2}
+        <div class="column key-val-row receipt-content">
+          <div class="is-flex is-12 key-val-row">
+            <div class="column col-left py-0">HODL BONUS</div>
+            {#await $currentHODLBonus}
+              <div class="column col-right has-text-right py-0">0</div>
+            {:then value}
+              {#if value}
+                <div class="column col-right has-text-right py-0">
+                  {value} HODL
+                </div>
+              {:else}
+                <div class="column col-right has-text-right py-0">0</div>
+              {/if}
+            {/await}
+          </div>
+        </div>
+      {/if}
+
+      {#if $currentSwapPhase == 3 || ($currentSwapPhase == 2 && $currentSwapToken === "ETH")}
+        <div class="column key-val-row receipt-content">
+          <div class="is-flex is-12 key-val-row">
+            <div class="column col-left py-0">GAS ESTIMATE</div>
+            {#await $currentGasPriceEstimate}
+              <div class="column col-right has-text-right py-0">0</div>
+            {:then value}
+              <div class="column col-right has-text-right py-0">
+                {value} ETH
+              </div>
+            {/await}
+          </div>
+        </div>
+      {/if}
+    </div>
+  {/if}
+{/await}
 
 <style>
 </style>
-
-<div
-  class="live-receipt-wrapper columns is-flex-direction-column is-12 p-4 col-right">
-  <div class="column key-val-row receipt-content">
-    {#each receiptItems as item}
-      <div class="is-flex is-12 key-val-row">
-        <div class="column col-left py-0">{item.label}</div>
-        {#await item.value}
-          <div class="column col-right has-text-right py-0">0</div>
-        {:then value}
-          <div class="column col-right has-text-right py-0">{value}</div>
-        {/await}
-      </div>
-    {/each}
-  </div>
-  <div class="column is-flex is-12 key-val-row receipt-footer">
-    <div class="column col-left py-0">HODL TOTAL</div>
-    {#await getReceiptTotal}
-      <div class="column col-right has-text-right py-0">0</div>
-    {:then value}
-      <div class="column col-right has-text-right py-0">
-        <span class="hodl-total">{value}</span>
-      </div>
-    {/await}
-  </div>
-</div>

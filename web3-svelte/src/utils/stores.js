@@ -1,5 +1,4 @@
-import { derived, writable } from 'svelte/store';
-
+import { writable } from 'svelte/store';
 
 // TODO: clean these up
 
@@ -11,10 +10,19 @@ export let swapAmountELT = writable(null);
 export let selectedAccount = writable(null);
 
 export let isBurnSliderVisible = writable(false);
+export let isSwapTokenDropDownActive = writable(false);
 
+export let currentSwapPhase = writable(0);
 export let currentSwapToken = writable('ELT');
-export let isSwapTokenDropDownActive = writable();
+export let currentSwapProgress = writable(0);
+export let currentHODLBonus = writable(0);
+export let currentHODLInContract = writable(0);
+export let currentELTInContract = writable(0);
+export let currentELTBurned = writable(0);
+export let currentTotalHODLReward = writable(0);
+export let currentGasPriceEstimate = writable(0);
 
+/** TODO: Refactor to properly use nested states */
 export let swapValues = writable({
   swapAmountELT: swapAmountELT,
 });
@@ -22,14 +30,11 @@ export let swapValues = writable({
 export let isOverlayScreenActive = writable(false);
 
 // set to true when user logs into Metamask (accounts.length > 0)
-export const isRPCEnabled = writable(false);
+export let isRPCEnabled = writable(false);
 // note latest account
-export const latestAccount = writable(null);
+export let latestAccount = writable(null);
 // set to true while async; if reload, can help guide the user
-export const isAppPending = writable(false);
-
-export const currentSwapPhase = writable(0);
-
+export let isAppPending = writable(false);
 
 const createWritableStore = (key, startValue) => {
   const { subscribe, set } = writable(startValue);
@@ -51,6 +56,6 @@ const createWritableStore = (key, startValue) => {
 }
 
 // set to true if fatal error
-export const isAppBroken = createWritableStore('isAppBroken', false);
+export let isAppBroken = createWritableStore('isAppBroken', false);
 // keep track of transaction history
-export const transactionHistory = createWritableStore('transactionHistory', []);
+export let transactionHistory = createWritableStore('transactionHistory', []);

@@ -1,23 +1,29 @@
 <script>
-  import { isRPCEnabled, currentSwapToken } from "../../utils/stores";
+  import {
+    isRPCEnabled,
+    currentSwapToken,
+    currentSwapPhase,
+  } from "../../utils/stores";
   import Icon from "svelte-awesome";
   import { angleRight } from "svelte-awesome/icons";
 </script>
 
-<div
-  id="swapTransactionPath"
-  class="column is-flex is-flex-flow-row is-justify-content-center is-12 mb-5 py-0"
->
-  <h3 class="is-flex ">
-    <pre class="disabeld">ETH</pre>
-    <pre><Icon data={angleRight} /></pre>
+{#if $currentSwapPhase === 1 && $isRPCEnabled}
+  <div
+    id="swapTransactionPath"
+    class="column is-flex is-flex-flow-row is-justify-content-center is-12 mb-5 py-0"
+  >
+    <h3 class="is-flex ">
+      <pre class="disabeld">ETH</pre>
+      <pre><Icon data={angleRight} /></pre>
 
-    <pre>ELT</pre>
-    <pre><Icon data={angleRight} /></pre>
+      <pre>ELT</pre>
+      <pre><Icon data={angleRight} /></pre>
 
-    <pre>HODL</pre>
-  </h3>
-</div>
+      <pre>HODL</pre>
+    </h3>
+  </div>
+{/if}
 
 <style lang="scss">
   @import "../../styles/variables";
