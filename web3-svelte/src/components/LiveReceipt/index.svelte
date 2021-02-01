@@ -9,21 +9,19 @@
   $: receiptItems = [
     {
       label: "ELTCOIN",
-      value: $isRPCEnabled ? getELTInContract($web3) : 1000000,
+      value: $isRPCEnabled ? getELTInContract($web3) : 0,
     },
-    { label: "HODL", value: $isRPCEnabled ? getHODLInContract($web3) : 0.5 },
-    { label: "HODL BONUS", value: $isRPCEnabled ? "TBD" : 0.033 },
-    { label: "GAS ESTIMATE", value: $isRPCEnabled ? "ETH" : 0.01 + " ETH" },
+    { label: "HODL", value: $isRPCEnabled ? getHODLInContract($web3) : 0 },
+    { label: "HODL BONUS", value: $isRPCEnabled ? "TBD" : 0 },
+    { label: "GAS ESTIMATE", value: $isRPCEnabled ? "ETH" : 0 + " ETH" },
   ];
 
   $: getReceiptTotal = $isRPCEnabled ? getHODLInContract($web3) : 0.533; // is this so?
 </script>
 
-<style>
-</style>
-
 <div
-  class="live-receipt-wrapper columns is-flex-direction-column is-12 p-4 col-right">
+  class="live-receipt-wrapper columns is-flex-direction-column is-12 p-4 col-right"
+>
   <div class="column key-val-row receipt-content">
     {#each receiptItems as item}
       <div class="is-flex is-12 key-val-row">
@@ -47,3 +45,6 @@
     {/await}
   </div>
 </div>
+
+<style>
+</style>

@@ -20,7 +20,7 @@
  * TODO: find a way of exporting methods based on web3
  */
 
-import { isAppPending, isAppBroken } from "./stores";
+import * as stores from "./stores";
 
 export const formatAddr = (str) => {
   if (!str) return;
@@ -41,26 +41,26 @@ export const castToPrecision = (floatNum, maxDecLen = 8) => {
 export const RPCErrorHandler = (error) => {
   console.dir(error);
   // set state to "pending"
-  isAppPending.set(true);
+  stores.isAppPending.set(true);
 
   // handle codes
   switch (error.code) {
     case 4001:
       // EIP-1193 userRejectedRequest error
       console.log("Permissions needed to continue.");
-      isAppPending.set(false);
+      stores.isAppPending.set(false);
       // tooltip
       break;
     case -32002:
     case -32602:
       // there's a pending request for permissions
       console.log("Please check Metamask for pending requests.");
-      isAppPending.set(false);
+      stores.isAppPending.set(false);
       // tooltip
       break;
     default:
       // impossible to recover;
       console.dir(error)
-      isAppBroken.set(true);
+      stores.isAppBroken.set(true);
   }
 };
