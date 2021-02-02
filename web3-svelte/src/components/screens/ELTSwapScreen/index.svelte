@@ -51,7 +51,7 @@
     window.location.reload();
   });
 
-  afterUpdate(() => {
+  afterUpdate(async () => {
     if (
       hasConnectedAccounts() &&
       getConnectedAccounts()[0] !== $latestAccount
@@ -59,6 +59,10 @@
       isRPCEnabled.set(hasConnectedAccounts());
       latestAccount.set(getConnectedAccounts()[0]);
       selectedAccount.set($latestAccount);
+
+      // Quick fix to get data to load
+      isAppPending.set(true);
+      await enable();
     }
   });
 
@@ -115,6 +119,7 @@
       try {
         switch ($currentSwapPhase) {
           case 1:
+            console.log("Yes, case 1");
             phase1Swap($web3, $approvedELTAmount, $selectedAccount).then(
               async function (resolve, reject) {
                 if (resolve) {
@@ -217,12 +222,14 @@
     }
   }
 
-  function getApprovedAmount() {
+  async function getApprovedAmount() {
     if ($isRPCEnabled) {
       isAppPending.set(true);
-      return getAllowance($web3, checkAccount, global.swapContractAddress).then(
+
+      return await getAllowance($web3, checkAccount, global.swapContractAddress).then(
         (result) => {
           console.log(" approvedAmount ", result);
+          result = result === undefined ? 0 : result;
           approvedELTAmount.set(Number(result));
 
           isAppPending.set(false);
@@ -257,6 +264,9 @@
   $: eltBalance = $isRPCEnabled
     ? getTokenBalance($web3, checkAccount, global.ELTTokenContractAddr)
     : "";
+  
+  // Load amount of ELT approved when app loads
+  $: $isRPCEnabled || $web3, getApprovedAmount();
 
   const tooltips = {
     connStatus: {
@@ -366,8 +376,7 @@
                 <button
                   class="button connect-wallet connected is-rounded"
                   class:pending={$isAppPending}
-                  class:disabled={!$swapAmountELT ||
-                    $swapAmountELT < global.minELTToSwap}
+                  class:disabled={!$swapAmountELT || $swapAmountELT < global.minELTToSwap}
                   on:click={approveELTTransfer}
                 >
                   Approve

@@ -1,5 +1,8 @@
 <script>
+  import { bind } from "svelte/internal";
   import { isRPCEnabled } from "../../utils/stores";
+
+  export let bindTo, placeholder, isDisabled, sanitizeClbk, inputClasses;
 
   const sanitizeNumberInput = (evt, isGtZeroAbs = true) => {
     evt.preventDefault();
@@ -25,14 +28,14 @@
 <div class="numper-input-wrapper is-flex is-12">
   {#if $isRPCEnabled}
     <input
-      class={config.inputClasses ||
+      class={inputClasses ||
         "number-bubble input has-text-centered-mobile"}
       type="number"
-      placeholder={config.placeholder}
+      placeholder={placeholder}
       onwheel="this.blur()"
-      bind:value={config.bindTo}
+      bind:value={bindTo}
       on:input={(evt) => {
-        return sanitizeNumberInput(evt)(config.sanitizeClbk);
+        return sanitizeNumberInput(evt)(sanitizeClbk);
       }}
       on:keydown={(evt) => {
         // prevent editing value by arrowKeys
@@ -59,10 +62,10 @@
     />
   {:else}
     <input
-      class={config.inputClasses ||
+      class={inputClasses ||
         "number-bubble input has-text-centered-mobile"}
       type="number"
-      placeholder={config.placeholder}
+      placeholder={placeholder}
       onwheel="this.blur()"
       disabled="disabled"
     />

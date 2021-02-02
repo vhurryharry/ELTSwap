@@ -173,7 +173,7 @@ contract Swap is Ownable {
         return eltSwapped.add(eltBurned);
     }
     
-    function setSwapPhase() public onlyOwner {
+    function setSwapPhase() public {
         if(swapPhase == 1 && getELTInContract() >= eltPhase2Requirement)  {
             swapPhase = 2;
         } 

@@ -136,7 +136,7 @@
         },
         (err) => {
           currentHODLBonus.set(null);
-          console.dir(err);
+          //console.dir(err);
         }
       );
     }
@@ -168,7 +168,7 @@
     } else {
       swapPhase.then(
         (result) => {
-          currentSwapPhase.set(result);
+          currentSwapPhase.set(parseInt(result));
         },
         (err) => {
           currentSwapPhase.set(null);
