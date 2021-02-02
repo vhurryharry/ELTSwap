@@ -154,9 +154,13 @@ export let approveELT = async (web3, amount, fromAddress, toAddress) => {
 export let phase1Swap = async (web3, amount, fromAddress) => {
   if (!web3 || !web3.eth) return;
 
+  console.log("Past the web3 thing");
+
   let contract = new web3.eth.Contract(swapABI, swapContract, { from: fromAddress });
 
-  let gasEstimate = getGasPriceEstimate(web3, 'phase1Swap', contract, burnPercent);
+  let gasEstimate = await contract.methods.phase1Swap(decimalToAtomic(amount)).estimateGas().then(function (res) {
+    return res;
+  });
 
   try {
     return new Promise((resolve, reject) => {
@@ -210,7 +214,7 @@ export let phase3Swap = async (web3, amount, fromAddress) => {
 
   let contract = new web3.eth.Contract(swapABI, swapContract, { from: fromAddress });
 
-  let gasEstimate = getGasPriceEstimate(web3, 'phase3Swap', burnPercent);
+  let gasEstimate = getGasPriceEstimate(web3, 'phase3Swap');
 
   try {
     return new Promise((resolve, reject) => {
